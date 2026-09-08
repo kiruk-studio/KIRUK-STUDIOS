@@ -54,6 +54,9 @@ importers:
 
   apps/kiruk-portal:
     dependencies:
+      '@kiruk/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
       '@tailwindcss/postcss':
         specifier: ^4.0.0
         version: 4.3.0
@@ -118,6 +121,9 @@ importers:
       '@astrojs/vercel':
         specifier: ^8.0.0
         version: 8.2.11(astro@5.18.2(@types/node@22.19.19)(@vercel/functions@2.2.13)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(terser@5.48.0)(typescript@5.9.3)(yaml@2.9.0))(next@15.5.18(@babel/core@7.29.7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(rollup@4.60.4)
+      '@kiruk/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
       '@react-three/drei':
         specifier: ^9.114.0
         version: 9.122.0(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.170.0))(@types/react@19.2.15)(@types/three@0.170.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.170.0)(use-sync-external-store@1.6.0(react@19.2.6))
