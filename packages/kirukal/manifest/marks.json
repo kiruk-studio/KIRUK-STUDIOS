@@ -1,0 +1,122 @@
+{
+  "$comment": "The 44 marks Arun draws. Families set the drawing template geometry; `takes` is how many honest redraws that mark wants. Variant COUNTS are never stored here — process-assets.mjs counts the v*.svg files actually on disk, so adding a redraw stays an asset-only commit with no code, token or spec change.",
+  "families": {
+    "frame": { "viewBox": [384, 384], "slice": [96, 288], "safeArea": 24, "nineSlice": true },
+    "rule": { "viewBox": [512, 128], "safeArea": 16, "tileable": true },
+    "glyph": { "viewBox": [512, 512], "safeArea": 64 },
+    "part": { "viewBox": [512, 512], "safeArea": 64 },
+    "fill": { "viewBox": [512, 512], "safeArea": 0, "tileable": true },
+    "eye": { "viewBox": [512, 512], "safeArea": 64 },
+    "wordmark": { "viewBox": [1024, 256], "safeArea": 32 }
+  },
+  "marks": {
+    "frame.box": {
+      "takes": 4,
+      "tier": "B",
+      "usedBy": ["Frame", "Card", "Dialog", "Popover", "Panel"]
+    },
+    "frame.box-tight": {
+      "takes": 4,
+      "tier": "A",
+      "usedBy": ["Button", "Badge", "Tabs"],
+      "note": "Drawn separately from frame.box — a shrunk box reads wrong at button scale."
+    },
+    "frame.pill": { "takes": 4, "tier": "A", "usedBy": ["Switch", "Badge"] },
+    "frame.circle": { "takes": 4, "tier": "A", "usedBy": ["Radio", "IconButton", "Avatar"] },
+    "frame.sheet": {
+      "takes": 4,
+      "tier": "B",
+      "usedBy": ["Sheet", "Dialog"],
+      "note": "Torn top edge."
+    },
+    "frame.field": { "takes": 4, "tier": "B", "usedBy": ["Input", "Textarea"] },
+
+    "rule.line": { "takes": 3, "tier": "A", "usedBy": ["Separator"] },
+    "rule.dashed": { "takes": 3, "tier": "A", "usedBy": ["Separator"] },
+    "rule.underline": { "takes": 3, "tier": "A", "usedBy": ["Tabs", "Input"] },
+    "rule.hatch": { "takes": 3, "tier": "A", "usedBy": ["Toggle", "Progress"] },
+
+    "glyph.tick": { "takes": 3, "tier": "A", "usedBy": ["Checkbox", "Menu"] },
+    "glyph.cross": { "takes": 3, "tier": "A", "usedBy": ["Dialog", "Toast", "Badge"] },
+    "glyph.chevron": {
+      "takes": 3,
+      "tier": "A",
+      "usedBy": ["Select", "Menu", "Tabs"],
+      "note": "One asset, rotated four ways."
+    },
+    "glyph.arrow": { "takes": 3, "tier": "A", "usedBy": ["Button"] },
+    "glyph.plus": { "takes": 3, "tier": "A", "usedBy": ["NumberField"] },
+    "glyph.minus": { "takes": 3, "tier": "A", "usedBy": ["NumberField"] },
+    "glyph.dot": { "takes": 3, "tier": "A", "usedBy": ["Radio", "Menu"] },
+    "glyph.ellipsis": { "takes": 3, "tier": "A", "usedBy": ["Menu"] },
+    "glyph.grip": { "takes": 3, "tier": "A", "usedBy": ["Slider", "ScrollArea"] },
+    "glyph.caret": { "takes": 3, "tier": "A", "usedBy": ["Select"] },
+    "glyph.search": { "takes": 3, "tier": "A", "usedBy": ["Input"] },
+    "glyph.eye-open": {
+      "takes": 3,
+      "tier": "A",
+      "usedBy": ["Input"],
+      "note": "Functional visibility toggle — not the brand mark."
+    },
+
+    "part.switch-track": { "takes": 2, "tier": "A", "usedBy": ["Switch"] },
+    "part.switch-knob": { "takes": 2, "tier": "A", "usedBy": ["Switch"] },
+    "part.slider-track": { "takes": 2, "tier": "A", "usedBy": ["Slider"] },
+    "part.slider-thumb": { "takes": 2, "tier": "A", "usedBy": ["Slider"] },
+    "part.checkbox-box": { "takes": 2, "tier": "A", "usedBy": ["Checkbox"] },
+    "part.radio-ring": { "takes": 2, "tier": "A", "usedBy": ["Radio"] },
+    "part.progress-track": { "takes": 2, "tier": "A", "usedBy": ["Progress"] },
+    "part.resize-handle": { "takes": 2, "tier": "A", "usedBy": ["ScrollArea"] },
+    "part.scrollbar-thumb": { "takes": 2, "tier": "A", "usedBy": ["ScrollArea"] },
+    "part.corner-bracket": {
+      "takes": 2,
+      "tier": "A",
+      "usedBy": ["Frame"],
+      "note": "Canvas selection / crop marks."
+    },
+    "part.tab-notch": { "takes": 2, "tier": "A", "usedBy": ["Tabs"] },
+    "part.tooltip-tail": { "takes": 2, "tier": "A", "usedBy": ["Tooltip", "Popover"] },
+    "part.focus-halo": {
+      "takes": 2,
+      "tier": "A",
+      "usedBy": ["*"],
+      "note": "Accessibility-critical. The drawn focus ring is its own asset, never an afterthought."
+    },
+
+    "fill.scribble": { "takes": 2, "tier": "A", "usedBy": ["Toggle", "Checkbox"] },
+    "fill.paper-grain": {
+      "takes": 2,
+      "tier": "A",
+      "usedBy": ["PaperGround"],
+      "note": "Applied once to the document ground. Never per component — law 2."
+    },
+    "fill.marker": { "takes": 2, "tier": "A", "usedBy": ["Badge"] },
+
+    "eye.primary": {
+      "takes": 1,
+      "tier": "A",
+      "usedBy": ["EyeMark"],
+      "note": "PLACEHOLDER until FOUNDER_DECISIONS B1."
+    },
+    "eye.iris": {
+      "takes": 1,
+      "tier": "A",
+      "usedBy": ["EyeMark", "Progress"],
+      "note": "Busy / processing indicator."
+    },
+    "eye.gaze": { "takes": 1, "tier": "A", "usedBy": ["EyeMark"] },
+    "eye.blink": {
+      "takes": 1,
+      "tier": "A",
+      "usedBy": ["EyeMark"],
+      "note": "Three-frame sequence."
+    },
+    "eye.watermark": { "takes": 1, "tier": "A", "usedBy": ["EmptyState"] },
+    "wordmark.kiruk": {
+      "takes": 1,
+      "tier": "A",
+      "usedBy": ["Wordmark"],
+      "note": "PLACEHOLDER until FOUNDER_DECISIONS B2."
+    }
+  }
+}

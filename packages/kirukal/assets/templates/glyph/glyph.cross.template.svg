@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 568" width="512" height="568">
+  <!--
+    kiruk drawing template — glyph.cross
+    Draw INSIDE this frame. Everything in #guides is stripped on import, so you
+    never need to hide or delete a layer.
+    Brush: 6 units (the swatch below the frame is exactly this weight).
+    Colour: pure black on transparent. Import rewrites it to currentColor.
+  -->
+  <g id="guides" data-kirukal="guide" stroke="#FF00FF" stroke-width="1" fill="none" opacity="0.85">
+    <path d="M 0 0 h 20" />
+    <path d="M 0 0 v 20" />
+    <path d="M 512 0 h -20" />
+    <path d="M 512 0 v 20" />
+    <path d="M 512 512 h -20" />
+    <path d="M 512 512 v -20" />
+    <path d="M 0 512 h 20" />
+    <path d="M 0 512 v -20" />
+    <rect x="64" y="64" width="384" height="384" fill="none" stroke-dasharray="8 8" />
+    <path d="M 41 540 h 92" stroke-width="6" stroke-dasharray="none" />
+  </g>
+  <g id="artwork" data-kirukal="artwork">
+    <!-- your strokes go here -->
+  </g>
+</svg>

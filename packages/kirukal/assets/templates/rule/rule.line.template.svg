@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 184" width="512" height="184">
+  <!--
+    kiruk drawing template — rule.line
+    Draw INSIDE this frame. Everything in #guides is stripped on import, so you
+    never need to hide or delete a layer.
+    Brush: 1.5 units (the swatch below the frame is exactly this weight).
+    Colour: pure black on transparent. Import rewrites it to currentColor.
+  -->
+  <g id="guides" data-kirukal="guide" stroke="#FF00FF" stroke-width="1" fill="none" opacity="0.85">
+    <path d="M 0 0 h 5" />
+    <path d="M 0 0 v 5" />
+    <path d="M 512 0 h -5" />
+    <path d="M 512 0 v 5" />
+    <path d="M 512 128 h -5" />
+    <path d="M 512 128 v -5" />
+    <path d="M 0 128 h 5" />
+    <path d="M 0 128 v -5" />
+    <rect x="16" y="16" width="480" height="96" fill="none" stroke-dasharray="8 8" />
+    <path d="M 41 156 h 92" stroke-width="1.5" stroke-dasharray="none" />
+  </g>
+  <g id="artwork" data-kirukal="artwork">
+    <!-- your strokes go here -->
+  </g>
+</svg>

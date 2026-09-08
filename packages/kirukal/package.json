@@ -1,0 +1,37 @@
+{
+  "name": "@kiruk/kirukal",
+  "version": "0.0.1",
+  "private": true,
+  "description": "kiruk hand-drawn component layer \u2014 Base UI structure, kiruk surface, replayed from captured pen strokes.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./engine": "./src/engine/index.ts",
+    "./skin": "./src/skin/index.css"
+  },
+  "scripts": {
+    "check-types": "tsc -p tsconfig.json --noEmit",
+    "outline": "node scripts/new-outline.mjs",
+    "assets:build": "node scripts/process-assets.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@kiruk/design-system": "workspace:*",
+    "perfect-freehand": "^1.2.3"
+  },
+  "peerDependencies": {
+    "@base-ui/react": ">=1.8",
+    "react": ">=19",
+    "react-dom": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "svgo": "^4.1.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
