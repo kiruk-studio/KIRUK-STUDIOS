@@ -54,3 +54,11 @@ coverage/
 # tool-installer artifacts
 *.tgz
 .pnpm-store/
+
+# Velite generated content data
+.velite/
+
+# Claude Code local state — only commands/ and settings.json are committed (CLAUDE.md §7)
+.claude/*
+!.claude/commands/
+!.claude/settings.json

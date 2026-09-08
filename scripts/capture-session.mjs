@@ -48,10 +48,13 @@ function parseTranscript(tp) {
       const role = obj?.message?.role ?? obj?.role;
       const content = obj?.message?.content ?? obj?.content;
       const text = Array.isArray(content)
-        ? content.filter((c) => c?.type === 'text').map((c) => c.text).join('\n')
-        : typeof content === 'string'
         ? content
-        : '';
+            .filter((c) => c?.type === 'text')
+            .map((c) => c.text)
+            .join('\n')
+        : typeof content === 'string'
+          ? content
+          : '';
       if (role === 'assistant' && text) assistantTurns.push(text);
       if (role === 'user' && text) userTurns.push(text);
     } catch {
@@ -70,10 +73,14 @@ function condense(turns, maxLen = 400) {
 
 function extractDecisions(assistantTurns) {
   const out = [];
-  const pat = /(?:^|\n)\s*(?:decision|chose|picked|locked in|going with)\s*[:-]?\s*([^\n.]{5,140})/gi;
+  const pat =
+    /(?:^|\n)\s*(?:decision|chose|picked|locked in|going with)\s*[:-]?\s*([^\n.]{5,140})/gi;
   for (const t of assistantTurns) {
-    let m;
-    while ((m = pat.exec(t)) !== null) out.push(redact(m[1].trim()));
+    let m = pat.exec(t);
+    while (m !== null) {
+      out.push(redact(m[1].trim()));
+      m = pat.exec(t);
+    }
     if (out.length > 8) break;
   }
   return out.slice(0, 8);
@@ -113,7 +120,9 @@ function main() {
   fs.appendFileSync(logPath, JSON.stringify(entry) + '\n');
   console.log('[capture-session] appended', source, 'entry to ideas/log.ndjson');
   if (scribble === null) {
-    console.log('[capture-session] note: scribble:null → fine for exploration, required before promotion (pen-and-paper spec).');
+    console.log(
+      '[capture-session] note: scribble:null → fine for exploration, required before promotion (pen-and-paper spec).',
+    );
   }
 }
 

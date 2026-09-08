@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "Kiruk — scribbles into worlds. Spec-driven creative OS, monorepo for the kirukism movement.",
+  "description": "Kiruk \u2014 scribbles into worlds. Spec-driven creative OS, monorepo for the kirukism movement.",
   "homepage": "https://kiruk.studio",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "lint:fix": "biome lint --write .",
     "format": "biome format . && prettier --check \"**/*.{md,mdx}\"",
     "format:fix": "biome format --write . && prettier --write \"**/*.{md,mdx}\"",
-    "typecheck": "turbo run typecheck",
+    "typecheck": "turbo run check-types",
     "test": "turbo run test",
     "size": "size-limit",
     "dev": "turbo dev",

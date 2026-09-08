@@ -54,7 +54,10 @@ function tryRead(p) {
 
 function tryExec(cmd) {
   try {
-    return { ok: true, out: execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim() };
+    return {
+      ok: true,
+      out: execSync(cmd, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim(),
+    };
   } catch (e) {
     return { ok: false, out: (e.stdout || '') + (e.stderr || '') + String(e.message) };
   }
@@ -73,7 +76,11 @@ line(nodeOk ? 'ok' : 'fail', `Node ${nodeV}`, engines.node ? `pinned ${engines.n
 const pnpmRes = tryExec('pnpm --version');
 if (pnpmRes.ok) {
   const pnpmOk = !engines.pnpm || satisfiesMajor(pnpmRes.out, engines.pnpm);
-  line(pnpmOk ? 'ok' : 'warn', `pnpm ${pnpmRes.out}`, engines.pnpm ? `pinned ${engines.pnpm}` : 'no pin');
+  line(
+    pnpmOk ? 'ok' : 'warn',
+    `pnpm ${pnpmRes.out}`,
+    engines.pnpm ? `pinned ${engines.pnpm}` : 'no pin',
+  );
 } else {
   line('warn', 'pnpm', 'not installed in PATH (npm is OK for spec work)');
 }
@@ -129,7 +136,11 @@ const devlogFiles = fs.existsSync(devlogsDir)
 // build-in-public spec: no fixed cadence floor — publish when there's material
 // progress. Report days-since as INFO only; never warn/fail/block on an interval.
 if (devlogFiles.length === 0) {
-  line('info', 'no devlog entries yet', 'publish when there is material progress (no fixed cadence)');
+  line(
+    'info',
+    'no devlog entries yet',
+    'publish when there is material progress (no fixed cadence)',
+  );
 } else {
   const last = devlogFiles[devlogFiles.length - 1];
   const lastDate = new Date(last.slice(0, 10));

@@ -10,6 +10,7 @@
     "includes": [
       "**/*.{js,cjs,mjs,jsx,ts,tsx,json,jsonc}",
       "!**/node_modules",
+      "!**/.claude",
       "!**/.next",
       "!**/.astro",
       "!**/.turbo",

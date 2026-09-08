@@ -8,5 +8,7 @@
  * If you arrived here via npm run tokens:sync-pen: that script has been removed
  * from package.json. Run `npm run tokens:build` instead for CSS/Tailwind/TS output.
  */
-console.error('[sync-pen] This script is no longer active. See packages/design-system/components/.');
+console.error(
+  '[sync-pen] This script is no longer active. See packages/design-system/components/.',
+);
 process.exit(1);
