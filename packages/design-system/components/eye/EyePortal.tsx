@@ -6,7 +6,7 @@
  * Three rings that collapse inward — the motion motif "portal-transition" expressed
  * as a static mark. Used for loading states, between-universe transitions, call-to-action focal points.
  */
-import * as React from 'react';
+import type * as React from 'react';
 
 export interface EyePortalProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -27,13 +27,13 @@ export function EyePortal({ size = 200, label = 'Kiruk portal mark', ...props }:
       {...props}
     >
       {/* Outer ring */}
-      <circle cx={r} cy={r} r={r * 0.98} fill="var(--color-portal-glow, #7C4DFF)" opacity={0.18} />
+      <circle cx={r} cy={r} r={r * 0.98} fill="var(--color-ink, #0A0A0A)" opacity={0.18} />
       {/* Mid ring */}
-      <circle cx={r} cy={r} r={r * 0.68} fill="var(--color-portal-glow, #7C4DFF)" opacity={0.45} />
+      <circle cx={r} cy={r} r={r * 0.68} fill="var(--color-ink, #0A0A0A)" opacity={0.45} />
       {/* Inner ring */}
-      <circle cx={r} cy={r} r={r * 0.38} fill="var(--color-portal-glow, #7C4DFF)" />
+      <circle cx={r} cy={r} r={r * 0.38} fill="var(--color-ink, #0A0A0A)" />
       {/* Core — void center */}
-      <circle cx={r} cy={r} r={r * 0.15} fill="var(--color-void, #0A0A0B)" />
+      <circle cx={r} cy={r} r={r * 0.15} fill="var(--color-paper, #FFFFFF)" />
     </svg>
   );
 }

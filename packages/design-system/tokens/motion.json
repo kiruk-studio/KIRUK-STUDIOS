@@ -2,19 +2,35 @@
   "motion": {
     "gaze-track": {
       "duration": { "$type": "duration", "$value": "{duration.slow}" },
-      "easing": { "$type": "cubicBezier", "$value": "{cubicBezier.ease-gaze}", "$description": "Element follows pointer like a gaze. Smooth lag." }
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{cubicBezier.ease-gaze}",
+        "$description": "Element follows pointer like a gaze. Smooth lag."
+      }
     },
     "iris-dilate": {
       "duration": { "$type": "duration", "$value": "{duration.fast}" },
-      "easing": { "$type": "cubicBezier", "$value": "{cubicBezier.ease-iris}", "$description": "State change — scale/brightness pulse like iris dilating." }
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{cubicBezier.ease-iris}",
+        "$description": "State change — scale/brightness pulse like iris dilating."
+      }
     },
     "portal-transition": {
       "duration": { "$type": "duration", "$value": "{duration.portal}" },
-      "easing": { "$type": "cubicBezier", "$value": "{cubicBezier.ease-portal}", "$description": "Between-universe — collapse to iris, expand into next world." }
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{cubicBezier.ease-portal}",
+        "$description": "Between-universe — collapse to iris, expand into next world."
+      }
     },
     "cursor-orbit": {
       "duration": { "$type": "duration", "$value": "{duration.base}" },
-      "easing": { "$type": "cubicBezier", "$value": "{cubicBezier.ease-gaze}", "$description": "Companion element orbits cursor at fixed radius." }
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{cubicBezier.ease-gaze}",
+        "$description": "Companion element orbits cursor at fixed radius."
+      }
     }
   }
 }

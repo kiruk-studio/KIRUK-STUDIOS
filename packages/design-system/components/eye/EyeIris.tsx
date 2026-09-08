@@ -6,7 +6,7 @@
  * Solid iris disk with centered pupil. Used for favicons, pattern tiles,
  * tight UI contexts where full sclera is too heavy.
  */
-import * as React from 'react';
+import type * as React from 'react';
 
 export interface EyeIrisProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -27,8 +27,8 @@ export function EyeIris({ size = 120, label = 'Kiruk iris mark', ...props }: Eye
       aria-label={label}
       {...props}
     >
-      <circle cx={r} cy={r} r={r} fill="var(--color-iris-core, #FF4D2E)" />
-      <circle cx={r} cy={r} r={pupilR} fill="var(--color-void, #0A0A0B)" />
+      <circle cx={r} cy={r} r={r} fill="var(--color-ink, #0A0A0A)" />
+      <circle cx={r} cy={r} r={pupilR} fill="var(--color-paper, #FFFFFF)" />
     </svg>
   );
 }

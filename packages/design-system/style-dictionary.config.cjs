@@ -10,10 +10,7 @@
 const path = require('node:path');
 
 // glob requires forward slashes even on Windows
-const tokensGlob = path
-  .join(__dirname, 'tokens', '**', '*.json')
-  .split(path.sep)
-  .join('/');
+const tokensGlob = path.join(__dirname, 'tokens', '**', '*.json').split(path.sep).join('/');
 
 const buildBase = path.join(__dirname, 'build').split(path.sep).join('/') + '/';
 
@@ -31,9 +28,9 @@ module.exports = {
         {
           destination: 'tokens.css',
           format: 'css/variables',
-          options: { outputReferences: true, selector: ':root' }
-        }
-      ]
+          options: { outputReferences: true, selector: ':root' },
+        },
+      ],
     },
     tailwind: {
       transformGroup: 'js',
@@ -42,8 +39,8 @@ module.exports = {
         {
           destination: 'tokens.cjs',
           format: 'javascript/module',
-        }
-      ]
+        },
+      ],
     },
     ts: {
       transformGroup: 'js',
@@ -52,8 +49,8 @@ module.exports = {
         {
           destination: 'tokens.ts',
           format: 'javascript/es6',
-        }
-      ]
-    }
-  }
+        },
+      ],
+    },
+  },
 };

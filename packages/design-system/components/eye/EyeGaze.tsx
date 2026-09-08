@@ -6,7 +6,7 @@
  * The iris sits right-weighted as if tracking something. Communicates
  * attention, focus, creative anticipation.
  */
-import * as React from 'react';
+import type * as React from 'react';
 
 export interface EyeGazeProps extends React.SVGProps<SVGSVGElement> {
   size?: number;
@@ -36,11 +36,11 @@ export function EyeGaze({ size = 160, label = 'Kiruk gaze mark', ...props }: Eye
       {...props}
     >
       {/* Sclera lid */}
-      <path d={lidPath} fill="var(--color-paper, #EFEADF)" />
+      <path d={lidPath} fill="var(--color-paper, #FFFFFF)" />
       {/* Iris */}
-      <circle cx={irisX} cy={cy} r={irisR} fill="var(--color-iris-core, #FF4D2E)" />
+      <circle cx={irisX} cy={cy} r={irisR} fill="var(--color-ink, #0A0A0A)" />
       {/* Pupil */}
-      <circle cx={irisX} cy={cy} r={pupilR} fill="var(--color-void, #0A0A0B)" />
+      <circle cx={irisX} cy={cy} r={pupilR} fill="var(--color-paper, #FFFFFF)" />
     </svg>
   );
 }

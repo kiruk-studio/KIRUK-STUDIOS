@@ -2,9 +2,10 @@
   "name": "@kiruk/design-system",
   "version": "0.0.1",
   "private": true,
-  "description": "Kiruk design system — DTCG tokens, Eye SVG components, Style Dictionary build.",
+  "description": "Kiruk design system \u2014 DTCG tokens, Eye SVG components, Style Dictionary build.",
   "type": "module",
   "exports": {
+    ".": "./components/index.ts",
     "./components": "./components/index.ts",
     "./tokens/css": "./build/css/tokens.css",
     "./tokens/ts": "./build/ts/tokens.ts",
@@ -12,7 +13,8 @@
   },
   "scripts": {
     "tokens:build": "node ../../scripts/build-tokens.mjs",
-    "tokens:watch": "node ../../scripts/build-tokens.mjs --watch"
+    "tokens:watch": "node ../../scripts/build-tokens.mjs --watch",
+    "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "peerDependencies": {
     "react": ">=18",
