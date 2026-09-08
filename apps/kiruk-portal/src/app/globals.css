@@ -1,5 +1,7 @@
 @import 'tailwindcss';
-@import '@kiruk/design-system/tokens/css';
+/* Tokens as Tailwind theme: colours, breakpoints, radii, leading, tracking.
+   Excludes absurd colours (asset-only) and asset mark IDs by design. */
+@import '@kiruk/design-system/tokens/theme';
 
 /* Hand fonts (served from /public/fonts). LICENSE GATE before public deploy — see kiruk-web. */
 @font-face {

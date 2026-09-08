@@ -3,114 +3,179 @@
     "paper": {
       "$type": "color",
       "$value": "#FFFFFF",
-      "$description": "The page. White paper — the unwritten universe."
+      "$description": "The page. White paper \u2014 the unwritten universe."
     },
     "ink": {
       "$type": "color",
       "$value": "#0A0A0A",
-      "$description": "Pen/pencil stroke — primary foreground line."
+      "$description": "Pen/pencil stroke \u2014 primary foreground line."
     },
     "pencil-100": {
       "$type": "color",
       "$value": "#E5E5E5",
-      "$description": "Pencil ramp — faintest graphite."
+      "$description": "Pencil ramp \u2014 faintest graphite."
     },
-    "pencil-200": { "$type": "color", "$value": "#C9C9C9", "$description": "Pencil ramp." },
+    "pencil-200": {
+      "$type": "color",
+      "$value": "#C9C9C9",
+      "$description": "Pencil ramp."
+    },
     "pencil-300": {
       "$type": "color",
       "$value": "#9A9A9A",
-      "$description": "Pencil ramp — muted line."
+      "$description": "Pencil ramp \u2014 muted line."
     },
     "pencil-400": {
       "$type": "color",
       "$value": "#6B6B6B",
-      "$description": "Pencil ramp — mid graphite."
+      "$description": "Pencil ramp \u2014 mid graphite."
     },
     "pencil-500": {
       "$type": "color",
       "$value": "#3A3A3A",
-      "$description": "Pencil ramp — heavy graphite."
+      "$description": "Pencil ramp \u2014 heavy graphite."
     },
     "pencil-600": {
       "$type": "color",
       "$value": "#1A1A1A",
-      "$description": "Pencil ramp — near-black, strong stroke."
+      "$description": "Pencil ramp \u2014 near-black, strong stroke."
     },
     "absurd": {
       "pink": {
         "$type": "color",
         "$value": "#FF2D78",
-        "$description": "Absurd asset color — illustrations/objects only, never UI chrome."
+        "$description": "Absurd asset color \u2014 illustrations/objects only, never UI chrome."
       },
       "lime": {
         "$type": "color",
         "$value": "#B6FF1A",
-        "$description": "Absurd asset color — assets only."
+        "$description": "Absurd asset color \u2014 assets only."
       },
       "violet": {
         "$type": "color",
         "$value": "#7C4DFF",
-        "$description": "Absurd asset color — assets only."
+        "$description": "Absurd asset color \u2014 assets only."
       },
       "cyan": {
         "$type": "color",
         "$value": "#18E0FF",
-        "$description": "Absurd asset color — assets only."
+        "$description": "Absurd asset color \u2014 assets only."
       },
       "orange": {
         "$type": "color",
         "$value": "#FF6A00",
-        "$description": "Absurd asset color — assets only."
+        "$description": "Absurd asset color \u2014 assets only."
       }
     }
   },
   "dimension": {
     "space": {
-      "0": { "$type": "dimension", "$value": "0px" },
-      "1": { "$type": "dimension", "$value": "4px" },
-      "2": { "$type": "dimension", "$value": "8px" },
-      "3": { "$type": "dimension", "$value": "12px" },
-      "4": { "$type": "dimension", "$value": "16px" },
-      "5": { "$type": "dimension", "$value": "24px" },
-      "6": { "$type": "dimension", "$value": "32px" },
-      "7": { "$type": "dimension", "$value": "48px" },
-      "8": { "$type": "dimension", "$value": "64px" },
-      "9": { "$type": "dimension", "$value": "96px" }
+      "0": {
+        "$type": "dimension",
+        "$value": "0px"
+      },
+      "1": {
+        "$type": "dimension",
+        "$value": "4px"
+      },
+      "2": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "3": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "4": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "5": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "6": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "7": {
+        "$type": "dimension",
+        "$value": "48px"
+      },
+      "8": {
+        "$type": "dimension",
+        "$value": "64px"
+      },
+      "9": {
+        "$type": "dimension",
+        "$value": "96px"
+      }
+    },
+    "touch": {
+      "min": {
+        "$type": "dimension",
+        "$value": "44px",
+        "$description": "Minimum interactive hit area below breakpoint.md, independent of visual size."
+      }
     }
   },
   "fontFamily": {
     "wordmark": {
       "$type": "fontFamily",
       "$value": "Bridges Not Walls, cursive",
-      "$description": "KIRUK wordmark face (placeholder until custom letterform — B2)."
+      "$description": "KIRUK wordmark face (placeholder until custom letterform \u2014 B2)."
     },
     "display": {
       "$type": "fontFamily",
       "$value": "Magnetic Drawing, cursive",
-      "$description": "Hand-drawn display face — big headings."
+      "$description": "Hand-drawn display face \u2014 big headings."
     },
     "handwriting": {
       "$type": "fontFamily",
       "$value": "Left Hand, cursive",
-      "$description": "Handwriting face — notes, labels, accents."
+      "$description": "Handwriting face \u2014 notes, labels, accents."
     },
     "body": {
       "$type": "fontFamily",
       "$value": "Inter, ui-sans-serif, system-ui, sans-serif",
-      "$description": "Clean body sans — long-form reading + UI."
+      "$description": "Clean body sans \u2014 long-form reading + UI."
     },
-    "mono": { "$type": "fontFamily", "$value": "JetBrains Mono, ui-monospace, monospace" }
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "JetBrains Mono, ui-monospace, monospace"
+    }
   },
   "fontWeight": {
-    "regular": { "$type": "fontWeight", "$value": 400 },
-    "medium": { "$type": "fontWeight", "$value": 500 },
-    "bold": { "$type": "fontWeight", "$value": 700 }
+    "regular": {
+      "$type": "fontWeight",
+      "$value": 400
+    },
+    "medium": {
+      "$type": "fontWeight",
+      "$value": 500
+    },
+    "bold": {
+      "$type": "fontWeight",
+      "$value": 700
+    }
   },
   "duration": {
-    "instant": { "$type": "duration", "$value": "80ms" },
-    "fast": { "$type": "duration", "$value": "180ms" },
-    "base": { "$type": "duration", "$value": "280ms" },
-    "slow": { "$type": "duration", "$value": "520ms" },
+    "instant": {
+      "$type": "duration",
+      "$value": "80ms"
+    },
+    "fast": {
+      "$type": "duration",
+      "$value": "180ms"
+    },
+    "base": {
+      "$type": "duration",
+      "$value": "280ms"
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": "520ms"
+    },
     "portal": {
       "$type": "duration",
       "$value": "900ms",
@@ -126,7 +191,7 @@
     "ease-iris": {
       "$type": "cubicBezier",
       "$value": [0.65, 0, 0.35, 1],
-      "$description": "Iris dilation — quick-out, settle."
+      "$description": "Iris dilation \u2014 quick-out, settle."
     },
     "ease-portal": {
       "$type": "cubicBezier",
@@ -135,10 +200,75 @@
     }
   },
   "radius": {
-    "none": { "$type": "dimension", "$value": "0px" },
-    "sm": { "$type": "dimension", "$value": "4px" },
-    "md": { "$type": "dimension", "$value": "8px" },
-    "lg": { "$type": "dimension", "$value": "16px" },
-    "iris": { "$type": "dimension", "$value": "9999px", "$description": "Full round — iris shape." }
+    "none": {
+      "$type": "dimension",
+      "$value": "0px"
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "iris": {
+      "$type": "dimension",
+      "$value": "9999px",
+      "$description": "Full round \u2014 iris shape."
+    }
+  },
+  "breakpoint": {
+    "xs": {
+      "$type": "dimension",
+      "$value": "480px",
+      "$description": "Large phone \u2014 two-column control rows become viable."
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": "768px",
+      "$description": "PINNED to Toolcraft's MOBILE_BREAKPOINT (src/toolcraft/ui/hooks/use-mobile.ts, hash-protected). Changing this desynchronises the forge shell from the kit at one pixel \u2014 must change together."
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": "1024px",
+      "$description": "Tablet landscape / small laptop \u2014 multi-panel becomes viable."
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "1440px",
+      "$description": "Desktop reference."
+    },
+    "2xl": {
+      "$type": "dimension",
+      "$value": "1920px",
+      "$description": "Large screen \u2014 cap content column, grow panels."
+    }
+  },
+  "stroke": {
+    "hairline": {
+      "$type": "dimension",
+      "$value": "1px",
+      "$description": "Faintest drawn line \u2014 guides, ruling."
+    },
+    "base": {
+      "$type": "dimension",
+      "$value": "2px",
+      "$description": "Default drawn stroke. Baseline for the 6-unit-at-512 drawing template."
+    },
+    "heavy": {
+      "$type": "dimension",
+      "$value": "3px",
+      "$description": "Emphasis stroke \u2014 active/selected frames."
+    },
+    "mark": {
+      "$type": "dimension",
+      "$value": "4px",
+      "$description": "Marker weight \u2014 brand marks, headline underlines."
+    }
   }
 }

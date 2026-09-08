@@ -1,0 +1,166 @@
+{
+  "asset": {
+    "frame": {
+      "box": {
+        "$type": "asset",
+        "$value": "frame.box",
+        "$description": "Drawn rectangle frame — panels, cards, popovers, dialogs."
+      },
+      "box-tight": {
+        "$type": "asset",
+        "$value": "frame.box-tight",
+        "$description": "Small-radius drawn frame — buttons, chips, tabs. Drawn separately; a shrunk frame.box reads wrong."
+      },
+      "pill": {
+        "$type": "asset",
+        "$value": "frame.pill",
+        "$description": "Drawn pill — switch track, badge, chip."
+      },
+      "circle": {
+        "$type": "asset",
+        "$value": "frame.circle",
+        "$description": "Freehand circle — radio, avatar, icon button, dot handle."
+      },
+      "sheet": {
+        "$type": "asset",
+        "$value": "frame.sheet",
+        "$description": "Torn-top sheet — mobile bottom sheet and dialog."
+      },
+      "field": {
+        "$type": "asset",
+        "$value": "frame.field",
+        "$description": "Bottom-weighted input frame — text input, textarea."
+      }
+    },
+    "rule": {
+      "line": { "$type": "asset", "$value": "rule.line", "$description": "Drawn horizontal rule." },
+      "dashed": {
+        "$type": "asset",
+        "$value": "rule.dashed",
+        "$description": "Drawn dashed rule — provisional boundaries."
+      },
+      "underline": {
+        "$type": "asset",
+        "$value": "rule.underline",
+        "$description": "Hand underline — links, active tab, emphasis."
+      },
+      "hatch": {
+        "$type": "asset",
+        "$value": "rule.hatch",
+        "$description": "Diagonal shading — disabled, selected, destructive."
+      }
+    },
+    "glyph": {
+      "tick": { "$type": "asset", "$value": "glyph.tick", "$description": "Checkmark." },
+      "cross": {
+        "$type": "asset",
+        "$value": "glyph.cross",
+        "$description": "Close / clear / delete."
+      },
+      "chevron": {
+        "$type": "asset",
+        "$value": "glyph.chevron",
+        "$description": "Disclosure — select, accordion, breadcrumb. One asset, rotated four ways."
+      },
+      "arrow": {
+        "$type": "asset",
+        "$value": "glyph.arrow",
+        "$description": "Directional — nav, submit."
+      },
+      "plus": { "$type": "asset", "$value": "glyph.plus", "$description": "Add." },
+      "minus": { "$type": "asset", "$value": "glyph.minus", "$description": "Remove / collapse." },
+      "dot": {
+        "$type": "asset",
+        "$value": "glyph.dot",
+        "$description": "Bullet, keyframe, handle."
+      },
+      "ellipsis": {
+        "$type": "asset",
+        "$value": "glyph.ellipsis",
+        "$description": "Overflow menu."
+      },
+      "grip": { "$type": "asset", "$value": "glyph.grip", "$description": "Drag handle." },
+      "caret": {
+        "$type": "asset",
+        "$value": "glyph.caret",
+        "$description": "Filled disclosure triangle — visually distinct from chevron."
+      },
+      "search": { "$type": "asset", "$value": "glyph.search", "$description": "Search." },
+      "eye-open": {
+        "$type": "asset",
+        "$value": "glyph.eye-open",
+        "$description": "Functional visibility toggle — not the brand mark."
+      }
+    },
+    "part": {
+      "switch-track": { "$type": "asset", "$value": "part.switch-track" },
+      "switch-knob": { "$type": "asset", "$value": "part.switch-knob" },
+      "slider-track": { "$type": "asset", "$value": "part.slider-track" },
+      "slider-thumb": { "$type": "asset", "$value": "part.slider-thumb" },
+      "checkbox-box": { "$type": "asset", "$value": "part.checkbox-box" },
+      "radio-ring": { "$type": "asset", "$value": "part.radio-ring" },
+      "progress-track": { "$type": "asset", "$value": "part.progress-track" },
+      "resize-handle": { "$type": "asset", "$value": "part.resize-handle" },
+      "scrollbar-thumb": { "$type": "asset", "$value": "part.scrollbar-thumb" },
+      "corner-bracket": {
+        "$type": "asset",
+        "$value": "part.corner-bracket",
+        "$description": "Canvas selection / crop marks."
+      },
+      "tab-notch": { "$type": "asset", "$value": "part.tab-notch" },
+      "tooltip-tail": { "$type": "asset", "$value": "part.tooltip-tail" },
+      "focus-halo": {
+        "$type": "asset",
+        "$value": "part.focus-halo",
+        "$description": "Drawn focus ring. Accessibility-critical — its own asset, never an afterthought."
+      }
+    },
+    "fill": {
+      "scribble": {
+        "$type": "asset",
+        "$value": "fill.scribble",
+        "$description": "Dense kirukal block — pressed / selected."
+      },
+      "paper-grain": {
+        "$type": "asset",
+        "$value": "fill.paper-grain",
+        "$description": "Paper tooth tile. Applied once to the document ground, never per component."
+      },
+      "marker": { "$type": "asset", "$value": "fill.marker", "$description": "Highlighter swipe." }
+    },
+    "eye": {
+      "primary": {
+        "$type": "asset",
+        "$value": "eye.primary",
+        "$description": "Hand-drawn primary mark. PLACEHOLDER until FOUNDER_DECISIONS B1 lands."
+      },
+      "iris": {
+        "$type": "asset",
+        "$value": "eye.iris",
+        "$description": "Small eye — busy / processing indicator."
+      },
+      "gaze": {
+        "$type": "asset",
+        "$value": "eye.gaze",
+        "$description": "Wide eye, off-centre pupil — cursor-follow."
+      },
+      "blink": {
+        "$type": "asset",
+        "$value": "eye.blink",
+        "$description": "Three-frame blink sequence."
+      },
+      "watermark": {
+        "$type": "asset",
+        "$value": "eye.watermark",
+        "$description": "Faint eye — empty canvas and empty states."
+      }
+    },
+    "wordmark": {
+      "kiruk": {
+        "$type": "asset",
+        "$value": "wordmark.kiruk",
+        "$description": "Bespoke hand letterform. PLACEHOLDER until FOUNDER_DECISIONS B2 lands."
+      }
+    }
+  }
+}

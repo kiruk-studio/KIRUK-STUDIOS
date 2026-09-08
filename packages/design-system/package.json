@@ -8,6 +8,7 @@
     ".": "./components/index.ts",
     "./components": "./components/index.ts",
     "./tokens/css": "./build/css/tokens.css",
+    "./tokens/theme": "./build/css/theme.css",
     "./tokens/ts": "./build/ts/tokens.ts",
     "./tokens/tailwind": "./build/tailwind/tokens.cjs"
   },
