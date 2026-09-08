@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@kiruk/design-system/tokens/css';
 
 /* Hand fonts (served from /public/fonts). LICENSE GATE before public deploy — see kiruk-web. */
 @font-face {
@@ -17,12 +18,15 @@
   font-display: swap;
 }
 
-/* Black & white sketch — mirrors @kiruk/design-system direction (adopt-sketch-direction). */
+/*
+  Black & white sketch. ALIASES, not values — every colour resolves to a token
+  emitted by @kiruk/design-system. Do not reintroduce literals here.
+*/
 :root {
-  --paper: #ffffff;
-  --ink: #0a0a0a;
-  --pencil: #6b6b6b;
-  --rule: #e5e5e5;
+  --paper: var(--color-bg);
+  --ink: var(--color-fg);
+  --pencil: var(--color-pencil-400);
+  --rule: var(--color-pencil-100);
 }
 
 @theme {

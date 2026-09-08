@@ -3,15 +3,18 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "kiruk.studio — public studio website. Worlds from scribbles.",
+  "description": "kiruk.studio \u2014 public studio website. Worlds from scribbles.",
   "scripts": {
+    "content:build": "velite build",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "velite build && astro build",
     "preview": "astro preview",
     "check": "astro check && tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@kiruk/design-system": "workspace:*",
     "astro": "^5.0.0",
     "@astrojs/mdx": "^4.0.0",
     "@astrojs/react": "^4.0.0",

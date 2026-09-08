@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@kiruk/design-system/tokens/css';
 
 /* ──────────────────────────────────────────────────────────────
    Hand-drawn fonts — ported to match kiruk.in exactly.
@@ -43,19 +44,21 @@
 }
 
 /*
-  Black & white only — the kiruk-in "sketch" theme. --seal kept for the rare
-  accent the founder adds by hand. App-local for now; promote to
-  @kiruk/design-system tokens via OpenSpec proposal (non-neg #5) before ship.
+  Black & white only — the kiruk-in "sketch" theme.
+  These are ALIASES, not values: every colour resolves to a token emitted by
+  @kiruk/design-system. Do not reintroduce literals here — design-tokens R4 and
+  brand-consistency-ci's no-hardcoded-colour gate both forbid it.
+  (--seal removed: a saturated hex in app source, unused, and barred by the
+  design-tokens absurd-colour boundary — UI chrome stays mono.)
 */
 :root {
-  --paper: #ffffff;
-  --paper-line: #f0f0f0;
-  --ink: #0a0a0a;
-  --ink-soft: #3a3a3a;
-  --pencil: #6b6b6b;
-  --gaze: #9a9a9a;
-  --rule: #e5e5e5;
-  --seal: #c8402a;
+  --paper: var(--color-bg);
+  --paper-line: color-mix(in oklab, var(--color-pencil-100) 55%, var(--color-bg));
+  --ink: var(--color-fg);
+  --ink-soft: var(--color-pencil-500);
+  --pencil: var(--color-pencil-400);
+  --gaze: var(--color-pencil-300);
+  --rule: var(--color-pencil-100);
 }
 
 @theme {

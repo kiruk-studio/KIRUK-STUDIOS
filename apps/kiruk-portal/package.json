@@ -3,14 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "kiruk portal — internal client management, universe tracking, deliverables.",
+  "description": "kiruk portal \u2014 internal client management, universe tracking, deliverables.",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@kiruk/design-system": "workspace:*",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
