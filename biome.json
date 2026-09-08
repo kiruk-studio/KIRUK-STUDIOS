@@ -19,7 +19,19 @@
       "!**/coverage",
       "!**/.brand-ci",
       "!packages/design-system/build",
-      "!ideas/log.ndjson"
+      "!ideas/log.ndjson",
+      "!apps/kiruk-forge/src/toolcraft",
+      "!apps/kiruk-forge/src/app",
+      "!apps/kiruk-forge/src/routes",
+      "!apps/kiruk-forge/src/main.tsx",
+      "!apps/kiruk-forge/src/router.tsx",
+      "!apps/kiruk-forge/e2e",
+      "!apps/kiruk-forge/scripts",
+      "!apps/kiruk-forge/toolcraft",
+      "!apps/kiruk-forge/docs",
+      "!apps/kiruk-forge/tsconfig.json",
+      "!apps/kiruk-forge/vite.config.ts",
+      "!apps/kiruk-forge/playwright.config.ts"
     ]
   },
   "formatter": {

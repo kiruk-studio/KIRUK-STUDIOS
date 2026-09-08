@@ -8,3 +8,11 @@ coverage
 .brand-ci
 ideas/log.ndjson
 **/scribble/.raw
+
+# Vendored Toolcraft — hash-locked and protected paths. Reformatting breaks
+# apps/kiruk-forge/scripts/check-toolcraft-integrity.mjs. Do not remove.
+apps/kiruk-forge/docs/
+apps/kiruk-forge/AGENTS.md
+apps/kiruk-forge/NOTICE.md
+apps/kiruk-forge/LICENSE.md
+apps/kiruk-forge/e2e/
