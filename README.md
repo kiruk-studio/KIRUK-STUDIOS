@@ -106,6 +106,7 @@ Then read [`docs/README.md`](./docs/README.md) for the full path through the OS.
 | Client portal app | [apps/kiruk-portal/](./apps/kiruk-portal/) |
 | Keep secrets and client data safe | [openspec/specs/repo-privacy/spec.md](./openspec/specs/repo-privacy/spec.md) |
 | Learn from past mistakes (guards) | [LEARNINGS.md](./LEARNINGS.md) · [operational-learning spec](./openspec/specs/operational-learning/spec.md) |
+| Hybrid monorepo vs product repos | [FOUNDER_DECISIONS.md](./FOUNDER_DECISIONS.md) → ST5 |
 
 ## Spec-first flow
 

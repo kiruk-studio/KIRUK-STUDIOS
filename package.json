@@ -7,10 +7,10 @@
   "homepage": "https://kiruk.studio",
   "repository": {
     "type": "git",
-    "url": "https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS.git"
+    "url": "https://github.com/kiruk-studio/KIRUK-STUDIOS.git"
   },
   "bugs": {
-    "url": "https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS/issues"
+    "url": "https://github.com/kiruk-studio/KIRUK-STUDIOS/issues"
   },
   "author": "Arun Kumaar Srinivasan <arunkumaar.srinivasan@gmail.com> (@kirukism)",
   "license": "SEE LICENSE IN LICENSE",

@@ -10,10 +10,10 @@ authors:
     family-names: Srinivasan
     alias: kirukism
     email: praveenmanikandan2000@gmail.com
-    affiliation: kiruk studio
+    affiliation: Kiruk Studio
     city: Bangalore
     country: IN
-repository-code: "https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS"
+repository-code: "https://github.com/kiruk-studio/KIRUK-STUDIOS"
 url: "https://kiruk.studio"
 keywords:
   - creative-studio
@@ -35,4 +35,4 @@ preferred-citation:
     - given-names: Arun Kumaar
       family-names: Srinivasan
   year: 2026
-  url: "https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS"
+  url: "https://github.com/kiruk-studio/KIRUK-STUDIOS"

@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Raw idea (no commitment)
-    url: https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS/blob/main/ideas/inbox.md
+    url: https://github.com/kiruk-studio/KIRUK-STUDIOS/blob/main/ideas/inbox.md
     about: For half-baked thoughts, drop them in ideas/inbox.md instead of opening an issue.
   - name: Security report (private)
-    url: https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS/blob/main/SECURITY.md
+    url: https://github.com/kiruk-studio/KIRUK-STUDIOS/blob/main/SECURITY.md
     about: Vulnerabilities or committed secrets — email the founder, do not open a public issue.
   - name: Code of Conduct concern (private)
-    url: https://github.com/arunkumaarsrinivasan/KIRUK-STUDIOS/blob/main/CODE_OF_CONDUCT.md
+    url: https://github.com/kiruk-studio/KIRUK-STUDIOS/blob/main/CODE_OF_CONDUCT.md
     about: CoC reports go to the founder by email, not as public issues.

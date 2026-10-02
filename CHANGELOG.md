@@ -8,6 +8,10 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ## [Unreleased]
 
+### Changed
+
+- **Repository ownership moved to the Kiruk Studio organization.** Clone, issue, and citation URLs now point at [`kiruk-studio/KIRUK-STUDIOS`](https://github.com/kiruk-studio/KIRUK-STUDIOS). Hybrid monorepo strategy locked as ST5 in `FOUNDER_DECISIONS.md` — incubating products stay here; mature products may graduate to independent `kiruk-studio` repos when autonomy criteria apply. **Why:** the studio operates under the org, not a personal account, without prematurely splintering the core OS.
+
 ### Added
 
 - **Brand-thinking knowledge base (17 Day Brand pass through Unique Edge).** [ideas/brand-thinking/](ideas/brand-thinking/README.md) is the dump home for this pass: skill, rule, `/kiruk-brand-thinking`, chapters 01–03 and 05–07 filed (Balance 04 skipped). Working name **kiruk**; money as doctor-trust and start-small (figures off-git); studio before company; people snapshot **Sanxia** (persona, not a live universe); three edges — express don’t coat, **Kiruk Framework**, a pack not only a studio. Why: thinking captured without locking `VISION-MISSION.md`. Next spoken block: Brand (08).

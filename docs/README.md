@@ -50,15 +50,16 @@
 
 23. [`/openspec/specs/products/spec.md`](../openspec/specs/products/spec.md) — tiers, registry, graduation.
 24. [`/openspec/specs/products/registry.md`](../openspec/specs/products/registry.md) — active + archived products.
+25. [`/FOUNDER_DECISIONS.md`](../FOUNDER_DECISIONS.md) → **ST5** — when a product graduates out of this monorepo into its own `kiruk-studio` repository.
 
 ## Read when you start an ISM
 
-25. [`/openspec/specs/ism/spec.md`](../openspec/specs/ism/spec.md) — registry, scaffolding rules.
+26. [`/openspec/specs/ism/spec.md`](../openspec/specs/ism/spec.md) — registry, scaffolding rules.
 
 ## Read when you sketch
 
-26. [`/openspec/specs/pen-and-paper/spec.md`](../openspec/specs/pen-and-paper/spec.md) — scribble-first ritual.
-27. [`/kiruk-templates/_scribble/`](../kiruk-templates/_scribble/) — manifest + textual templates.
+27. [`/openspec/specs/pen-and-paper/spec.md`](../openspec/specs/pen-and-paper/spec.md) — scribble-first ritual.
+28. [`/kiruk-templates/_scribble/`](../kiruk-templates/_scribble/) — manifest + textual templates.
 
 ## Quickstart commands
 

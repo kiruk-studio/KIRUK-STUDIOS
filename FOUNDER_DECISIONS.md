@@ -35,6 +35,9 @@
 
 `[x]` Content pipeline (devlog → social), client lifecycle (intake → invoice), idea capture + promotion, brand consistency CI. All four governed by their own specs. Implementation choice pending (see AU1, AU2 below).
 
+### ST5 — Hybrid repository strategy
+`[x]` **Locked 2026-08-20.** `KIRUK-STUDIOS` remains the core monorepo under the `kiruk-studio` GitHub organization. Shared apps, packages, design system, specifications, content, studio automation, early ISM experiments, and incubating products stay in this monorepo. Mature products may graduate into independent repositories under `kiruk-studio`. Extraction should happen when **at least two** of the following apply: customers, billing, authentication, or user data; independent secrets or permissions; independent deployments or releases; substantially different technology stack; external collaborators; large assets or Git history; distinct product identity and roadmap. Suggested future names: `product-<slug>`, `extension-<slug>`, `experiment-<slug>`, `creative-os`. Do **not** create empty product repositories prematurely. ISM→product graduation inside the monorepo remains governed by `openspec/specs/products/spec.md`; this decision covers GitHub-repo extraction only.
+
 ---
 
 ## BRAND — blocks Phase 3 + all visual work
