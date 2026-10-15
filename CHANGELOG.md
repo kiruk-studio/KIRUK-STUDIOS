@@ -10,6 +10,14 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ### Added
 
+- **ISM · Inktober: Turtleism, Edibilism and a skill per concept (2026-10-16).** [`ideas/ism-inktober/`](ideas/ism-inktober/README.md) now carries Turtleism (D10–11, with its four sub-isms Askism, Answerism, Dissectism, Intersectism), Edibilism (D12), the D13–14 break post, journal-page rules, and stubs for Rentism and Habitism. Each built concept got a slash-command skill in `.claude/commands/`: `/ism-vibeism`, `/ism-inviteism`, `/ism-onceism`, `/ism-turtleism`, `/ism-edibilism`, plus series-wide `/ism-day` for drafting new days. Each skill explains its ISM, applies it as a method (mirror test, one-person invite, feed dedupe, four gates, stomach forecast), and drafts pages and captions in the series voice.
+  - **Why:** The founder wants each ISM to be knowable on its own, by people and by agents, not just a row in a table. Skills sit in `commands/` because that is the only committed `.claude/` path; `/ism-turtleism` hands off to the existing `turtle` skill rather than duplicating it. Rentism and Habitism wait for detail before getting skills.
+
+- **ISM · Inktober notes filed (2026-10-12).** [`ideas/ism-inktober/`](ideas/ism-inktober/README.md) holds the series rules, caption voice, and per-day notes for Vibeism (D7), Inviteism (D8) and Onceism (D9), including Onceism's local-first extension architecture and v1 scope. Rentism and Habitism listed as one-liners.
+  - **Why:** Founder wants the ideas kept somewhere durable to build later. Parked in `ideas/`, not `kiruk-ism/`, because ISM folders spawn only via `/kiruk-ism-new` and products need a registry proposal.
+
+### Added
+
 - **`apps/kiruk-forge` — Toolcraft vendored as the kiruk instrument.** kiruk's own Figma: an internal tool where marks are drawn on a tablet and exported as component code. **Not a product** — PR1 is parked, so no registry entry. Toolcraft `0.0.20`, MIT, admitted to the stack by [`adopt-forge-tooling`](openspec/changes/adopt-forge-tooling/proposal.md) scoped to this workspace only.
   - **It is a signed host** — 685 file hashes, 709 protected paths, 17 byte-compared scripts, a signature. Verified from the generated manifest rather than assumed; the protected set includes `src/styles.css`, `src/main.tsx`, `src/routes/**`, `tsconfig.json` and `vite.config.ts`, so there is no theming seam and none was attempted. **The product surface is exactly five files** plus what we add beside them.
   - Formatter exclusions landed in the same commit as the vendor — biome or prettier rewriting a protected file breaks the manifest exactly as an edit does, and lint-staged would have done it on the very next commit. Verified: `format:fix` leaves the tree untouched and integrity still passes after a real commit.
