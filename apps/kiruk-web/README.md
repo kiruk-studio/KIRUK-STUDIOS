@@ -1,53 +1,41 @@
 # kiruk-web
 
-> `apps/kiruk-web` — the public face of kiruk. Deploys to [studio.kiruk.in](https://studio.kiruk.in). Apex `kiruk.studio` is a later config change.
+> `apps/kiruk-web` — the public face of kiruk. Deploys to [studio.kiruk.in](https://studio.kiruk.in).
 
-Public studio website built on **Astro 5** (island architecture, content collections, zero-JS-by-default).
+## Status — rebuilding from scratch (2026-10-17)
 
-## Why Astro and not Next.js
+The previous site (3D grease-pencil landing, sketch CSS, hand fonts, sketch nav) was cut. It is preserved in git at commit `a201273` (`chore(web): snapshot before studio reset`).
 
-This app is **content-first** — manifesto, devlogs, case studies, ISM showcase, products gallery, about. Astro 5 ships near-zero JavaScript for static routes while still allowing React islands for heavy interactive surfaces (WebGL hero, signature transitions). On the LCP / TBT / JS-budget metrics that define Awwwards-tier craft, Astro beats Next.js for this profile.
+What is here now is a **bare Astro shell**: one plain-text placeholder page, the logogram, analytics, and the Velite content config. It keeps studio.kiruk.in up while the new site is built. The stack is re-chosen in Phase 4 of the plan, so this shell is a placeholder, not a lock.
 
-The decision is locked in [`openspec/specs/tech-stack/spec.md`](../../openspec/specs/tech-stack/spec.md) → **"kiruk-web uses Astro 5"**. The internal portal at `apps/kiruk-portal/` still uses Next.js 15 — it is dashboard- and auth-heavy and benefits from RSC + Server Actions.
-
-## Status
-
-Astro 5 scaffold + sketch home are live. Public origin is **`studio.kiruk.in`** (`base: '/'`). Devlog routes pull Velite from `content/devlogs/`. Remaining studio pages (`/kirukism`, `/ism`, `/products`, `/services`, `/universes`) ship later.
+**The plan:** [`ideas/studio-dawn/plan.md`](../../ideas/studio-dawn/plan.md) — decisions, content model, phases, and what is still parked for ideation.
 
 ## Planned routes
 
-| Route        | Purpose                                            | JS budget |
-| ------------ | -------------------------------------------------- | --------- |
-| `/`          | Home — Eye motif hero, studio punch (WebGL island) | ≤ 150 KB  |
-| `/kirukism`  | Manifesto, philosophy                              | 0 KB      |
-| `/ism`       | ISM lab — experiment series index                  | ≤ 50 KB   |
-| `/products`  | In-house product gallery                           | ≤ 50 KB   |
-| `/services`  | What kiruk builds with founders                    | 0 KB      |
-| `/about`     | Arun + kirukan + kirukargals                       | 0 KB      |
-| `/devlog`    | Transparent process log (MDX via Velite)           | 0 KB      |
-| `/universes` | Consent-gated shipped universes                    | ≤ 50 KB   |
+| Route        | Purpose                                                |
+| ------------ | ------------------------------------------------------ |
+| `/`          | Landing                                                |
+| `/work`      | In-house, client (consent-gated), and built ISM pieces |
+| `/ism`       | ISM ideas and how kiruk ideates                        |
+| `/framework` | Kiruk Framework — researching                          |
+| `/writing`   | Deep, researched articles (feed at `/writing/rss.xml`) |
+| `/contact`   | Email, GitHub, Instagram                               |
 
-Budgets enforced via `size-limit` + Lighthouse CI per [`tech-stack`](../../openspec/specs/tech-stack/spec.md) → "Performance budgets per route".
+Piece pages: `/work/<slug>` and `/ism/<slug>`.
 
-## Stack inside this app
+## Kept from before
 
-| Layer             | Choice                                        | Source            |
-| ----------------- | --------------------------------------------- | ----------------- |
-| Framework         | Astro 5                                       | `tech-stack` spec |
-| Component runtime | React 19 (island only)                        | `tech-stack` spec |
-| Styling           | Tailwind v4 + `@kiruk/design-system` CSS vars | `tech-stack` spec |
-| Content           | MDX 3 + Velite                                | `tech-stack` spec |
-| Animation         | Motion v11 + GSAP 3                           | `tech-stack` spec |
-| 3D                | Three.js r170 + R3F 9 + drei                  | `tech-stack` spec |
-| Validation        | Zod 4                                         | `tech-stack` spec |
-| Images            | Sharp at build + AVIF + WebP                  | `tech-stack` spec |
+- `public/brand/` — logogram exports (Figma), `public/favicon.svg` — cropped logogram
+- `src/lib/base.ts`, `src/lib/site.ts` — base-path + origin helpers
+- `velite.config.ts` — devlog content contract (`content/devlogs/`)
+- `vercel.json` — monorepo build on Vercel
 
 ## Deploy target
 
-Vercel via `@astrojs/vercel`. Domain: **studio.kiruk.in**. Optional later apex: kiruk.studio (config change + link audit).
+Vercel via `@astrojs/vercel`. Domain: **studio.kiruk.in**.
 
 ## Related
 
-- Design system: `../../packages/design-system/` (workspace package `@kiruk/design-system`)
-- Content: `../../content/devlogs/`, `../../content/case-studies/`, `../../content/story-drops/`
+- Plan: `../../ideas/studio-dawn/plan.md`
+- Content: `../../content/devlogs/`, `../../content/case-studies/`
 - Specs: `../../openspec/specs/`

@@ -1,35 +1,20 @@
 ---
+// Placeholder front door while the studio is rebuilt. Plain text on purpose:
+// the logogram carries the eye; everything else waits for the base layer.
+// spec-link: ideas/studio-dawn/plan.md — §2 Phase 0 (snapshot + cut)
 import Base from '../layouts/Base.astro';
-import ScribbleSheet from '../components/scribble/ScribbleSheet.astro';
-import SketchNav from '../components/sketch/SketchNav.astro';
-
-/**
- * The front door is a viewport, not a poster.
- *
- * Grease pencil is the whole idea: the drawing stays a drawing — pressure,
- * taper, paper tooth intact — while living at a depth in a scene you can turn.
- * Drag and the floor swings open under whatever is standing on it; the subject
- * keeps facing you; the drawn interface stays put, because interface does not
- * orbit. 2D and 3D in one frame, and no one had to pretend to be the other.
- *
- * The scene is empty on purpose. Everything except the rig — the grid and the
- * axis cross, which are furniture — arrives in the founder's own hand:
- * `pnpm dev` → "scribble" (bottom-right) → pick a layer, pick a plane, write,
- * press Live. Strokes land in src/scribbles/landing.json and ship as static SVG.
- *
- * spec-link: openspec/specs/pen-and-paper/spec.md#requirement-grease-pencil-scene
- */
+import { href } from '../lib/base';
 ---
 
 <Base>
-  <main class="min-h-[100svh] w-full bg-paper">
-    <h1 class="sr-only">KIRUK-STUDIOS</h1>
-    <ScribbleSheet
-      sheet="landing"
-      orbit
-      rig
-      label="KIRUK-STUDIOS — a hand-drawn scene you can turn"
-    />
+  <main>
+    <img src={href('/favicon.svg')} width="64" height="64" alt="kiruk logogram" />
+    <h1>kiruk</h1>
+    <p>An art + code studio. The site is being rebuilt from scratch, in the open.</p>
+    <ul>
+      <li><a href="https://github.com/kiruk-studio/KIRUK-STUDIOS">GitHub</a></li>
+      <li><a href="https://instagram.com/kirukism">Instagram</a></li>
+      <li><a href="mailto:arunkumaar.srinivasan@gmail.com">arunkumaar.srinivasan@gmail.com</a></li>
+    </ul>
   </main>
-  <SketchNav />
 </Base>

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "kiruk.studio — public studio website. Worlds from scribbles.",
+  "description": "studio.kiruk.in — kiruk's public studio site. Being rebuilt from scratch (ideas/studio-dawn/plan.md).",
   "scripts": {
     "content:build": "velite build",
     "dev": "astro dev",
@@ -14,33 +14,14 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.0.0",
-    "@astrojs/react": "^4.0.0",
-    "@astrojs/sitemap": "^3.2.0",
     "@astrojs/vercel": "^8.0.0",
-    "@kiruk/design-system": "workspace:*",
-    "@react-three/drei": "^9.114.0",
-    "@react-three/fiber": "^9.0.0",
-    "@tailwindcss/vite": "^4.0.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "astro": "^5.0.0",
-    "gsap": "^3.12.0",
-    "motion": "^11.15.0",
-    "perfect-freehand": "^1.2.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "sharp": "^0.33.0",
-    "tailwindcss": "^4.0.0",
-    "three": "^0.170.0",
-    "velite": "^0.2.0",
-    "zod": "^3.23.0"
+    "velite": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "@types/three": "^0.170.0",
     "typescript": "^5.7.0"
   },
   "engines": {

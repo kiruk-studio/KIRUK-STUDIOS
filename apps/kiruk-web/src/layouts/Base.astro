@@ -1,12 +1,10 @@
 ---
+// Bare shell while the studio is rebuilt from scratch. No styles, no fonts, no
+// islands — the base layer gets designed in Phase 2, not inherited.
+// spec-link: ideas/studio-dawn/plan.md — §2 Phase 0 (snapshot + cut)
 import Analytics from '@vercel/analytics/astro';
 import SpeedInsights from '@vercel/speed-insights/astro';
-import '../styles/global.css';
 import { href } from '../lib/base';
-// The hand faces are the page's body text, not decoration: without a preload the
-// first paint is system-sans and every line reflows when the real face lands.
-import leftHand from '../assets/fonts/Left Hand.otf?url';
-import magneticDrawing from '../assets/fonts/MagneticDrawing.ttf?url';
 
 interface Props {
   title?: string;
@@ -14,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = 'KIRUK-STUDIOS — scribbles into worlds',
-  description = 'KIRUK-STUDIOS is a lab-led creative studio turning raw scribbles into shipped worlds. Building in public, starting with the ISM Lab and in-house products.',
+  title = 'kiruk — art + code studio',
+  description = 'kiruk is a lab-led art + code studio, rebuilding its site from scratch in the open.',
 } = Astro.props;
 ---
 
@@ -24,9 +22,9 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The favicon's ink flips with the colour scheme; let the page follow it too. -->
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
-    <link rel="preload" href={leftHand} as="font" type="font/otf" crossorigin />
-    <link rel="preload" href={magneticDrawing} as="font" type="font/ttf" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
