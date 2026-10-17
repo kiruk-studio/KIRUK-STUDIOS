@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import SketchNav from '../../components/sketch/SketchNav.astro';
+import PersonCrossLinks from '../../components/sketch/PersonCrossLinks.astro';
+import { href } from '../../lib/base';
+import { getDevlog, listDevlogs } from '../../lib/devlogs';
+
+export function getStaticPaths() {
+  return listDevlogs().map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = slug ? getDevlog(slug) : undefined;
+if (!entry) {
+  return Astro.redirect('/devlog');
+}
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<Base title={`${entry.title} — kiruk`} description={entry.summary ?? entry.title}>
+  <main class="relative mx-auto min-h-[100svh] max-w-2xl px-6 pb-28 pt-16">
+    <a href={href('/devlog')} class="handwritten text-base text-pencil hover:text-ink">
+      ← devlog
+    </a>
+
+    <header class="mt-8 mb-10">
+      <p class="prose-body text-sm text-pencil">
+        <time datetime={entry.date}>{formatDate(entry.date)}</time>
+        {entry.state !== 'published' && (
+          <span class="ml-2 uppercase tracking-wider">· {entry.state}</span>
+        )}
+      </p>
+      <h1 class="font-display mt-3 text-4xl leading-tight text-ink md:text-5xl">{entry.title}</h1>
+      {entry.tags.length > 0 && (
+        <p class="prose-body mt-3 text-sm text-pencil">{entry.tags.join(' · ')}</p>
+      )}
+    </header>
+
+    <article class="prose-body text-lg leading-relaxed text-ink" set:html={entry.body} />
+
+    <PersonCrossLinks />
+    <SketchNav />
+  </main>
+</Base>

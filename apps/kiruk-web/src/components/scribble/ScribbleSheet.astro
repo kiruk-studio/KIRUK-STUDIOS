@@ -1,0 +1,350 @@
+---
+/**
+ * ScribbleSheet — a grease-pencil stage: founder handwriting, placed in depth.
+ *
+ *   <ScribbleSheet sheet="landing" />   →  reads src/scribbles/landing.json
+ *
+ * Each layer is a flat sheet of ink sitting somewhere in a 3D scene. Layers
+ * marked `plane` turn with the world (a floor stays a floor); layers marked
+ * `billboard` cancel the camera and stay face-on, exactly like grease pencil in
+ * Blender. Orbit and the drawing comes apart into depth without ever stopping
+ * being a drawing.
+ *
+ * Readers get static SVG and two CSS custom properties — zero JS, camera at the
+ * scene's rest pose. With `orbit`, a ~1KB inline module lets the pointer turn the
+ * camera; it writes only `--gp-yaw` / `--gp-pitch` on this element, so a frame
+ * costs one style write and the compositor does the rest. Nothing moves that the
+ * reader did not move: no auto-spin, no scroll hijack, no intro.
+ *
+ * Under `astro dev` the ScribbleDesk island mounts on top: pick a layer, pick a
+ * drawing plane, write, press **Live**, and the JSON is rewritten in place.
+ *
+ * Eye-motif: absent from the chrome by intent — the stage is empty paper and a
+ * camera. Any eye arrives drawn, on a layer, in the founder's own hand.
+ *
+ * spec-link: openspec/specs/pen-and-paper/spec.md#requirement-grease-pencil-scene
+ */
+import ScribbleDesk from './ScribbleDesk';
+import {
+  CAMERA_LIMITS,
+  type GreaseLayer,
+  type GreaseScene,
+  PERSPECTIVE,
+  layerOpacity,
+  layerOrigin,
+  layerTransform,
+  isScreenLayer,
+  rigLayers,
+  sortByDepth,
+  toScene,
+} from './scene';
+import {
+  EMPTY_SHEET,
+  SHEET_WIDTH,
+  type ScribbleSheetData,
+  graphiteFilterMarkup,
+  inkMarkup,
+  inkShape,
+} from './stroke';
+
+interface Props {
+  /** File id under src/scribbles/ (lowercase, digits, dashes). */
+  sheet: string;
+  /** Accessible description of what the drawing shows. */
+  label?: string;
+  /** Let the reader turn the camera by dragging. Off = a still frame. */
+  orbit?: boolean;
+  /** Draw the viewport chrome (floor grid + axis gizmo). */
+  rig?: boolean;
+  /** Stage height in sheet units when the scene has no ink to measure yet. */
+  minHeight?: number;
+  class?: string;
+}
+
+const {
+  sheet,
+  label = 'handwritten notes',
+  orbit = false,
+  rig = false,
+  minHeight = 900,
+  class: className,
+} = Astro.props;
+
+const sheets = import.meta.glob<ScribbleSheetData | GreaseScene>('../../scribbles/*.json', {
+  eager: true,
+  import: 'default',
+});
+const scene = toScene(sheets[`../../scribbles/${sheet}.json`] ?? EMPTY_SHEET);
+const height = Math.max(scene.height || 0, minHeight);
+
+const filterId = `kiruk-graphite-${sheet}`;
+const layers = sortByDepth([
+  ...(rig ? rigLayers(height) : []),
+  ...scene.layers.filter((l) => !l.hidden && l.strokes.length > 0),
+]);
+
+/** Ink is rendered here, at build time, so the reader downloads paths not points. */
+const paint = (layer: GreaseLayer) => ({
+  id: layer.id,
+  gizmo: layer.facing === 'gizmo',
+  transform: layerTransform(layer, height),
+  origin: layerOrigin(layer, height),
+  opacity: layerOpacity(layer),
+  ink: layer.strokes.map((s) => inkMarkup(inkShape(s), filterId)).join(''),
+});
+
+/** Chrome sits outside the world, so orbiting the scene never moves the UI. */
+const world = layers.filter((l) => !isScreenLayer(l)).map(paint);
+const screen = layers.filter(isScreenLayer).map(paint);
+
+const dev = import.meta.env.DEV;
+const hasInk = world.length + screen.length > 0;
+const describedBy = world[0]?.id ?? screen[0]?.id;
+---
+
+<div
+  class:list={['gp-stage', className]}
+  data-scribble-sheet={sheet}
+  data-orbit={orbit ? '' : undefined}
+  data-yaw-limit={orbit ? CAMERA_LIMITS.yaw : undefined}
+  data-pitch-limit={orbit ? CAMERA_LIMITS.pitch : undefined}
+  style={`--gp-yaw:${scene.camera.yaw}deg;--gp-pitch:${scene.camera.pitch}deg;--gp-perspective:${PERSPECTIVE}px`}
+  tabindex={orbit ? 0 : undefined}
+  role={orbit ? 'application' : undefined}
+  aria-label={orbit ? `${label} — drag or use arrow keys to turn the camera` : undefined}
+>
+  {
+    hasInk && (
+      <div class="gp-frame" style={`aspect-ratio:${SHEET_WIDTH} / ${height}`}>
+        <svg class="gp-defs" aria-hidden="true" focusable="false">
+          <defs set:html={graphiteFilterMarkup(filterId)} />
+        </svg>
+        <div class="gp-world">
+          {world.map((layer) => (
+            <div
+              class="gp-layer"
+              data-layer={layer.id}
+              style={`transform:${layer.transform};transform-origin:${layer.origin};opacity:${layer.opacity}`}
+            >
+              <svg
+                viewBox={`0 0 ${SHEET_WIDTH} ${height}`}
+                role={layer.id === describedBy ? 'img' : undefined}
+                aria-label={layer.id === describedBy ? label : undefined}
+                aria-hidden={layer.id === describedBy ? undefined : 'true'}
+              >
+                <g set:html={layer.ink} />
+              </svg>
+            </div>
+          ))}
+        </div>
+        {screen.map((layer) => (
+          <div
+            class:list={['gp-layer', layer.gizmo ? 'gp-gizmo' : 'gp-screen']}
+            data-layer={layer.id}
+            style={`transform:${layer.transform};transform-origin:${layer.origin};opacity:${layer.opacity}`}
+          >
+            <svg
+              viewBox={`0 0 ${SHEET_WIDTH} ${height}`}
+              role={layer.id === describedBy ? 'img' : undefined}
+              aria-label={layer.id === describedBy ? label : undefined}
+              aria-hidden={layer.id === describedBy ? undefined : 'true'}
+            >
+              <g set:html={layer.ink} />
+            </svg>
+          </div>
+        ))}
+      </div>
+    )
+  }
+  {
+    orbit && hasInk && (
+      <p class="gp-hint" aria-hidden="true">
+        drag to orbit
+      </p>
+    )
+  }
+  {dev && <ScribbleDesk client:only="react" sheet={sheet} initial={scene} rig={rig} />}
+</div>
+
+<style>
+  .gp-stage {
+    position: relative;
+    width: 100%;
+    color: var(--ink);
+    perspective: var(--gp-perspective);
+    /* Keeps the depth stack from bleeding into the rest of the page. */
+    isolation: isolate;
+  }
+  .gp-stage[data-orbit] {
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .gp-stage[data-orbit][data-dragging] {
+    cursor: grabbing;
+  }
+  .gp-stage:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  .gp-frame {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+  }
+  .gp-world {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--gp-pitch)) rotateY(var(--gp-yaw));
+  }
+  /* Drawn interface: in the page, not the scene. It never takes the camera. */
+  .gp-screen {
+    transform-style: flat;
+  }
+  /* The axis cross turns where it sits, so its own box keeps its depth. */
+  .gp-gizmo {
+    transform-style: preserve-3d;
+  }
+  /* Keyboard nudges get an ease so the camera reads as turning, not teleporting.
+     Pointer drags never take it — the camera must track the finger exactly. */
+  .gp-stage[data-eased] .gp-world {
+    transition: transform 180ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .gp-layer {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    /* Transparent boxes still hit-test, and these overlap the whole stage. The
+       orbit gesture belongs to the stage, so nothing in the scene takes it. */
+    pointer-events: none;
+    /* A drawn plane is paper: it is the same drawing seen from behind. */
+    backface-visibility: visible;
+  }
+  .gp-layer svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Filters must be in a rendered SVG to resolve; this one only holds defs. */
+  .gp-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  .gp-hint {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pencil);
+    pointer-events: none;
+  }
+
+  /* The desk replaces the committed ink while the founder is writing. */
+  .gp-stage[data-editing] .gp-frame,
+  .gp-stage[data-editing] .gp-hint {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gp-stage[data-eased] .gp-world {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Camera orbit. Direct manipulation only — the camera moves when the reader
+   * moves it and stays where it is let go, the way a viewport does. There is no
+   * idle spin, no scroll coupling and no entrance animation to gate, which is
+   * why this file has no timers in it.
+   *
+   * Cost per frame: two custom properties on one element. Every layer transform
+   * already reads them, so nothing here walks the DOM.
+   */
+  for (const stage of document.querySelectorAll<HTMLElement>('.gp-stage[data-orbit]')) {
+    const yawLimit = Number(stage.dataset.yawLimit) || 30;
+    const pitchLimit = Number(stage.dataset.pitchLimit) || 20;
+    const start = getComputedStyle(stage);
+    const rest = {
+      yaw: Number.parseFloat(start.getPropertyValue('--gp-yaw')) || 0,
+      pitch: Number.parseFloat(start.getPropertyValue('--gp-pitch')) || 0,
+    };
+
+    let yaw = rest.yaw;
+    let pitch = rest.pitch;
+    let frame = 0;
+    let drag: { id: number; x: number; y: number; yaw: number; pitch: number } | null = null;
+
+    const clamp = (v: number, limit: number) => Math.max(-limit, Math.min(limit, v));
+
+    const apply = () => {
+      frame = 0;
+      stage.style.setProperty('--gp-yaw', `${Math.round(yaw * 100) / 100}deg`);
+      stage.style.setProperty('--gp-pitch', `${Math.round(pitch * 100) / 100}deg`);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+
+    stage.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      // Leave real controls alone: a link inside the scene is still a link.
+      if ((e.target as HTMLElement).closest('a, button, input, [data-no-orbit]')) return;
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, yaw, pitch };
+      stage.setPointerCapture(e.pointerId);
+      stage.toggleAttribute('data-dragging', true);
+      stage.removeAttribute('data-eased');
+    });
+
+    stage.addEventListener('pointermove', (e: PointerEvent) => {
+      if (drag?.id !== e.pointerId) return;
+      // Sensitivity is framed against the stage width, so the same swipe turns
+      // the camera by the same amount on a phone and on a wide desktop.
+      const span = stage.clientWidth || 1;
+      yaw = clamp(drag.yaw + ((e.clientX - drag.x) / span) * yawLimit * 2.4, yawLimit);
+      // Drag up to look down on the floor: the world tips its top toward you,
+      // which is a negative rotateX. Same direction as every 3D viewport.
+      pitch = clamp(drag.pitch + ((e.clientY - drag.y) / span) * pitchLimit * 2.4, pitchLimit);
+      // Once the drag is clearly horizontal, take the gesture so the page stops
+      // scrolling under it; a vertical swipe stays the reader's scroll.
+      if (e.cancelable && Math.abs(e.clientX - drag.x) > Math.abs(e.clientY - drag.y)) {
+        e.preventDefault();
+      }
+      schedule();
+    });
+
+    const release = (e: PointerEvent) => {
+      if (drag?.id !== e.pointerId) return;
+      drag = null;
+      stage.removeAttribute('data-dragging');
+    };
+    stage.addEventListener('pointerup', release);
+    stage.addEventListener('pointercancel', release);
+
+    stage.addEventListener('keydown', (e: KeyboardEvent) => {
+      const step = e.shiftKey ? 8 : 3;
+      if (e.key === 'ArrowLeft') yaw = clamp(yaw - step, yawLimit);
+      else if (e.key === 'ArrowRight') yaw = clamp(yaw + step, yawLimit);
+      else if (e.key === 'ArrowUp') pitch = clamp(pitch - step, pitchLimit);
+      else if (e.key === 'ArrowDown') pitch = clamp(pitch + step, pitchLimit);
+      else if (e.key === 'Home' || e.key === '0') {
+        yaw = rest.yaw;
+        pitch = rest.pitch;
+      } else return;
+      e.preventDefault();
+      stage.toggleAttribute('data-eased', true);
+      schedule();
+    });
+  }
+</script>

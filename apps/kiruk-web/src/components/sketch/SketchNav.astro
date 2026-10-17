@@ -1,18 +1,22 @@
 ---
-// Bottom hand-drawn nav (kiruk-in parity). Active route = bold ink; others = pencil.
+// Bottom hand-drawn nav. Active route = bold ink; others = pencil.
 // NOTE: `.sketch-border` is unlayered and sets position:relative, which would override
 // Tailwind's layered `fixed`. So positioning lives on the OUTER wrapper, decoration on the inner nav.
 import { href, stripBase } from '../../lib/base';
-const items = [
-  { href: '/', label: 'home' },
-  { href: '/kirukism', label: 'kirukism' },
-  { href: '/ism', label: 'ism' },
-  { href: '/products', label: 'products' },
-  { href: '/services', label: 'services' },
-  { href: '/about', label: 'about' },
-  { href: '/devlog', label: 'devlog' },
-];
+import { PERSON_ORIGIN } from '../../lib/site';
+import Logogram from './Logogram.astro';
+
+// Home is the logogram; the rest stay handwritten.
+// about + devlog come back here when their pages do — no links to a 404.
+const items = [{ href: PERSON_ORIGIN, label: 'arun', external: true }];
 const path = stripBase(Astro.url.pathname);
+const homeActive = path === '/';
+
+function isActive(itemHref: string, external: boolean) {
+  if (external) return false;
+  if (itemHref === '/') return path === '/';
+  return path === itemHref || path.startsWith(`${itemHref}/`);
+}
 ---
 
 <div class="fixed bottom-5 left-1/2 z-30 -translate-x-1/2">
@@ -21,12 +25,22 @@ const path = stripBase(Astro.url.pathname);
     style="background: color-mix(in srgb, var(--paper) 88%, transparent);"
     aria-label="Primary"
   >
+    <a
+      href={href('/')}
+      class="flex items-center rounded-md px-2 py-1.5 transition-opacity hover:opacity-100"
+      style={`opacity: ${homeActive ? 1 : 0.7}; transform: rotate(${homeActive ? -0.6 : 0.3}deg);`}
+      aria-label="kiruk — home"
+      aria-current={homeActive ? 'page' : undefined}
+    >
+      <Logogram width={44} />
+    </a>
     {
       items.map((it) => {
-        const active = path === (it.href.replace(/\/$/, '') || '/');
+        const active = isActive(it.href, it.external);
+        const url = it.external ? it.href : href(it.href);
         return (
           <a
-            href={href(it.href)}
+            href={url}
             class="handwritten rounded-md px-2.5 py-1 text-base transition-colors hover:text-ink"
             style={`color: ${active ? 'var(--ink)' : 'var(--pencil)'}; font-weight: ${active ? 600 : 400}; transform: rotate(${active ? -0.6 : 0.3}deg);`}
             aria-current={active ? 'page' : undefined}

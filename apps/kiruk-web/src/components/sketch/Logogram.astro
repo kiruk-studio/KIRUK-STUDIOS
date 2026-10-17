@@ -1,0 +1,35 @@
+---
+// KIRUK LOGOGRAM — the eye-star mark from Figma (Kiruk-Studios, LIGHT 47:295 / DARK 44:127).
+// The SVGs in /public/brand/ are the Figma exports, untouched: a 2000×2000 frame
+// with the mark centred, spanning 48% of the width and 28% of the height.
+// This component shows the whole asset at `frame` px and lets a mark-sized window
+// crop the empty paper around it, so the file never needs editing.
+// spec-link: openspec/specs/brand-system/spec.md
+import { href } from '../../lib/base';
+
+interface Props {
+  /** Width of the visible mark in px. */
+  width?: number;
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+
+const { width = 44, tone = 'light', class: className } = Astro.props;
+const frame = Math.round(width / 0.48);
+const height = Math.round(frame * 0.28);
+---
+
+<span
+  class:list={['relative inline-block shrink-0 overflow-hidden', className]}
+  style={`width: ${width}px; height: ${height}px;`}
+  aria-hidden="true"
+>
+  <img
+    src={href(`/brand/kiruk-logogram-${tone}.svg`)}
+    alt=""
+    width={frame}
+    height={frame}
+    decoding="async"
+    class="absolute top-1/2 left-1/2 max-w-none -translate-x-1/2 -translate-y-1/2"
+  />
+</span>

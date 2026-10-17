@@ -1,7 +1,16 @@
 import { defineCollection, defineConfig, s } from 'velite';
 
-// Devlog collection — reads content/devlogs/*.mdx (repo root), emits typed data to .velite/.
-// Body is compiled to HTML (s.markdown) — the entries are plain markdown, no JSX.
+// spec-link: openspec/specs/content-pipeline/spec.md — Canonical entry front-matter contract
+// spec-link: openspec/specs/tech-stack/spec.md — kiruk-web public origin
+const deriveSchema = s
+  .object({
+    ig: s.boolean().default(false),
+    linkedin: s.boolean().default(false),
+    x: s.boolean().default(false),
+    video: s.boolean().default(false),
+  })
+  .default({ ig: false, linkedin: false, x: false, video: false });
+
 const devlogs = defineCollection({
   name: 'Devlog',
   pattern: 'devlogs/**/*.mdx',
@@ -10,12 +19,19 @@ const devlogs = defineCollection({
       title: s.string(),
       slug: s.string(),
       date: s.isodate(),
-      state: s.string().default('draft'),
+      state: s.enum(['draft', 'ready', 'published', 'archived']).default('draft'),
       tags: s.array(s.string()).default([]),
       summary: s.string().optional(),
+      'eye-motif': s.string(),
+      scribble: s.string(),
+      derive: deriveSchema,
       body: s.markdown(),
     })
-    .transform((d) => ({ ...d, url: `/devlog/${d.slug}` })),
+    .transform((d) => ({
+      ...d,
+      eyeMotif: d['eye-motif'],
+      url: `/devlog/${d.slug}`,
+    })),
 });
 
 export default defineConfig({
@@ -23,7 +39,7 @@ export default defineConfig({
   output: {
     data: '.velite',
     assets: 'public/static',
-    base: '/studio/static/',
+    base: '/static/',
     name: '[name]-[hash:6].[ext]',
     clean: true,
   },

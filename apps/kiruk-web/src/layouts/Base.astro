@@ -1,7 +1,12 @@
 ---
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import '../styles/global.css';
-import CustomCursor from '../components/sketch/CustomCursor.tsx';
 import { href } from '../lib/base';
+// The hand faces are the page's body text, not decoration: without a preload the
+// first paint is system-sans and every line reflows when the real face lands.
+import leftHand from '../assets/fonts/Left Hand.otf?url';
+import magneticDrawing from '../assets/fonts/MagneticDrawing.ttf?url';
 
 interface Props {
   title?: string;
@@ -9,8 +14,8 @@ interface Props {
 }
 
 const {
-  title = 'kiruk — scribbles into worlds',
-  description = 'kiruk is a lab-led creative studio turning wild scribbles into never-before-seen products and worlds.',
+  title = 'KIRUK-STUDIOS — scribbles into worlds',
+  description = 'KIRUK-STUDIOS is a lab-led creative studio turning raw scribbles into shipped worlds. Building in public, starting with the ISM Lab and in-house products.',
 } = Astro.props;
 ---
 
@@ -20,6 +25,8 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+    <link rel="preload" href={leftHand} as="font" type="font/otf" crossorigin />
+    <link rel="preload" href={magneticDrawing} as="font" type="font/ttf" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
@@ -28,6 +35,7 @@ const {
   </head>
   <body>
     <slot />
-    <CustomCursor client:only="react" />
+    <Analytics />
+    <SpeedInsights />
   </body>
 </html>

@@ -75,6 +75,7 @@
   --font-display: 'Magnetic Drawing', cursive;
   --font-hand: 'Left Hand', cursive;
   --font-sans: 'Left Hand', system-ui, sans-serif;
+  --font-body: Inter, ui-sans-serif, system-ui, sans-serif;
 }
 
 html {
@@ -126,6 +127,25 @@ body {
 .scribbled-text {
   position: relative;
   display: inline-block;
+}
+
+.prose-body {
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+.prose-body h2,
+.prose-body h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  margin: 1.6em 0 0.5em;
+}
+.prose-body p {
+  margin: 0.9em 0;
+}
+.prose-body a {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
 }
 .scribbled-text::after {
   content: '';

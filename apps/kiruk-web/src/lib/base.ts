@@ -1,6 +1,7 @@
-// Base-path helper. Astro's `base` (/studio) is NOT auto-applied to anchor hrefs,
-// so all internal links go through href(). When the dedicated domain lands, only
-// astro.config.mjs `base` changes — call sites stay put (tech-stack spec).
+// Base-path helper. Astro's `base` is NOT auto-applied to anchor hrefs,
+// so all internal links go through href(). Public origin is studio.kiruk.in
+// with base `/` (tech-stack: "kiruk-web public origin"). An apex domain later
+// is a config change — call sites stay put.
 export const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 /** Prefix an internal route with the configured base path. */

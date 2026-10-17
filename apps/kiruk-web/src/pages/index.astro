@@ -1,48 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
-import InkHero from '../components/InkHero.tsx';
+import ScribbleSheet from '../components/scribble/ScribbleSheet.astro';
 import SketchNav from '../components/sketch/SketchNav.astro';
-import SketchButton from '../components/sketch/SketchButton.astro';
-import { href } from '../lib/base';
+
+/**
+ * The front door is a viewport, not a poster.
+ *
+ * Grease pencil is the whole idea: the drawing stays a drawing — pressure,
+ * taper, paper tooth intact — while living at a depth in a scene you can turn.
+ * Drag and the floor swings open under whatever is standing on it; the subject
+ * keeps facing you; the drawn interface stays put, because interface does not
+ * orbit. 2D and 3D in one frame, and no one had to pretend to be the other.
+ *
+ * The scene is empty on purpose. Everything except the rig — the grid and the
+ * axis cross, which are furniture — arrives in the founder's own hand:
+ * `pnpm dev` → "scribble" (bottom-right) → pick a layer, pick a plane, write,
+ * press Live. Strokes land in src/scribbles/landing.json and ship as static SVG.
+ *
+ * spec-link: openspec/specs/pen-and-paper/spec.md#requirement-grease-pencil-scene
+ */
 ---
 
 <Base>
-  <main class="relative h-[100svh] w-full overflow-hidden">
-    <!-- pencil-sketch field — client-only island, scribble with the cursor -->
-    <InkHero client:only="react" />
-
-    <!-- top hint -->
-    <p
-      class="handwritten absolute right-6 top-6 z-10 rotate-3 text-base text-pencil md:right-10 md:top-8"
-    >
-      &#9998; scribble anywhere
-    </p>
-
-    <!-- hero stack -->
-    <div
-      class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
-    >
-      <p class="handwritten mb-4 text-base tracking-wide text-pencil md:text-lg">
-        kirukism &mdash; the movement
-      </p>
-
-      <h1
-        class="font-wordmark text-ink leading-[0.82] text-[24vw] md:text-[15rem]"
-      >
-        kiruk
-      </h1>
-
-      <p
-        class="scribbled-note mt-5 max-w-md text-xl text-ink-soft md:text-2xl"
-      >
-        wild scribbles, drawn into worlds that don&rsquo;t exist yet.
-      </p>
-
-      <div class="pointer-events-auto mt-9">
-        <SketchButton href={href('/kirukism')} label="read the manifesto" />
-      </div>
-    </div>
-
-    <SketchNav />
+  <main class="min-h-[100svh] w-full bg-paper">
+    <h1 class="sr-only">KIRUK-STUDIOS</h1>
+    <ScribbleSheet
+      sheet="landing"
+      orbit
+      rig
+      label="KIRUK-STUDIOS — a hand-drawn scene you can turn"
+    />
   </main>
+  <SketchNav />
 </Base>
