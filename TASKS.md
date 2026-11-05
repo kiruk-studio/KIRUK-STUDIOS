@@ -128,3 +128,32 @@ See `ROADMAP.md` Phases 4.5–7.
 - Move completed items to `## Done` with date.
 - Dropped tasks → delete; log the "why" in `CHANGELOG.md`.
 - Priority: **P0** = blocks phase exit · **P1** = phase scope · **P2** = nice-to-have.
+
+## The hand: p5.brush × burin (in progress, 2026-11-05)
+
+Blend p5.brush 3.0 (the hand: chalk, wash, quill, lead white) with `@kiruk/burin` (three.js WebGPURenderer + TSL paper, bleed, engraving). Pipeline: p5.brush standalone (WebGL 2, no p5) in a Web Worker → ImageBitmap ×5 → three.js textures → TSL compose → WebGPU / WebGL 2.
+
+**Done (pushed, not yet reviewed):**
+
+- [x] `p5.brush@3.0.0` pinned in `packages/burin` (npm dist byte-identical to GitHub). Root `pnpm.packageExtensions` marks its `p5` peer optional, so p5 is not installed.
+- [x] `packages/burin/src/hand/`: `media.ts` (pigments, old→new paper swaps), `spine.ts` (pressure spines, tremor, left-handed "hash" hatching, kirukal pen samples → spine), `brushes.ts` (k-quill, k-hatch, k-reed, k-sanguine, k-side, k-white, k-silver), `painter.ts` (one canvas, one layer per medium, `transferToImageBitmap`), `worker.ts` (`serveHand`), `index.ts` (`createHand` client with latest-wins and main-thread fallback), `compose.ts` (TSL, optical density: chalk on the peaks, wash in the valleys + paper buckle, quill starved, lead white on top and opaque to the light, dawn pigment swap).
+- [x] `subjects/eye/hand.ts`: the eye recipe (sanguine globe, lids and axes; bistre socket and corner washes; carnation; blue-grey + hazel iris decal; white hatching; quill hatching). New exports: `./hand`, `./hand/worker`, `./hand/painter`, `./eye-hand`.
+- [x] Renderer: `setHand()`, `handSheet()`, hand uniforms, compose order (under → engraving → quill → bleed → white → type). Paper `buckle`, `lit`, `flocs`, `fibre` outputs. Bleed: hand ink and wash re-wet, washes being laid add water. Eye ink pass `w` = palpebral opening. `eyeIrisDecal()` carries the rest-pose iris colour onto the turning eye.
+- [x] Studio: `hand.worker.ts`, `hand-local.ts`, EyeEngine wiring (H on/off, I new impression, the hand's passes in Make again, hand easing, `__burin.hand/impression/handMedia/handLayers`), store `hand`, Instrument _vii. Hand_ (Engine is now _viii_), `.ins-media` CSS.
+- [x] Both workspaces typecheck. The worker paints a sheet in about 90–420 ms on SwiftShader. Layer dumps (`__burin.handLayers()`) look right.
+
+**Open: fix first**
+
+1. **Chalk does not show in the composite.** A pixel diff of chalk-only against none shows no globe circle at all. Render the raw `chalk` sample on screen, as was done for the iris decal: check the `hand.set('chalk')` node swap, `swapped()`, and the tooth gate.
+2. **A wash-shaped stain still appears after load** even with the `w > 0.12` gate on hand pickup. Confirm the bleed change is compiled. Otherwise clear or skip the sim the first time a sheet lands.
+3. **The iris colour is weak**: the engraved iris is nearly solid ink near the limbus. Density ×2.2 is set but not yet seen. Option: a lighter iris tone while the hand is on.
+4. **Tune the look**: the socket wash band is flat, so grade it. Then the white heightening, quill strength and the carnation blush. Check each at dpr 2.
+
+**Then prove it**
+
+5. Proofs at 1440×900 and 1920×1080 at dpr 2, and on a 390×844 phone. Also: new paper (D), held to the light (L), Make again (C) through the hand passes, new impression (I), and a wet brush over the hand's media. WebGPU on real hardware. No console errors, no overflow.
+6. `pnpm lint` (biome), `next build`, size check (p5.brush only in the worker chunk). Keep or gate the proof hooks.
+
+**Then document it**
+
+7. Write `ideas/studio-dawn/hand.md` (code already spec-links it). Add a CHANGELOG _Unreleased_ entry and an OpenSpec change `adopt-p5-brush-hand` (tech-stack delta: p5.brush standalone scoped to burin's hand, no p5), then validate it `--strict`. Link from `eye.md`. Open founder questions: is the hand on by default? Should it be on the new paper? Should the founder's own kirukal strokes go through `fromSamples`?

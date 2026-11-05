@@ -2,13 +2,17 @@
   "name": "@kiruk/burin",
   "version": "0.0.1",
   "private": true,
-  "description": "kiruk's engraving engine — laid paper, burin line fields on the GPU (WebGPU, WebGL 2 fallback), vector burin strokes, ink, and an HTML-in-Canvas ink plate.",
+  "description": "kiruk's engraving engine — laid paper, burin line fields on the GPU (WebGPU, WebGL 2 fallback), vector burin strokes, ink, an HTML-in-Canvas ink plate, and the hand: p5.brush media (chalk, wash, quill, lead white) laid into the paper in TSL.",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./logogram": "./src/logogram.ts",
     "./vector": "./src/vector/burin.ts",
     "./eye": "./src/subjects/eye/index.ts",
+    "./eye-hand": "./src/subjects/eye/hand.ts",
+    "./hand": "./src/hand/index.ts",
+    "./hand/painter": "./src/hand/painter.ts",
+    "./hand/worker": "./src/hand/worker.ts",
     "./motion": "./src/motion/dynamics.ts",
     "./rig": "./src/subjects/eye/rig.ts",
     "./plate": "./src/plate/htmlPlate.ts"
@@ -26,5 +30,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "p5.brush": "3.0.0"
   }
 }

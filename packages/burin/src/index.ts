@@ -8,7 +8,9 @@
  *   vector/burin    burin strokes as SVG: swelling lines, guides, scale bars
  *   plate           HTML-in-Canvas ink plate
  *   motion          exact springs, reflexes, blinks, histories
- *   subjects/eye    the engraved eye: rig, motion, shader
+ *   hand            p5.brush media (red chalk, bistre wash, iron-gall quill, lead white) painted
+ *                   in a worker and laid into the paper by the compose pass (./hand, ./hand/worker)
+ *   subjects/eye    the engraved eye: rig, motion, shader, and its hand-colouring (./eye-hand)
  *
  * spec-link: ideas/studio-dawn/eye.md · skill: .claude/skills/kiruk-burin
  */
@@ -17,6 +19,7 @@ export {
   type EngineInfo,
   type EyeEngine,
   type EyeFrame,
+  type HandFrame,
   INK_RGB,
   type Rect,
 } from './core/renderer';

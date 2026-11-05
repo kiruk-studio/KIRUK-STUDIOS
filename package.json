@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "description": "Kiruk \u2014 scribbles into worlds. Spec-driven creative OS, monorepo for the kirukism movement.",
+  "description": "Kiruk — scribbles into worlds. Spec-driven creative OS, monorepo for the kirukism movement.",
   "homepage": "https://kiruk.studio",
   "repository": {
     "type": "git",
@@ -74,5 +74,16 @@
     "*.{md,mdx}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "packageExtensions": {
+      "p5.brush@3": {
+        "peerDependenciesMeta": {
+          "p5": {
+            "optional": true
+          }
+        }
+      }
+    }
   }
 }

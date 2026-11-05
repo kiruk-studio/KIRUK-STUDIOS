@@ -805,6 +805,11 @@
   min-height: 30px;
   padding: 0 9px;
 }
+/* vii. Hand — the media, off while the hand is: the plain print has none. */
+.ins-media button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
 
 /* ── the construction's writing (printed; shown with the construction) ───── */
 

@@ -21,6 +21,12 @@
  *   click the eye / B   a blink
  *   hold L              held to the light
  *   on first print      the sheet is damp, as intaglio paper is: every line blooms a little, then dries
+ *   H                   the hand on the plate, or the plain print
+ *   I                   a new impression: the hand colours the print again, differently
+ *
+ * The hand (ideas/studio-dawn/hand.md): once the plate has printed, p5.brush colours this
+ * impression in a worker — red chalk under the cut, bistre washes, the iris, lead white, the
+ * quill — and the engine lays the sheets into its paper. Each visit is its own impression.
  *
  * With HTML-in-Canvas the overlay (all the page's type) moves inside a transparent
  * <canvas layoutsubtree> laid over the stage and is printed into the paper on the
@@ -28,10 +34,11 @@
  *
  * spec-link: ideas/studio-dawn/eye.md · skill: kiruk-burin
  */
+import type { HandClient, HandSheet } from '@kiruk/burin/hand';
 import { createHtmlPlate } from '@kiruk/burin/plate';
 import { landmarks, type Pose, UNITS } from '@kiruk/burin/rig';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { actions, eyeStore } from './store';
+import { actions, eyeStore, type HandState, newImpression } from './store';
 
 type Rect = [number, number, number, number];
 
@@ -56,6 +63,14 @@ declare global {
       wire: (v: number) => void;
       point: (x: number, y: number) => void;
       make: () => void;
+      /** the hand: its client's state, the impression, and what shows */
+      hand: () => Record<string, unknown>;
+      /** paint an impression (a given seed, or a new one) without replaying it */
+      impression: (seed?: number) => void;
+      /** one medium (chalk · wash · ink · body · iris) on or off */
+      handMedia: (m: string, on: boolean) => void;
+      /** the hand's sheets as PNG data URLs, as p5.brush painted them (proofs) */
+      handLayers: () => Record<string, string>;
     };
   }
 }
@@ -143,12 +158,29 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
     let wire = 0.3;
     let wireTarget = 0.3;
     let wireV = 0;
-    // Making it again: hold the construction, then cut each pass across the eye.
-    const HOLD = 0.9;
+    // Making it again: hold the construction (the hand's chalk goes down meanwhile), then cut each
+    // pass across the eye, then the hand colours the print: washes, then lead white and the quill.
+    const HOLD = 1.4;
     const PER_PASS = 1.5;
     let make = 5;
     let makeAt = -1;
     let lastPass = 5;
+    // The hand: p5.brush in a worker paints this impression; the engine lays it into the paper.
+    let hand: HandClient | null = null;
+    let closeSheet: ((s: HandSheet | null) => void) | null = null;
+    let handGeo = '';
+    let handTimer = 0;
+    let handLoaded = false;
+    // chalk, wash, quill, lead white, iris: each eases on and off.
+    const handShow = [0, 0, 0, 0, 0];
+    // The hand's passes while it colours: 0 … 3 (chalk, washes, white and quill); 3 at rest.
+    let handMake = 3;
+    let handMakeAt = -1;
+    const HAND_PASS = 1.2;
+    let lastHandKey = '';
+    const setHandState = (p: Partial<HandState>) =>
+      eyeStore.set({ hand: { ...eyeStore.get().hand, ...p } });
+    setHandState({ seed: newImpression() });
     // The calipers.
     let poseNow: Pose = { gx: 0, gy: 0, open: 1, pupil: 0.36 };
     let caliperDrag = false;
@@ -174,6 +206,14 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
       engine?.resize(window.innerWidth, window.innerHeight);
       inkDirty = true;
       composeDirty = true;
+      // A new layout is a new sheet for the hand: the same impression, painted again to fit.
+      if (hand) {
+        clearTimeout(handTimer);
+        handTimer = window.setTimeout(() => {
+          const req = handRequest(eyeStore.get().hand.seed);
+          if (handKeyOf(req) !== handGeo) paintHand(eyeStore.get().hand.seed, false);
+        }, 350);
+      }
       eyeStore.set({
         W: window.innerWidth,
         H: window.innerHeight,
@@ -181,6 +221,67 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
         cx: geo.eye[0],
         cy: geo.eye[1],
       });
+    };
+
+    const handRequest = (seed: number) => {
+      const [cx, cy, S] = geo.eye;
+      const x0 = Math.max(0, Math.floor(cx - 1.78 * S));
+      const y0 = Math.max(0, Math.floor(cy - 1.62 * S));
+      const x1 = Math.min(window.innerWidth, Math.ceil(cx + 1.78 * S));
+      const y1 = Math.min(window.innerHeight, Math.ceil(cy + 1.34 * S));
+      return {
+        subject: 'eye',
+        seed,
+        region: [x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0)] as Rect,
+        density: Math.min(window.devicePixelRatio || 1, 1.5),
+        params: { eye: [cx, cy, S] },
+      };
+    };
+    const handKeyOf = (req: ReturnType<typeof handRequest>) =>
+      `${req.region.join(',')}|${(req.params.eye as number[]).map((v) => v.toFixed(1)).join(',')}`;
+    const paintHand = (seed: number, replay: boolean) => {
+      if (!hand || !engine || geo.eye[2] < 8) return;
+      const req = handRequest(seed);
+      handGeo = handKeyOf(req);
+      setHandState({ state: 'painting', seed });
+      void hand.paint(req).then((sheet) => {
+        if (!alive || !engine) {
+          closeSheet?.(sheet);
+          return;
+        }
+        const st = hand?.status();
+        if (!sheet) {
+          // Superseded (a newer layout or impression is being painted), or the hand failed.
+          if (st && st.state !== 'painting')
+            setHandState({ state: st.state === 'idle' ? 'failed' : st.state, via: st.via });
+          return;
+        }
+        engine.setHand(sheet);
+        handLoaded = true;
+        composeDirty = true;
+        setHandState({ state: 'idle', via: sheet.via, ms: sheet.ms, seed: sheet.seed });
+        if (replay && !reduced && makeAt < 0) {
+          handMakeAt = performance.now();
+          handMake = 0;
+        }
+      });
+    };
+    const startHand = async () => {
+      if (hand || !alive || !engine) return;
+      try {
+        const mod = await import('@kiruk/burin/hand');
+        if (!alive) return;
+        closeSheet = mod.closeSheet;
+        hand = mod.createHand({
+          worker: () =>
+            new Worker(new URL('./hand.worker.ts', import.meta.url), { type: 'module' }),
+          local: () => import('./hand-local'),
+        });
+        paintHand(eyeStore.get().hand.seed, false);
+      } catch (err) {
+        console.warn('[burin] the hand is unavailable:', err);
+        setHandState({ state: 'none' });
+      }
     };
 
     const wetAt = (x: number, y: number, px: number, py: number) => {
@@ -223,10 +324,20 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
         }
       }
 
+      const handOn = eyeStore.get().hand.on && handLoaded;
       if (makeAt >= 0) {
         const e = (t - makeAt) / 1000;
         make = Math.min(5, 1 + Math.max(0, e - HOLD) / PER_PASS);
-        if (make >= 5) makeAt = -1;
+        // The hand: chalk while the construction holds; its colour once the plate is cut.
+        if (handOn)
+          handMake =
+            Math.min(1, e / HOLD) + Math.min(2, Math.max(0, e - HOLD - 4 * PER_PASS) / PER_PASS);
+        const end = handOn ? HOLD + 6 * PER_PASS : HOLD + 4 * PER_PASS;
+        if (e >= end) {
+          makeAt = -1;
+          make = 5;
+          handMake = 3;
+        }
         // The pass being cut: I while the construction holds, then II … IV, then the plate itself.
         const pass = make >= 5 ? 6 : make <= 1.0001 ? 1 : Math.floor(make) + 1;
         if (pass !== lastPass) {
@@ -239,6 +350,29 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
         lastPose = poseKey;
         inkDirty = true;
       }
+
+      // A new impression: the hand's three passes, one after another.
+      if (handMakeAt >= 0) {
+        handMake = Math.min(3, (t - handMakeAt) / 1000 / HAND_PASS);
+        if (handMake >= 3) handMakeAt = -1;
+      }
+      // Each medium eases on and off; the whole hand fades in when its first sheet arrives.
+      const hs = eyeStore.get().hand;
+      const want = [hs.media.chalk, hs.media.wash, hs.media.ink, hs.media.body, hs.iris];
+      const kh = reduced ? 1 : 1 - Math.exp(-dt * 7);
+      for (let i = 0; i < 5; i++) {
+        const target = hs.on && handLoaded && want[i] ? 1 : 0;
+        const d = target - handShow[i]!;
+        handShow[i] = Math.abs(d) < 0.002 ? target : handShow[i]! + d * kh;
+      }
+      const handKey = `${handShow.map((v) => v.toFixed(3)).join(',')},${handMake.toFixed(3)}`;
+      if (handKey !== lastHandKey) {
+        lastHandKey = handKey;
+        composeDirty = true;
+      }
+      // While a wash goes on, the sheet under it is wet: the cut lines beneath soften into it.
+      const washing = handOn && handMake > 1 && handMake < 2;
+      if (washing) bleedUntil = Math.max(bleedUntil, performance.now() + 25000);
 
       // The paper's raking light is the same light, with a slow drift on top.
       const drift = reduced ? 0 : 1;
@@ -322,8 +456,21 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
             sun,
             wire,
             make,
+            hand: {
+              media: [handShow[0]!, handShow[1]!, handShow[2]!, handShow[3]!],
+              iris: handShow[4]!,
+              make: handMake,
+            },
           },
-          { ink: inkDirty, bleed: bleeding ? 3 : 0, dt: 1 / 110, brush, brushPrev, damp },
+          {
+            ink: inkDirty,
+            bleed: bleeding ? 3 : 0,
+            dt: 1 / 110,
+            brush,
+            brushPrev,
+            damp,
+            handWet: washing ? 1.6 : 0,
+          },
         );
         inkDirty = false;
         composeDirty = false;
@@ -336,6 +483,8 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
           // Hand the type to the GPU only once the GPU has printed. Until then (the first shader
           // compile can take seconds) it stays DOM, and readable.
           if (engine.info.plate) page?.classList.add('ink-in-paper');
+          // The plate has printed: now the hand may colour it.
+          window.setTimeout(() => void startHand(), 120);
         }
       } else if (settleWaiters.length && !bleeding) {
         for (const w of settleWaiters.splice(0)) w();
@@ -368,6 +517,7 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
           wire,
           make,
           making: makeAt >= 0,
+          handMake,
           dawn,
           gaze: { t: h.gaze.t.slice(), x: h.gaze.x.slice(), v: h.gaze.v.slice() },
           pupilT: { t: h.pupil.t.slice(), x: h.pupil.x.slice(), v: h.pupil.v.slice() },
@@ -480,6 +630,8 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
       if (k === 'w') actions.setWire(wireTarget === 0.3 ? 1 : wireTarget === 1 ? 0 : 0.3);
       if (k === 'm') actions.calipers(!eyeStore.get().calipers);
       if (k === 'c') actions.make();
+      if (k === 'h') actions.setHand(!eyeStore.get().hand.on);
+      if (k === 'i') actions.impression();
       if (k === 'u') {
         const u = eyeStore.get().unit;
         actions.setUnit(UNITS[(UNITS.indexOf(u) + 1) % UNITS.length]!);
@@ -513,6 +665,19 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
       makeAt = performance.now();
       make = 1;
       lastPass = 0;
+      handMakeAt = -1;
+      handMake = 0;
+    };
+    actions.setHand = (on: boolean) => setHandState({ on });
+    actions.toggleMedium = (m) => {
+      const hs = eyeStore.get().hand;
+      if (m === 'iris') setHandState({ iris: !hs.iris });
+      else setHandState({ media: { ...hs.media, [m]: !hs.media[m] } });
+    };
+    actions.impression = () => {
+      const seed = newImpression();
+      setHandState({ seed, on: true });
+      paintHand(seed, true);
     };
     const markWire = (v: number) => {
       if (page) page.dataset.wire = v === 0 ? '0' : v === 1 ? 'full' : 'faint';
@@ -578,6 +743,40 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
           dawn: (v: 0 | 1) => actions.setDawn(v),
           wire: (v: number) => actions.setWire(v),
           make: () => actions.make(),
+          hand: () => ({
+            ...(hand?.status() ?? { state: eyeStore.get().hand.state }),
+            seed: eyeStore.get().hand.seed,
+            sheets: engine?.debug.hand ?? 0,
+            loaded: handLoaded,
+            show: handShow.slice(),
+            make: handMake,
+          }),
+          impression: (seed?: number) => {
+            const s = seed ?? newImpression();
+            setHandState({ seed: s, on: true });
+            paintHand(s, false);
+          },
+          handLayers: () => {
+            // For proofs: the hand's sheets as images, as p5.brush painted them.
+            const sh = engine?.handSheet();
+            if (!sh) return {};
+            const url = (b: ImageBitmap) => {
+              const c = document.createElement('canvas');
+              c.width = b.width;
+              c.height = b.height;
+              c.getContext('2d')?.drawImage(b, 0, 0);
+              return c.toDataURL('image/png');
+            };
+            const out: Record<string, string> = {};
+            for (const [k, b] of Object.entries(sh.layers)) out[k] = url(b);
+            if (sh.iris) out.iris = url(sh.iris.bitmap);
+            return out;
+          },
+          handMedia: (m: string, on: boolean) => {
+            const hs = eyeStore.get().hand;
+            if (m === 'iris') setHandState({ iris: on });
+            else if (m in hs.media) setHandState({ media: { ...hs.media, [m]: on } });
+          },
           point: (x: number, y: number) => {
             pointer = [x, y];
           },
@@ -625,6 +824,8 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
       removeEventListener('keydown', onKey);
       removeEventListener('keyup', onKey);
       offCalipers();
+      clearTimeout(handTimer);
+      hand?.dispose();
       plate?.dispose();
       engine?.dispose();
       delete window.__burin;

@@ -65,6 +65,11 @@ export type PaperInputs = {
   paper: Texture;
   noise: Texture;
   watermark: Texture;
+  /**
+   * Extra height in the sheet, read at any point (CSS px): the hand's washes cockle the paper
+   * as they dry, so the raking light finds their edges (hand/compose.ts, handRelief).
+   */
+  buckle?: (css: N) => N;
 };
 
 /** Dawn Light #fadfa9 — the old paper. Dawn Departs #ccffff — the new. (names.color.pizza)
@@ -88,7 +93,10 @@ export function paperNode(o: PaperInputs) {
 
   // Cockle: slow waves in the sheet, read by the raking light.
   // Broad waves only: a cockled sheet, not a crumpled one (BR-6).
-  const H = (p: N) => texture(o.noise, p.div(1400)).w;
+  const H = (p: N) => {
+    const sheet = texture(o.noise, p.div(1400)).w;
+    return o.buckle ? sheet.add(o.buckle(p)) : sheet;
+  };
   const e = 9;
   const hx = H(css.add(vec2(e, 0))).sub(H(css.sub(vec2(e, 0))));
   const hy = H(css.add(vec2(0, e))).sub(H(css.sub(vec2(0, e))));
@@ -205,5 +213,7 @@ export function paperNode(o: PaperInputs) {
     .mul(clamp(float(0.62).add(float(1).sub(thickness).mul(1.85)), 0.08, 1.25))
     .mul(float(1).sub(plateTone.mul(3)));
   const color = mix(reflected, transmitted, o.light);
-  return { color, tooth: s.x, L, inside, dawn: dawnHere };
+  // How the sheet is lit here (relief and lamp), for whatever is laid on top of it.
+  const shine = float(0.97).add(relief).add(pool);
+  return { color, tooth: s.x, L, inside, dawn: dawnHere, flocs: s.y, fibre, lit: shine };
 }
