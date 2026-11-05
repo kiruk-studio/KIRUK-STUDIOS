@@ -57,14 +57,16 @@ function solid(v: number) {
  * (a new impression, a resize) swaps them all without rebuilding a shader.
  */
 export function createHandTextures() {
-  const white = solid(255);
-  const black = solid(0);
+  // One placeholder per slot, never shared. three.js gives texture nodes whose textures share a
+  // uuid one sampler, owned by the first node built (TextureNode.getUniformHash is the texture's
+  // uuid; UniformNode.getSharedNode). Slots built on one shared placeholder would all go on
+  // sampling whichever slot was built first, whatever `.value` they are given later.
   const empty: Record<HandSlot, Texture> = {
-    chalk: white,
-    wash: white,
-    ink: white,
-    body: black,
-    iris: white,
+    chalk: solid(255),
+    wash: solid(255),
+    ink: solid(255),
+    body: solid(0),
+    iris: solid(255),
   };
   const current = { ...empty };
   const nodes: Record<HandSlot, N[]> = { chalk: [], wash: [], ink: [], body: [], iris: [] };
@@ -81,8 +83,7 @@ export function createHandTextures() {
     get: (slot: HandSlot) => current[slot],
     isEmpty: (slot: HandSlot) => current[slot] === empty[slot],
     dispose() {
-      white.dispose();
-      black.dispose();
+      for (const t of Object.values(empty)) t.dispose();
     },
   };
 }

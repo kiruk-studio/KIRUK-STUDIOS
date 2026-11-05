@@ -135,19 +135,32 @@ Blend p5.brush 3.0 (the hand: chalk, wash, quill, lead white) with `@kiruk/burin
 
 **Done (pushed, not yet reviewed):**
 
-- [x] `p5.brush@3.0.0` pinned in `packages/burin` (npm dist byte-identical to GitHub). Root `pnpm.packageExtensions` marks its `p5` peer optional, so p5 is not installed.
+- [x] `p5.brush@3.0.0` pinned in `packages/burin` (its `dist/brush.esm.js`, the file imported, is byte-identical to GitHub commit `d56350a`). Root `pnpm.packageExtensions` marks its `p5` peer optional, so p5 is not installed.
 - [x] `packages/burin/src/hand/`: `media.ts` (pigments, old→new paper swaps), `spine.ts` (pressure spines, tremor, left-handed "hash" hatching, kirukal pen samples → spine), `brushes.ts` (k-quill, k-hatch, k-reed, k-sanguine, k-side, k-white, k-silver), `painter.ts` (one canvas, one layer per medium, `transferToImageBitmap`), `worker.ts` (`serveHand`), `index.ts` (`createHand` client with latest-wins and main-thread fallback), `compose.ts` (TSL, optical density: chalk on the peaks, wash in the valleys + paper buckle, quill starved, lead white on top and opaque to the light, dawn pigment swap).
 - [x] `subjects/eye/hand.ts`: the eye recipe (sanguine globe, lids and axes; bistre socket and corner washes; carnation; blue-grey + hazel iris decal; white hatching; quill hatching). New exports: `./hand`, `./hand/worker`, `./hand/painter`, `./eye-hand`.
 - [x] Renderer: `setHand()`, `handSheet()`, hand uniforms, compose order (under → engraving → quill → bleed → white → type). Paper `buckle`, `lit`, `flocs`, `fibre` outputs. Bleed: hand ink and wash re-wet, washes being laid add water. Eye ink pass `w` = palpebral opening. `eyeIrisDecal()` carries the rest-pose iris colour onto the turning eye.
 - [x] Studio: `hand.worker.ts`, `hand-local.ts`, EyeEngine wiring (H on/off, I new impression, the hand's passes in Make again, hand easing, `__burin.hand/impression/handMedia/handLayers`), store `hand`, Instrument _vii. Hand_ (Engine is now _viii_), `.ins-media` CSS.
-- [x] Both workspaces typecheck. The worker paints a sheet in about 90–420 ms on SwiftShader. Layer dumps (`__burin.handLayers()`) look right.
+- [x] `@kiruk/burin` typechecks at the latest commit. The studio was last typechecked before the `handLayers` hook was added, so re-run it. The raw layer dumps from `__burin.handLayers()` look right.
 
 **Open: fix first**
 
-1. **Chalk does not show in the composite.** A pixel diff of chalk-only against none shows no globe circle at all. Render the raw `chalk` sample on screen, as was done for the iris decal: check the `hand.set('chalk')` node swap, `swapped()`, and the tooth gate.
-2. **A wash-shaped stain still appears after load** even with the `w > 0.12` gate on hand pickup. Confirm the bleed change is compiled. Otherwise clear or skip the sim the first time a sheet lands.
-3. **The iris colour is weak**: the engraved iris is nearly solid ink near the limbus. Density ×2.2 is set but not yet seen. Option: a lighter iris tone while the hand is on.
+1. **Root cause found, fix pushed but NOT yet seen on screen: chalk, quill and iris sampled the wash texture.** In three.js r186, `TextureNode.getUniformHash()` returns the texture's `uuid`. Per `UniformNode.getSharedNode()`, nodes with the same hash share one uniform, owned by the first node built. All hand slots started on one shared white placeholder, so after `setHand` chalk, ink (quill) and iris all sampled the first-built node's texture: the paper buckle's wash. Evidence: chalk-only looked like a tooth-speckled wash shape, ink-only showed a brown band in the socket, the iris colour was near-white, and a debug build that added an iris sample first tinted the whole region with the iris decal. Fix (`packages/burin/src/hand/compose.ts`, `createHandTextures`): one `solid()` placeholder per slot. It typechecks; it was not re-proved in a browser. **First local step:** run the dev server, then call `__burin.handMedia(m, true/false)` to show each medium alone and confirm the chalk globe, quill hatching and iris colour now show.
+2. **Re-tune after fix 1.** These strengths were raised while the bug hid three of the media, so they are probably now too strong: iris density `×2.2` and chalk `×1.45` (both in `compose.ts`); brush opacities in `hand/brushes.ts` (k-sanguine 190, k-hatch 205); recipe weights in `subjects/eye/hand.ts`. The earlier "wash-shaped stain" was most likely this same bug, not the bleed. The bleed change (hand pigment lifts only where water `w > 0.12`, `bleed/bleed.ts`) stays as a design choice. Re-check for a real stain only after fix 1.
+3. **The iris colour may still be faint**: the engraved iris is nearly solid ink near the limbus, so the wash shows only between the cuts. Judge it after fix 1 before changing anything.
 4. **Tune the look**: the socket wash band is flat, so grade it. Then the white heightening, quill strength and the carnation blush. Check each at dpr 2.
+
+**Run it locally**
+
+- `git checkout claude/intelligent-einstein-0hn5e2 && pnpm install` (Node 22, pnpm 10). Then run `pnpm --filter @kiruk/studio dev`.
+- To skip the opening loader: in the console, run `sessionStorage.setItem('kiruk-loading-seen','true')`, then reload.
+- Keys: H hand on/off · I new impression · C make it again (includes the hand's passes) · D paper · L held to light · W construction.
+- Console hooks:
+  - `__burin.hand()`: state, via, ms, seed, loaded, show, make.
+  - `__burin.impression(4242)`: repaint with a fixed seed, no replay.
+  - `__burin.handMedia('chalk'|'wash'|'ink'|'body'|'iris', bool)`.
+  - `__burin.handLayers()`: PNG data URLs of the raw p5.brush layers.
+- Typecheck: `pnpm --filter @kiruk/burin check-types` and `pnpm --filter @kiruk/studio check-types`.
+- Measured so far, only on SwiftShader in this container (no GPU here): the first sheet painted in about 415–423 ms, later ones in 63–127 ms. WebGPU is unproven: the container's WebGPU device was lost even on the original page.
 
 **Then prove it**
 
