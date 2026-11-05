@@ -1,0 +1,26 @@
+{
+  "name": "@kiruk/mai",
+  "version": "0.0.1",
+  "private": true,
+  "description": "kiruk's ink engine (மை, mai: ink, and the kohl that lines an eye). Human strokes and the anomalies of ink: hand, nib, ink, paper, light, measure, letter, plate, and a critic that proves them in numbers.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./critic": "./src/critic/index.ts",
+    "./node": "./src/node/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "specimen": "node scripts/specimen.ts",
+    "proof": "node scripts/proof.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
