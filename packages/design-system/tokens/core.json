@@ -66,6 +66,38 @@
         "$value": "#FF6A00",
         "$description": "Absurd asset color \u2014 assets only."
       }
+    },
+    "dawn": {
+      "light": {
+        "$type": "color",
+        "$value": "#FADFA9",
+        "$description": "Dawn Light \u2014 the old paper: where the hand drew. \"Soft morning glow, when darkness starts to lift and yellow seeps in.\" Takes iron-gall ink; carries its years. Tint: L \u2265 0.90, C \u2264 0.08 (design-tokens: Dawn paper pair)."
+      },
+      "departs": {
+        "$type": "color",
+        "$value": "#CCFFFF",
+        "$description": "Dawn Departs \u2014 the new paper: where the code draws. \"Morning\u2019s first pale breath, the blue before sunrise.\" Takes dawn navy; crisp, no age. Tint: L \u2265 0.90, C \u2264 0.08."
+      },
+      "iron-gall": {
+        "$type": "color",
+        "$value": "#231A14",
+        "$description": "Iron-gall ink \u2014 the old paper\u2019s ink; browns as the sheet ages. 13.2:1 on Dawn Light."
+      },
+      "navy": {
+        "$type": "color",
+        "$value": "#1D1C2D",
+        "$description": "Dawn navy \u2014 the new paper\u2019s ink; runs blue in water. 15.4:1 on Dawn Departs."
+      },
+      "rubric": {
+        "$type": "color",
+        "$value": "#983A22",
+        "$description": "Rubric \u2014 the rubricator\u2019s red, for type that measures and numbers (plate numbers, measure labels). Never body copy or fills. \u2265 4.5:1 on both papers."
+      },
+      "rubric-line": {
+        "$type": "color",
+        "$value": "#B5462B",
+        "$description": "Rubric line \u2014 the same red for rules: guides, scales, leaders, a selected border. Strokes only, never text."
+      }
     }
   },
   "dimension": {

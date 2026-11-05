@@ -19,7 +19,43 @@
     },
     "accent-alt": { "$type": "color", "$value": "{color.pencil-500}" },
     "halo": { "$type": "color", "$value": "{color.pencil-200}" },
-    "border": { "$type": "color", "$value": "{color.ink}" }
+    "border": { "$type": "color", "$value": "{color.ink}" },
+    "sheet": {
+      "old": {
+        "paper": {
+          "$type": "color",
+          "$value": "{color.dawn.light}",
+          "$description": "Old sheet — a surface drawn as paper, the hand’s side of the dawn. Paper-drawn surfaces only (plates, their instruments), never app chrome."
+        },
+        "ink": {
+          "$type": "color",
+          "$value": "{color.dawn.iron-gall}",
+          "$description": "Ink on the old sheet."
+        }
+      },
+      "new": {
+        "paper": {
+          "$type": "color",
+          "$value": "{color.dawn.departs}",
+          "$description": "New sheet — a surface drawn as paper, the code’s side of the dawn. Paper-drawn surfaces only."
+        },
+        "ink": {
+          "$type": "color",
+          "$value": "{color.dawn.navy}",
+          "$description": "Ink on the new sheet."
+        }
+      },
+      "rubric": {
+        "$type": "color",
+        "$value": "{color.dawn.rubric}",
+        "$description": "Measure and numbering type on either sheet."
+      },
+      "rubric-line": {
+        "$type": "color",
+        "$value": "{color.dawn.rubric-line}",
+        "$description": "Rules and construction lines on either sheet."
+      }
+    }
   },
   "space": {
     "inline-xs": { "$type": "dimension", "$value": "{dimension.space.2}" },
