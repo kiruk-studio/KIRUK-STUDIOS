@@ -1,0 +1,364 @@
+<!doctype html>
+<!--
+  V1 · Codex — a manuscript folio at dawn.
+  Medieval: ruled page, illuminated initial, IM Fell (17th-c. Fell types, ink spread intact),
+  pen-and-ink sun-eye over the curve of the earth. Modern: the rubric red line — once the
+  scribe's annotation colour, now a design tool's selection — laid over the same drawing.
+  spec-link: ideas/studio-dawn/blend-roadmap.md (V1)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — V1 Codex (proto)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      .sheet {
+        --sun-x: 70%;
+        font-family: 'IM Fell English', Georgia, serif;
+      }
+      /* manuscript ruling: a double frame round the text block */
+      .ruling {
+        position: absolute;
+        z-index: 3;
+        inset: 64px clamp(16px, 3vw, 44px) calc(var(--earth-h) + 22px);
+        border: 1px solid rgba(59, 47, 42, 0.38);
+        outline: 1px solid rgba(59, 47, 42, 0.22);
+        outline-offset: 5px;
+        pointer-events: none;
+      }
+      header {
+        position: absolute;
+        z-index: 6;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 clamp(16px, 3vw, 44px);
+      }
+      .running {
+        font: 500 11px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--rubric-text);
+      }
+      nav ul {
+        display: flex;
+        gap: clamp(12px, 2.2vw, 30px);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav a {
+        font-family: 'IM Fell English SC', serif;
+        font-size: 19px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      nav a i {
+        font-family: 'IM Fell English', serif;
+        font-style: italic;
+        color: var(--rubric-text);
+        margin-right: 4px;
+      }
+      nav a:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--rubric);
+        text-underline-offset: 4px;
+      }
+
+      .text {
+        position: absolute;
+        z-index: 6;
+        left: clamp(36px, 6.5vw, 108px);
+        top: clamp(110px, 19svh, 190px);
+        width: min(40vw, 560px);
+      }
+      h1 {
+        margin: 0;
+        font-weight: 400;
+        font-size: clamp(84px, 10vw, 156px);
+        line-height: 0.86;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        display: flex;
+        align-items: flex-end;
+      }
+      /* the illuminated initial: a dawn-coloured ground, hatched, framed twice */
+      .initial {
+        display: inline-grid;
+        place-items: center;
+        width: 1.02em;
+        height: 1.02em;
+        margin-right: 0.06em;
+        padding-top: 0.08em;
+        border: 2px solid var(--ink);
+        outline: 1px solid var(--ink);
+        outline-offset: 4px;
+        background:
+          repeating-linear-gradient(-45deg, rgba(59, 47, 42, 0.32) 0 1px, transparent 1px 6px),
+          radial-gradient(ellipse at 50% 100%, #fff1dc 0%, var(--peach) 35%, var(--rose) 85%, var(--plum) 120%);
+        filter: url(#ink-bleed);
+      }
+      .rest {
+        filter: url(#ink-bleed);
+      }
+      .sub {
+        margin: 26px 0 0;
+        font-style: italic;
+        font-size: clamp(22px, 2vw, 30px);
+        color: var(--sepia);
+      }
+      .body {
+        margin: 18px 0 0;
+        font-size: clamp(18px, 1.45vw, 21px);
+        line-height: 1.55;
+        text-align: justify;
+        hyphens: auto;
+        color: var(--ink);
+        max-width: 36ch;
+      }
+      .body .sc {
+        font-family: 'IM Fell English SC', serif;
+      }
+      .rubric-note {
+        margin: 18px 0 0;
+        font: 400 12px/1.6 'JetBrains Mono', monospace;
+        color: var(--rubric-text);
+        letter-spacing: 0.02em;
+      }
+
+      .plate {
+        position: absolute;
+        z-index: 4;
+        left: 41vw;
+        right: clamp(16px, 3vw, 44px);
+        top: 72px;
+        bottom: var(--earth-h);
+      }
+      .plate svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      @media (max-width: 860px) {
+        .ruling {
+          display: none;
+        }
+        header {
+          height: auto;
+          padding-top: 16px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        nav a {
+          font-size: 16px;
+        }
+        .text {
+          position: relative;
+          left: auto;
+          top: auto;
+          width: auto;
+          padding: 112px 20px 0;
+        }
+        .plate {
+          position: relative;
+          left: auto;
+          right: auto;
+          top: auto;
+          bottom: auto;
+          height: 52svh;
+          margin-top: 8px;
+        }
+        .sheet {
+          padding-bottom: var(--earth-h);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <span class="proto-tag">proto · V1 codex</span>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="ink-bleed" x="-5%" y="-15%" width="110%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feGaussianBlur in="rough" stdDeviation="3" result="halo" />
+        <feComponentTransfer in="halo" result="haloSoft"><feFuncA type="linear" slope="0.3" /></feComponentTransfer>
+        <feMerge><feMergeNode in="haloSoft" /><feMergeNode in="rough" /></feMerge>
+      </filter>
+    </svg>
+
+    <main class="sheet">
+      <div class="ruling" aria-hidden="true"></div>
+
+      <header>
+        <span class="running">Folio i · studio.kiruk.in</span>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#"><i>i.</i>Work</a></li>
+            <li><a href="#"><i>ii.</i>ISM</a></li>
+            <li><a href="#"><i>iii.</i>Writing</a></li>
+            <li><a href="#"><i>iv.</i>Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <section class="text" aria-labelledby="t">
+        <h1 id="t" aria-label="kiruk"><span class="initial" aria-hidden="true">K</span><span class="rest" aria-hidden="true">iruk</span></h1>
+        <p class="sub">an art + code studio</p>
+        <p class="body">
+          <span class="sc">Here the eye</span> is drawn before it is built. Every idea rises the way the sun does: first
+          in ink, as a scribble; then in line, as a structure; then in code, as something you can hold.
+        </p>
+        <p class="rubric-note">¶ the ink is the pen · the red line is the intent</p>
+      </section>
+
+      <div class="plate">
+        <svg viewBox="-560 -840 1120 860" preserveAspectRatio="xMidYMax meet" role="img" aria-label="A pen-and-ink drawing of the kiruk eye risen above the curve of the earth, with rays, construction circles and a red design-tool selection laid over it.">
+          <defs>
+            <g id="logo-needles" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1071.91 1266.79L1051.2 1189.51M1135 1241.28L1095 1172M1311.56 1178L1173 1098M1402.5 1100.94L1190 1044M927.798 1266.79L948.504 1189.51M857.707 1236.28L897.707 1167M687.142 1171L825.706 1091M597.203 1100.94L809.706 1044M1071.91 738L1051.2 815.274M1132 760.503L1092 829.785M1306.56 822.785L1168 902.785M1402.5 903.845L1190 960.785M927.798 738L948.504 815.274M860.707 762.503L900.707 831.785M689.142 830.785L827.706 910.785M597.203 903.845L809.706 960.785" />
+            </g>
+            <g id="logo-body" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z" />
+              <path class="nss" d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z" />
+              <path class="nss" d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z" />
+              <path class="nss" d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z" />
+              <path class="nss" d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z" />
+              <path class="nss" d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z" />
+              <path class="nss" d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z" />
+              <path class="nss" d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z" />
+            </g>
+            <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <line x1="0" y1="0" x2="0" y2="7" stroke="#3b2f2a" stroke-width="1.2" />
+            </pattern>
+            <pattern id="hatch-x" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+              <line x1="0" y1="0" x2="0" y2="9" stroke="#3b2f2a" stroke-width="1" />
+            </pattern>
+            <mask id="hole" maskUnits="userSpaceOnUse" x="-700" y="-700" width="1400" height="1400">
+              <rect x="-700" y="-700" width="1400" height="1400" fill="#fff" />
+              <circle r="60" fill="#000" />
+            </mask>
+            <filter id="pen" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="w" />
+              <feDisplacementMap in="SourceGraphic" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            <clipPath id="sky"><path d="M-700 -840H700V14A3060 3060 0 0 0 -700 14Z" /></clipPath>
+            <!-- the earth's curve fades out at both ends instead of stopping at the frame -->
+            <linearGradient id="fade-x" gradientUnits="userSpaceOnUse" x1="-560" y1="0" x2="560" y2="0">
+              <stop offset="0" stop-color="#3b2f2a" stop-opacity="0" />
+              <stop offset="0.22" stop-color="#3b2f2a" />
+              <stop offset="0.78" stop-color="#3b2f2a" />
+              <stop offset="1" stop-color="#3b2f2a" stop-opacity="0" />
+            </linearGradient>
+            <radialGradient id="shade" cx="0.5" cy="1" r="0.95">
+              <stop offset="0.55" stop-color="#000" />
+              <stop offset="1" stop-color="#fff" />
+            </radialGradient>
+            <mask id="corners" maskUnits="userSpaceOnUse" x="-700" y="-840" width="1400" height="860">
+              <rect x="-700" y="-840" width="1400" height="860" fill="url(#shade)" />
+            </mask>
+          </defs>
+
+          <!-- THE PEN -->
+          <g filter="url(#pen)" fill="none" stroke="#3b2f2a">
+            <g clip-path="url(#sky)">
+              <!-- rays: a sun diagram, every six degrees, two lengths -->
+              <g id="rays" stroke-width="1" opacity="0.42">
+                <path class="nss" d="M0 -330" />
+              </g>
+              <circle class="nss" cx="0" cy="-330" r="440" stroke-dasharray="2 7" opacity="0.5" />
+              <circle class="nss" cx="0" cy="-330" r="560" stroke-dasharray="2 7" opacity="0.35" />
+            </g>
+            <!-- the curve of the earth, drawn twice by a searching hand -->
+            <path class="nss" d="M-700 14A3060 3060 0 0 1 700 14" stroke="url(#fade-x)" stroke-width="1.6" />
+            <path class="nss" d="M-700 20A3070 3070 0 0 1 700 18" stroke="url(#fade-x)" stroke-width="0.8" opacity="0.5" />
+            <!-- the eye, risen -->
+            <g transform="translate(0 -330) scale(0.62)">
+              <circle class="nss" r="280" stroke-dasharray="5 7" opacity="0.5" />
+              <circle class="nss" r="480" stroke-dasharray="5 7" opacity="0.5" />
+              <use href="#logo-body" fill="url(#hatch)" stroke-width="1.4" mask="url(#hole)" />
+              <use href="#logo-body" fill="url(#hatch-x)" stroke="none" opacity="0.5" mask="url(#hole)" clip-path="url(#left)" />
+              <use href="#logo-needles" stroke-width="1.6" stroke-linecap="round" />
+              <use href="#logo-needles" stroke-width="0.9" opacity="0.4" transform="translate(3 -2) rotate(0.4)" />
+              <use href="#logo-body" fill="none" stroke-width="0.8" opacity="0.35" transform="translate(-3 2) rotate(-0.3)" />
+              <circle class="nss" r="60" stroke-width="1.2" />
+            </g>
+            <!-- ground below the curve: close cross-hatching, kept thin -->
+            <path d="M-700 20A3070 3070 0 0 1 700 18V24H-700Z" fill="url(#hatch-x)" stroke="none" opacity="0.6" />
+          </g>
+          <clipPath id="left"><rect x="-700" y="-700" width="700" height="1400" /></clipPath>
+
+          <!-- THE INTENT: rubric red, crisp, no wobble -->
+          <g fill="none" stroke="#b5462b" stroke-width="1">
+            <rect class="nss" x="-300" y="-505" width="600" height="350" />
+            <g fill="#f3e4d0">
+              <rect class="nss" x="-305" y="-510" width="10" height="10" />
+              <rect class="nss" x="-5" y="-510" width="10" height="10" />
+              <rect class="nss" x="295" y="-510" width="10" height="10" />
+              <rect class="nss" x="295" y="-335" width="10" height="10" />
+              <rect class="nss" x="295" y="-160" width="10" height="10" />
+              <rect class="nss" x="-5" y="-160" width="10" height="10" />
+              <rect class="nss" x="-305" y="-160" width="10" height="10" />
+              <rect class="nss" x="-305" y="-335" width="10" height="10" />
+            </g>
+            <!-- dimension -->
+            <path class="nss" d="M-300 -560H300M-300 -570V-550M300 -570V-550" />
+            <!-- the rise: from the curve of the earth up to the eye -->
+            <path class="nss" d="M0 -62V-150" stroke-dasharray="3 5" />
+            <path class="nss" d="M-7 -136L0 -152L7 -136" />
+            <!-- fifteen degrees between hours -->
+            <path class="nss" d="M-210 -330A210 210 0 0 1 -202.8 -384.4" />
+            <!-- eight directions -->
+            <g fill="#b5462b" stroke="none">
+              <circle cx="0" cy="-516" r="5" />
+              <circle cx="186" cy="-330" r="5" />
+              <circle cx="-186" cy="-330" r="5" />
+              <circle cx="0" cy="-144" r="5" />
+              <circle cx="131.5" cy="-461.5" r="4" />
+              <circle cx="-131.5" cy="-461.5" r="4" />
+              <circle cx="131.5" cy="-198.5" r="4" />
+              <circle cx="-131.5" cy="-198.5" r="4" />
+            </g>
+          </g>
+          <g class="mono" fill="#983a22" font-size="21" letter-spacing="0.5">
+            <text x="0" y="-578" text-anchor="middle">595 × 347</text>
+            <text x="-300" y="-520">eye · frame 01</text>
+            <text x="16" y="-96">rise ↑ dawn</text>
+            <text x="-226" y="-388" text-anchor="end">15°</text>
+            <text x="300" y="-120" text-anchor="end">8 directions · 16 hours</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="ground"><p><span>studio.kiruk.in · folio i</span><span>scribble → structure → code</span></p></div>
+    </main>
+
+    <script>
+      // Rays: a sun diagram drawn every six degrees, alternating length (static, built once).
+      const g = document.getElementById('rays');
+      let d = '';
+      for (let a = -186; a <= 6; a += 6) {
+        const r = (a * Math.PI) / 180;
+        const r0 = 330;
+        const r1 = (a / 6) % 2 ? 520 : 660;
+        d += `M${(r0 * Math.cos(r)).toFixed(1)} ${(-330 + r0 * Math.sin(r)).toFixed(1)}L${(r1 * Math.cos(r)).toFixed(1)} ${(-330 + r1 * Math.sin(r)).toFixed(1)}`;
+      }
+      g.querySelector('path').setAttribute('d', d);
+    </script>
+  </body>
+</html>

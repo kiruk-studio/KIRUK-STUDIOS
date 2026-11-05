@@ -1,0 +1,300 @@
+<!doctype html>
+<!--
+  V4 · Folio — the same blend, applied to a writing page.
+  Example subject only (a habit-tracking idea): nothing here is a product or an app.
+  Old: a Da Vinci mechanism in pen — three gears rising from the horizon like a sun,
+  hatched, labelled in an italic hand. New: rubric-red rotation arrows, a measured
+  radius, a friction callout and a week of streak marks laid over the same drawing.
+  Type: IM Fell Double Pica (title) + Xanh Mono (typescript dek) + JetBrains Mono (labels).
+  spec-link: ideas/studio-dawn/blend-roadmap.md (V4)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — V4 Folio (proto)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IM+Fell+Double+Pica:ital@0;1&family=Xanh+Mono:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      .sheet {
+        --sun-x: 70%;
+      }
+      header {
+        position: absolute;
+        z-index: 6;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px clamp(16px, 5vw, 80px);
+        font: 400 15px/1 'Xanh Mono', monospace;
+      }
+      header a {
+        color: var(--ink);
+        text-decoration: none;
+      }
+      header .home {
+        font: italic 400 22px/1 'IM Fell Double Pica', serif;
+      }
+      nav ul {
+        display: flex;
+        gap: clamp(14px, 2.4vw, 34px);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav a[aria-current] {
+        text-decoration: underline;
+        text-decoration-color: var(--rubric);
+        text-underline-offset: 5px;
+      }
+      article {
+        position: absolute;
+        z-index: 6;
+        left: clamp(16px, 5vw, 80px);
+        top: clamp(110px, 17svh, 170px);
+        width: min(40vw, 580px);
+      }
+      .kicker {
+        margin: 0 0 16px;
+        font: 500 11px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--rubric-text);
+      }
+      h1 {
+        margin: 0;
+        font: 400 clamp(58px, 6.4vw, 96px) / 0.98 'IM Fell Double Pica', serif;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        filter: url(#ink-bleed);
+      }
+      .dek {
+        margin: 22px 0 0;
+        font: 400 clamp(16px, 1.3vw, 19px) / 1.6 'Xanh Mono', monospace;
+        color: #2e2628;
+        max-width: 42ch;
+      }
+      .byline {
+        margin: 22px 0 0;
+        font: 400 12px/1.4 'JetBrains Mono', monospace;
+        letter-spacing: 0.06em;
+        color: #5e524b;
+      }
+      .example {
+        margin: 10px 0 0;
+        font: italic 400 16px/1.4 'IM Fell Double Pica', serif;
+        color: var(--sepia-soft);
+      }
+      .figure {
+        position: absolute;
+        z-index: 4;
+        left: 44vw;
+        right: clamp(16px, 3vw, 44px);
+        top: 70px;
+        bottom: var(--earth-h);
+      }
+      .figure svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .serif {
+        font-family: 'IM Fell Double Pica', serif;
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      @media (max-width: 860px) {
+        header {
+          padding: 16px 20px;
+          font-size: 13px;
+        }
+        article {
+          position: relative;
+          left: auto;
+          top: auto;
+          width: auto;
+          padding: 84px 20px 0;
+        }
+        .figure {
+          position: relative;
+          left: auto;
+          right: auto;
+          top: auto;
+          bottom: auto;
+          height: 48svh;
+        }
+        .sheet {
+          padding-bottom: var(--earth-h);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <span class="proto-tag">proto · V4 folio</span>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="ink-bleed" x="-5%" y="-15%" width="110%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feGaussianBlur in="rough" stdDeviation="2.6" result="halo" />
+        <feComponentTransfer in="halo" result="haloSoft"><feFuncA type="linear" slope="0.3" /></feComponentTransfer>
+        <feMerge><feMergeNode in="haloSoft" /><feMergeNode in="rough" /></feMerge>
+      </filter>
+    </svg>
+
+    <main class="sheet">
+      <header>
+        <a class="home" href="#">kiruk</a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">ISM</a></li>
+            <li><a href="#" aria-current="page">Writing</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <article aria-labelledby="t">
+        <p class="kicker">Writing · design engineering</p>
+        <h1 id="t">The habit engine</h1>
+        <p class="dek">How a small loop, repeated, becomes a machine — drawn first in ink, then measured in code.</p>
+        <p class="byline">Arun · 6 min · fig. 1</p>
+        <p class="example">An example subject, to test the illustration system. Not a product.</p>
+      </article>
+
+      <div class="figure">
+        <svg id="fig" viewBox="-500 -600 1000 620" preserveAspectRatio="xMidYMax meet" role="img" aria-label="A pen-and-ink mechanism of three gears — the cue, the routine and the reward — rising from the horizon like a sun, with red rotation arrows, a measured radius, a friction callout and a week of streak marks laid over it.">
+          <defs>
+            <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <line x1="0" y1="0" x2="0" y2="7" stroke="#3b2f2a" stroke-width="1.1" />
+            </pattern>
+            <pattern id="hatch-x" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(40)">
+              <line x1="0" y1="0" x2="0" y2="9" stroke="#3b2f2a" stroke-width="0.9" />
+            </pattern>
+            <filter id="pen" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="w" />
+              <feDisplacementMap in="SourceGraphic" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            <clipPath id="above"><rect x="-500" y="-600" width="1000" height="600" /></clipPath>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+              <path d="M0 1L9 5L0 9" fill="none" stroke="#b5462b" stroke-width="1.4" />
+            </marker>
+          </defs>
+
+          <!-- THE PEN: a mechanism rising like a sun -->
+          <g id="drawing" clip-path="url(#above)" filter="url(#pen)" fill="none" stroke="#3b2f2a" stroke-linejoin="round"></g>
+          <path class="nss" d="M-500 0H500" stroke="#3b2f2a" stroke-width="1.4" />
+
+          <!-- old-hand labels -->
+          <g class="serif" font-style="italic" font-size="28" fill="#3b2f2a">
+            <text x="-330" y="-392">the cue</text>
+            <text x="228" y="-22">the routine</text>
+            <text x="300" y="-470">the reward</text>
+          </g>
+
+          <!-- THE INTENT: rubric red, crisp -->
+          <g id="intent" fill="none" stroke="#b5462b" stroke-width="1.2"></g>
+          <g class="mono" font-size="17" letter-spacing="0.6" fill="#983a22">
+            <text x="-480" y="-566">LOOP · CUE → ROUTINE → REWARD</text>
+            <text x="222" y="-66">r 210 · 28 teeth</text>
+            <text x="-480" y="-196">Δ friction ↓</text>
+            <text x="-480" y="-526" font-size="14" fill="#6b5a4e">M  T  W  T  F  S  S</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="ground"><p><span>studio.kiruk.in / writing</span><span>ink first · code after</span></p></div>
+    </main>
+
+    <script>
+      const NS = 'http://www.w3.org/2000/svg';
+      const el = (parent, tag, attrs) => {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        parent.appendChild(n);
+        return n;
+      };
+      // A gear outline: n trapezoid teeth around radius r, plus the rim's inner circle (evenodd ring).
+      function gear(cx, cy, n, r, depth, rim, phase = 0) {
+        const step = (2 * Math.PI) / n;
+        const pts = [];
+        for (let i = 0; i < n; i++) {
+          const a = i * step + phase;
+          pts.push([a, r - depth], [a + step * 0.16, r], [a + step * 0.44, r], [a + step * 0.6, r - depth]);
+        }
+        const outer = 'M' + pts.map(([a, rr]) => `${(cx + rr * Math.cos(a)).toFixed(1)} ${(cy + rr * Math.sin(a)).toFixed(1)}`).join('L') + 'Z';
+        const inner = `M${cx + rim} ${cy}A${rim} ${rim} 0 1 0 ${cx - rim} ${cy}A${rim} ${rim} 0 1 0 ${cx + rim} ${cy}Z`;
+        return outer + inner;
+      }
+      const pen = document.getElementById('drawing');
+      const intent = document.getElementById('intent');
+
+      // rays behind the routine gear: it is the sun
+      let rays = '';
+      for (let a = -180; a <= 0; a += 6) {
+        const r = (a * Math.PI) / 180;
+        const r0 = 250;
+        const r1 = (Math.round(a / 6) % 2) ? 430 : 560;
+        rays += `M${(r0 * Math.cos(r)).toFixed(1)} ${(-60 + r0 * Math.sin(r)).toFixed(1)}L${(r1 * Math.cos(r)).toFixed(1)} ${(-60 + r1 * Math.sin(r)).toFixed(1)}`;
+      }
+      el(pen, 'path', { d: rays, class: 'nss', 'stroke-width': 1, opacity: 0.3 });
+
+      const gears = [
+        { name: 'routine', cx: 0, cy: -60, n: 28, r: 210, depth: 18, rim: 150, hub: 46, spokes: 6, phase: 0 },
+        { name: 'reward', cx: 254, cy: -268, n: 18, r: 140, depth: 16, rim: 98, hub: 30, spokes: 5, phase: 0.1 },
+        { name: 'cue', cx: -222, cy: -232, n: 12, r: 92, depth: 14, rim: 0, hub: 20, spokes: 0, phase: 0.2 },
+      ];
+      for (const g of gears) {
+        // ring body, hatched; a second searching pass of the pen
+        el(pen, 'path', { d: gear(g.cx, g.cy, g.n, g.r, g.depth, g.rim || 1, g.phase), 'fill-rule': 'evenodd', fill: 'url(#hatch)', class: 'nss', 'stroke-width': 1.5 });
+        el(pen, 'path', { d: gear(g.cx + 2.5, g.cy - 1.5, g.n, g.r, g.depth, g.rim || 1, g.phase + 0.01), class: 'nss', 'stroke-width': 0.8, opacity: 0.35 });
+        el(pen, 'circle', { cx: g.cx, cy: g.cy, r: g.hub, class: 'nss', 'stroke-width': 1.4, fill: 'url(#hatch-x)' });
+        el(pen, 'circle', { cx: g.cx, cy: g.cy, r: g.hub * 0.38, class: 'nss', 'stroke-width': 1.2 });
+        for (let s = 0; s < g.spokes; s++) {
+          const a = (s * 2 * Math.PI) / g.spokes + 0.3;
+          const c = Math.cos(a), sn = Math.sin(a), w = g.name === 'routine' ? 9 : 7;
+          const x0 = g.cx + g.hub * c, y0 = g.cy + g.hub * sn, x1 = g.cx + g.rim * c, y1 = g.cy + g.rim * sn;
+          const ox = -sn * w, oy = c * w;
+          el(pen, 'path', { d: `M${x0 + ox} ${y0 + oy}L${x1 + ox} ${y1 + oy}M${x0 - ox} ${y0 - oy}L${x1 - ox} ${y1 - oy}`, class: 'nss', 'stroke-width': 1.3 });
+        }
+        if (!g.spokes) {
+          for (let k = 0; k < 4; k++) {
+            const a = (k * Math.PI) / 2 + 0.6;
+            el(pen, 'circle', { cx: g.cx + 52 * Math.cos(a), cy: g.cy + 52 * Math.sin(a), r: 11, class: 'nss', 'stroke-width': 1.1 });
+          }
+        }
+        // construction: the pitch circle, dashed
+        el(pen, 'circle', { cx: g.cx, cy: g.cy, r: g.r - g.depth / 2, class: 'nss', 'stroke-width': 0.8, 'stroke-dasharray': '3 6', opacity: 0.6 });
+      }
+
+      // INTENT: rotation arrows on each gear (meshed gears turn opposite ways)
+      const arc = (cx, cy, r, a0, a1, sweep) => {
+        const p = (a) => `${(cx + r * Math.cos(a)).toFixed(1)} ${(cy + r * Math.sin(a)).toFixed(1)}`;
+        return `M${p(a0)}A${r} ${r} 0 0 ${sweep} ${p(a1)}`;
+      };
+      el(intent, 'path', { d: arc(0, -60, 262, -2.6, -1.9, 1), class: 'nss', 'marker-end': 'url(#arrow)' });
+      el(intent, 'path', { d: arc(254, -268, 178, -0.4, -1.3, 0), class: 'nss', 'marker-end': 'url(#arrow)' });
+      el(intent, 'path', { d: arc(-222, -232, 126, -2.0, -1.0, 0), class: 'nss', 'marker-end': 'url(#arrow)' });
+      // measured radius on the routine gear
+      el(intent, 'path', { d: 'M0 -60L210 -60', class: 'nss', 'stroke-dasharray': '4 5' });
+      el(intent, 'circle', { cx: 0, cy: -60, r: 4, fill: '#b5462b', class: 'nss' });
+      // friction: where cue meets routine
+      el(intent, 'path', { d: 'M-370 -202C-300 -202 -240 -196 -161 -184', class: 'nss' });
+      el(intent, 'circle', { cx: -156, cy: -181, r: 5, class: 'nss' });
+      // a week of streak marks
+      const done = [1, 1, 1, 0, 1, 1, 1];
+      done.forEach((v, i) => el(intent, 'circle', { cx: -473 + i * 30.2, cy: -502, r: 7, class: 'nss', fill: v ? '#b5462b' : 'none' }));
+      // selection on the whole mechanism
+      el(intent, 'rect', { x: -332, y: -426, width: 744, height: 426, class: 'nss', opacity: 0.5 });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,352 @@
+<!doctype html>
+<!--
+  V3 · Two plates — ink and code printed on one sheet, a little out of register.
+  Plate one (sepia): the pen drawing, hatched. Plate two (ultramarine): the same mark as
+  precise vectors with nodes. Both multiply onto dawn paper; the drift between them is the
+  "slightly broken in both directions". Type: IM Fell DW Pica (inked) with its own metrics
+  — cap, x-height, baseline, glyph boxes — measured in code and laid over it.
+  spec-link: ideas/studio-dawn/blend-roadmap.md (V3)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — V3 Two plates (proto)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica:ital@0;1&family=Xanh+Mono:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      .sheet {
+        --sun-x: 66%;
+      }
+      .scene {
+        position: absolute;
+        z-index: 4;
+        inset: 0 0 var(--earth-h) 0;
+      }
+      .scene svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .plate-ink,
+      .plate-code {
+        mix-blend-mode: multiply;
+      }
+      header {
+        position: absolute;
+        z-index: 6;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px clamp(16px, 5vw, 80px);
+        font: 400 15px/1 'Xanh Mono', monospace;
+      }
+      header a {
+        color: var(--ink);
+        text-decoration: none;
+      }
+      nav ul {
+        display: flex;
+        gap: clamp(14px, 2.4vw, 34px);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav a:hover {
+        color: var(--ultramarine);
+      }
+      .text {
+        position: absolute;
+        z-index: 6;
+        left: clamp(16px, 5vw, 80px);
+        top: clamp(100px, 15svh, 150px);
+        width: min(38vw, 540px);
+      }
+      .title {
+        position: relative;
+        display: inline-block;
+      }
+      h1 {
+        position: relative;
+        margin: 0;
+        font: 400 clamp(96px, 11vw, 168px) / 1 'IM Fell DW Pica', serif;
+        letter-spacing: 0.005em;
+        color: var(--ink);
+        filter: url(#ink-bleed);
+      }
+      /* code plate over the type: glyph boxes + metric lines, measured, slightly off register */
+      .metrics {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        transform: translate(3px, -2px);
+      }
+      .metrics i {
+        position: absolute;
+        left: -14px;
+        right: -64px;
+        height: 0;
+        border-top: 1px solid rgba(46, 74, 143, 0.75);
+      }
+      .metrics i::after {
+        content: attr(data-l);
+        position: absolute;
+        right: 0;
+        top: -15px;
+        font: 500 10px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.08em;
+        color: var(--ultramarine);
+      }
+      .metrics b {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border-left: 1px dashed rgba(46, 74, 143, 0.45);
+      }
+      .sub {
+        margin: 14px 0 0;
+        font: italic 400 clamp(20px, 1.7vw, 25px) / 1.3 'IM Fell DW Pica', serif;
+        color: var(--sepia);
+      }
+      .body {
+        margin: 16px 0 0;
+        font: 400 clamp(15px, 1.15vw, 17px) / 1.65 'Xanh Mono', monospace;
+        color: #2e2628;
+        max-width: 40ch;
+      }
+      .legend {
+        display: flex;
+        gap: 18px;
+        margin: 20px 0 0;
+        padding: 0;
+        list-style: none;
+        font: 500 11px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4a3f39;
+      }
+      .legend li::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 7px;
+        vertical-align: -1px;
+      }
+      .legend .k::before {
+        background: var(--sepia);
+      }
+      .legend .u::before {
+        background: var(--ultramarine);
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      @media (max-width: 760px) {
+        header {
+          padding: 16px 20px;
+          font-size: 13px;
+        }
+        .text {
+          top: 72px;
+          left: 20px;
+          right: 20px;
+          width: auto;
+        }
+        .metrics i {
+          right: -12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <span class="proto-tag">proto · V3 two plates</span>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="ink-bleed" x="-5%" y="-15%" width="110%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feGaussianBlur in="rough" stdDeviation="3.2" result="halo" />
+        <feComponentTransfer in="halo" result="haloSoft"><feFuncA type="linear" slope="0.32" /></feComponentTransfer>
+        <feMerge><feMergeNode in="haloSoft" /><feMergeNode in="rough" /></feMerge>
+      </filter>
+    </svg>
+
+    <main class="sheet">
+      <div class="scene">
+        <svg id="scene" viewBox="-800 -820 1600 820" preserveAspectRatio="xMidYMax slice" role="img" aria-label="The kiruk eye printed twice on dawn paper: once as a hatched sepia pen drawing, once as precise ultramarine vectors with nodes, slightly out of register, with registration marks at the corners.">
+          <defs>
+            <g id="logo-needles" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1071.91 1266.79L1051.2 1189.51M1135 1241.28L1095 1172M1311.56 1178L1173 1098M1402.5 1100.94L1190 1044M927.798 1266.79L948.504 1189.51M857.707 1236.28L897.707 1167M687.142 1171L825.706 1091M597.203 1100.94L809.706 1044M1071.91 738L1051.2 815.274M1132 760.503L1092 829.785M1306.56 822.785L1168 902.785M1402.5 903.845L1190 960.785M927.798 738L948.504 815.274M860.707 762.503L900.707 831.785M689.142 830.785L827.706 910.785M597.203 903.845L809.706 960.785" />
+            </g>
+            <g id="logo-body" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z" />
+              <path class="nss" d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z" />
+              <path class="nss" d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z" />
+              <path class="nss" d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z" />
+              <path class="nss" d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z" />
+              <path class="nss" d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z" />
+              <path class="nss" d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z" />
+              <path class="nss" d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z" />
+            </g>
+            <g id="reg">
+              <circle class="nss" r="14" fill="none" />
+              <path class="nss" d="M-24 0H24M0 -24V24" />
+            </g>
+            <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <line x1="0" y1="0" x2="0" y2="7" stroke="#3b2f2a" stroke-width="1.2" />
+            </pattern>
+            <mask id="hole" maskUnits="userSpaceOnUse" x="-700" y="-700" width="1400" height="1400">
+              <rect x="-700" y="-700" width="1400" height="1400" fill="#fff" />
+              <circle r="60" fill="#000" />
+            </mask>
+            <filter id="pen" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="w" />
+              <feDisplacementMap in="SourceGraphic" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+
+          <!-- PLATE ONE · the pen (sepia) -->
+          <g class="plate-ink" fill="none" stroke="#3b2f2a" filter="url(#pen)">
+            <path id="rays" class="nss" stroke-width="1" opacity="0.32" />
+            <g transform="translate(230 -380) scale(0.78)">
+              <circle class="nss" r="280" stroke-dasharray="5 7" opacity="0.55" />
+              <circle class="nss" r="480" stroke-dasharray="5 7" opacity="0.55" />
+              <use href="#logo-body" fill="url(#hatch)" stroke-width="1.5" mask="url(#hole)" />
+              <use href="#logo-needles" stroke-width="1.8" stroke-linecap="round" />
+              <use href="#logo-needles" stroke-width="0.9" opacity="0.4" transform="translate(4 -3) rotate(0.4)" />
+              <circle class="nss" r="60" stroke-width="1.2" />
+            </g>
+            <use href="#reg" x="-700" y="-60" stroke-width="1" />
+            <use href="#reg" x="700" y="-690" stroke-width="1" />
+            <use href="#reg" x="700" y="-60" stroke-width="1" />
+          </g>
+
+          <!-- PLATE TWO · the code (ultramarine), printed a little off register -->
+          <g class="plate-code" fill="none" stroke="#2e4a8f">
+            <g transform="translate(239 -386) rotate(-0.7) scale(0.78)">
+              <circle class="nss" r="280" stroke-width="0.8" opacity="0.6" />
+              <circle class="nss" r="480" stroke-width="0.8" opacity="0.6" />
+              <path class="nss" d="M-620 0H620M0 -400V400" stroke-width="0.8" opacity="0.6" />
+              <use href="#logo-body" stroke-width="1.2" />
+              <use href="#logo-needles" stroke-width="1.2" />
+              <g fill="#e9dccb" stroke-width="1">
+                <rect class="nss" x="-8" y="-288" width="16" height="16" />
+                <rect class="nss" x="-488" y="-8" width="16" height="16" />
+                <rect class="nss" x="472" y="-8" width="16" height="16" />
+                <rect class="nss" x="206" y="-224" width="16" height="16" />
+                <rect class="nss" x="-224" y="-227" width="16" height="16" />
+                <rect class="nss" x="394" y="-104" width="16" height="16" />
+                <rect class="nss" x="-405" y="-104" width="16" height="16" />
+              </g>
+            </g>
+            <use href="#reg" x="-691" y="-66" stroke-width="1" />
+            <use href="#reg" x="706" y="-696" stroke-width="1" />
+            <use href="#reg" x="707" y="-66" stroke-width="1" />
+          </g>
+          <!-- control strip -->
+          <g transform="translate(520 -96)">
+            <rect width="22" height="22" fill="#3b2f2a" />
+            <rect x="26" width="22" height="22" fill="#2e4a8f" />
+            <rect x="52" width="22" height="22" fill="#cd798f" />
+            <rect x="78" width="22" height="22" fill="#f7d5a6" />
+            <rect x="104" width="22" height="22" fill="#532f4c" />
+            <text class="mono" x="0" y="44" font-size="14" letter-spacing="1" fill="#4a3f39">INK · CODE · DAWN</text>
+          </g>
+          <text class="mono" x="230" y="-36" text-anchor="middle" font-size="14" letter-spacing="1.2" fill="#2e4a8f">PLATE 2 DRIFT · Δx 9 · Δy −6 · θ −0.7°</text>
+        </svg>
+      </div>
+
+      <header>
+        <a href="#">kiruk</a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">ISM</a></li>
+            <li><a href="#">Writing</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <section class="text" aria-labelledby="t">
+        <div class="title">
+          <h1 id="t">kiruk</h1>
+          <div class="metrics" aria-hidden="true"></div>
+        </div>
+        <p class="sub">an art + code studio — two plates, one sheet</p>
+        <p class="body">
+          Ink and code, printed on the same sheet, a little out of register. The drift between the plates is where the
+          studio works.
+        </p>
+        <ul class="legend" aria-hidden="true">
+          <li class="k">plate 1 · ink</li>
+          <li class="u">plate 2 · code</li>
+        </ul>
+      </section>
+
+      <div class="ground"><p><span>studio.kiruk.in · two plates</span><span>printed at dawn</span></p></div>
+    </main>
+
+    <script>
+      // Rays behind the mark (built once, static).
+      let d = '';
+      for (let a = -180; a <= 0; a += 7.5) {
+        const r = (a * Math.PI) / 180;
+        const r0 = 260;
+        const r1 = (Math.round(a / 7.5) % 2) ? 470 : 620;
+        d += `M${(230 + r0 * Math.cos(r)).toFixed(1)} ${(-380 + r0 * Math.sin(r)).toFixed(1)}L${(230 + r1 * Math.cos(r)).toFixed(1)} ${(-380 + r1 * Math.sin(r)).toFixed(1)}`;
+      }
+      document.getElementById('rays').setAttribute('d', d);
+
+      // Code plate over the type: measure the face's real metrics and draw them.
+      document.fonts.ready.then(() => {
+        const h1 = document.querySelector('h1');
+        const box = document.querySelector('.metrics');
+        const cs = getComputedStyle(h1);
+        const size = parseFloat(cs.fontSize);
+        const lh = h1.getBoundingClientRect().height;
+        const ctx = document.createElement('canvas').getContext('2d');
+        ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+        const m = ctx.measureText('kiruk');
+        const asc = m.fontBoundingBoxAscent;
+        const desc = m.fontBoundingBoxDescent;
+        const baseline = (lh - (asc + desc)) / 2 + asc;
+        const xh = ctx.measureText('x').actualBoundingBoxAscent;
+        const cap = ctx.measureText('k').actualBoundingBoxAscent;
+        const lines = [
+          ['ascender', baseline - cap],
+          ['x-height', baseline - xh],
+          ['baseline', baseline],
+        ];
+        box.innerHTML = lines.map(([l, y]) => `<i data-l="${l}" style="top:${y.toFixed(1)}px"></i>`).join('');
+        // glyph boxes: one dashed rule at each letter edge
+        const range = document.createRange();
+        const text = h1.firstChild;
+        const left0 = h1.getBoundingClientRect().left;
+        let edges = '';
+        for (let i = 0; i <= text.length; i++) {
+          range.setStart(text, Math.min(i, text.length - 1));
+          range.setEnd(text, Math.min(i + 1, text.length));
+          const r = range.getBoundingClientRect();
+          const x = i === text.length ? r.right : r.left;
+          edges += `<b style="left:${(x - left0).toFixed(1)}px"></b>`;
+        }
+        box.insertAdjacentHTML('beforeend', edges);
+      });
+
+      const svg = document.getElementById('scene');
+      const narrow = matchMedia('(max-width: 760px)');
+      const fit = () => svg.setAttribute('preserveAspectRatio', narrow.matches ? 'xMidYMax meet' : 'xMidYMax slice');
+      narrow.addEventListener('change', fit);
+      fit();
+    </script>
+  </body>
+</html>

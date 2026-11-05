@@ -1,0 +1,291 @@
+<!doctype html>
+<!--
+  V2 · Ascension — a Da Vinci study of the eye rising, in four states.
+  The sun's path across a dawn sky; along it the mark appears four times, each more
+  resolved: i. scribble (graphite) · ii. possibility (pen line, construction) ·
+  iii. drawing (hatched ink) · iv. build (the real mark, crisp, selected).
+  The modern line is the path itself — a red timeline laid over the study.
+  Type: Cormorant Garamond (Renaissance display) + Xanh Mono (typescript: a mono with old-style bones).
+  spec-link: ideas/studio-dawn/blend-roadmap.md (V2)
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — V2 Ascension (proto)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Xanh+Mono:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      .sheet {
+        --sun-x: 80%;
+      }
+      .scene {
+        position: absolute;
+        z-index: 4;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: var(--earth-h);
+      }
+      .scene svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      header {
+        position: absolute;
+        z-index: 6;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px clamp(16px, 5vw, 80px);
+      }
+      .mark {
+        font: italic 500 24px/1 'Cormorant Garamond', serif;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      nav ul {
+        display: flex;
+        gap: clamp(14px, 2.4vw, 34px);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav a {
+        font: 400 15px/1 'Xanh Mono', monospace;
+        letter-spacing: 0.02em;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      nav a:hover {
+        color: var(--rubric-text);
+      }
+      .text {
+        position: absolute;
+        z-index: 6;
+        left: clamp(16px, 5vw, 80px);
+        top: clamp(96px, 12svh, 130px);
+        width: min(36vw, 520px);
+      }
+      .kicker {
+        margin: 0 0 10px;
+        font: 500 11px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--rubric-text);
+      }
+      h1 {
+        margin: 0;
+        font: 500 clamp(88px, 10.5vw, 160px) / 0.86 'Cormorant Garamond', serif;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+      }
+      .sub {
+        margin: 10px 0 0;
+        font: italic 400 clamp(24px, 2.1vw, 32px) / 1.2 'Cormorant Garamond', serif;
+        color: var(--sepia);
+      }
+      .body {
+        margin: 18px 0 0;
+        font: 400 clamp(15px, 1.15vw, 17px) / 1.65 'Xanh Mono', monospace;
+        color: #2e2628;
+        max-width: 40ch;
+      }
+      .serif {
+        font-family: 'Cormorant Garamond', serif;
+      }
+      .mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      @media (max-width: 760px) {
+        header {
+          padding: 16px 20px;
+        }
+        nav a {
+          font-size: 13px;
+        }
+        .text {
+          top: 76px;
+          left: 20px;
+          width: auto;
+          right: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <span class="proto-tag">proto · V2 ascension</span>
+    <main class="sheet">
+      <div class="scene">
+        <svg id="scene" viewBox="0 0 1600 820" preserveAspectRatio="xMidYMax slice" role="img" aria-label="The kiruk eye rising along the sun's path in four states: a graphite scribble on the horizon, a pen outline with construction, a hatched ink drawing, and the finished mark high in the sky with a red selection around it.">
+          <defs>
+            <g id="logo-needles" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1071.91 1266.79L1051.2 1189.51M1135 1241.28L1095 1172M1311.56 1178L1173 1098M1402.5 1100.94L1190 1044M927.798 1266.79L948.504 1189.51M857.707 1236.28L897.707 1167M687.142 1171L825.706 1091M597.203 1100.94L809.706 1044M1071.91 738L1051.2 815.274M1132 760.503L1092 829.785M1306.56 822.785L1168 902.785M1402.5 903.845L1190 960.785M927.798 738L948.504 815.274M860.707 762.503L900.707 831.785M689.142 830.785L827.706 910.785M597.203 903.845L809.706 960.785" />
+            </g>
+            <g id="logo-body" transform="translate(-1000 -1000)">
+              <path class="nss" d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z" />
+              <path class="nss" d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z" />
+              <path class="nss" d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z" />
+              <path class="nss" d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z" />
+              <path class="nss" d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z" />
+              <path class="nss" d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z" />
+              <path class="nss" d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z" />
+              <path class="nss" d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z" />
+            </g>
+            <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+              <line x1="0" y1="0" x2="0" y2="7" stroke="#3b2f2a" stroke-width="1.1" />
+            </pattern>
+            <mask id="hole" maskUnits="userSpaceOnUse" x="-700" y="-700" width="1400" height="1400">
+              <rect x="-700" y="-700" width="1400" height="1400" fill="#fff" />
+              <circle r="60" fill="#000" />
+            </mask>
+            <filter id="graphite" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="2" result="w" />
+              <feDisplacementMap in="SourceGraphic" in2="w" scale="9" xChannelSelector="R" yChannelSelector="G" result="d" />
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="5" result="g" />
+              <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.4 1.4" result="ga" />
+              <feComposite in="d" in2="ga" operator="in" />
+            </filter>
+            <filter id="pen" x="-10%" y="-10%" width="120%" height="120%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="w" />
+              <feDisplacementMap in="SourceGraphic" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            <radialGradient id="halo">
+              <stop offset="0" stop-color="#fff3e0" stop-opacity="0.95" />
+              <stop offset="0.45" stop-color="#f7d5a6" stop-opacity="0.55" />
+              <stop offset="1" stop-color="#f7d5a6" stop-opacity="0" />
+            </radialGradient>
+            <clipPath id="above"><rect x="0" y="0" width="1600" height="820" /></clipPath>
+          </defs>
+
+          <!-- the risen sun's halo, behind the last state -->
+          <circle cx="1290" cy="250" r="300" fill="url(#halo)" />
+
+          <g clip-path="url(#above)">
+            <!-- rays from the risen mark, pen lines -->
+            <path id="rays" class="nss" fill="none" stroke="#3b2f2a" stroke-opacity="0.28" stroke-width="1" filter="url(#pen)" />
+
+            <!-- i. kirukal: the scribble, half-risen on the horizon (graphite) -->
+            <g transform="translate(330 820) scale(0.17)" filter="url(#graphite)" fill="none" stroke="#5b4e46" stroke-linecap="round">
+              <use href="#logo-body" stroke-width="2.2" />
+              <use href="#logo-body" stroke-width="1.4" transform="translate(14 -10) rotate(2)" opacity="0.7" />
+              <use href="#logo-needles" stroke-width="1.6" transform="rotate(-3)" />
+              <path class="nss" stroke-width="1.6" d="M-420 -10C-380 -260 -120 -420 60 -400 300 -380 470 -200 430 -20M-380 -40C-300 -300 -40 -370 160 -330 360 -280 420 -120 400 -30M-300 -60C-200 -260 40 -300 220 -250" />
+            </g>
+
+            <!-- ii. possibility: pen outline and its construction -->
+            <g transform="translate(590 560) scale(0.21)" filter="url(#pen)" fill="none" stroke="#3b2f2a">
+              <circle class="nss" r="280" stroke-dasharray="4 6" stroke-width="0.9" opacity="0.7" />
+              <circle class="nss" r="480" stroke-dasharray="4 6" stroke-width="0.9" opacity="0.7" />
+              <path class="nss" d="M-560 0H560M0 -360V360" stroke-width="0.8" stroke-dasharray="2 6" opacity="0.7" />
+              <use href="#logo-body" stroke-width="1.3" />
+              <use href="#logo-needles" stroke-width="1.2" />
+            </g>
+
+            <!-- iii. drawing: hatched ink, a second searching pass -->
+            <g transform="translate(900 380) scale(0.27)" filter="url(#pen)" fill="none" stroke="#3b2f2a">
+              <circle class="nss" r="480" stroke-dasharray="4 6" stroke-width="0.8" opacity="0.5" />
+              <use href="#logo-body" fill="url(#hatch)" stroke-width="1.5" mask="url(#hole)" />
+              <use href="#logo-needles" stroke-width="1.7" stroke-linecap="round" />
+              <use href="#logo-needles" stroke-width="0.9" opacity="0.4" transform="translate(5 -3) rotate(0.5)" />
+              <circle class="nss" r="60" stroke-width="1.2" />
+            </g>
+
+            <!-- iv. build: the real mark, crisp -->
+            <g transform="translate(1290 250) scale(0.36)">
+              <use href="#logo-body" fill="#242327" mask="url(#hole)" />
+              <use href="#logo-needles" fill="none" stroke="#242327" stroke-width="2" />
+            </g>
+          </g>
+
+          <!-- THE INTENT: the sun's path as a red timeline, crisp, laid over the study -->
+          <g fill="none" stroke="#b5462b" stroke-width="1">
+            <path class="nss" d="M330 820C370 700 450 610 590 560S800 400 900 380S1150 250 1290 250" stroke-dasharray="6 6" />
+            <g fill="#f3e4d0">
+              <circle class="nss" cx="330" cy="776" r="6" />
+              <circle class="nss" cx="590" cy="560" r="6" />
+              <circle class="nss" cx="900" cy="380" r="6" />
+              <circle class="nss" cx="1290" cy="250" r="6" fill="#b5462b" />
+            </g>
+            <!-- selection on the built state -->
+            <rect class="nss" x="1114" y="146" width="352" height="208" />
+            <g fill="#f3e4d0">
+              <rect class="nss" x="1110" y="142" width="8" height="8" />
+              <rect class="nss" x="1462" y="142" width="8" height="8" />
+              <rect class="nss" x="1462" y="350" width="8" height="8" />
+              <rect class="nss" x="1110" y="350" width="8" height="8" />
+            </g>
+            <path class="nss" d="M1114 126H1466M1114 118V134M1466 118V134" />
+          </g>
+
+          <!-- stage labels: old hand (roman, italic serif) + new hand (mono) -->
+          <g>
+            <text class="serif" x="330" y="740" text-anchor="middle" font-size="30" font-style="italic" fill="#3b2f2a">i.</text>
+            <text class="mono" x="330" y="712" text-anchor="middle" font-size="13" letter-spacing="1.2" fill="#6b5a4e">KIRUKAL · SCRIBBLE</text>
+
+            <text class="serif" x="620" y="672" font-size="30" font-style="italic" fill="#3b2f2a">ii.</text>
+            <text class="mono" x="620" y="694" font-size="13" letter-spacing="1.2" fill="#6b5a4e">POSSIBILITY · LINE</text>
+
+            <text class="serif" x="930" y="492" font-size="30" font-style="italic" fill="#3b2f2a">iii.</text>
+            <text class="mono" x="930" y="514" font-size="13" letter-spacing="1.2" fill="#6b5a4e">DRAWING · INK</text>
+
+            <text class="serif" x="1114" y="384" font-size="30" font-style="italic" fill="#3b2f2a">iv.</text>
+            <text class="mono" x="1150" y="384" font-size="13" letter-spacing="1.2" fill="#983a22">BUILD · CODE — 960 × 560</text>
+            <text class="mono" x="1290" y="112" text-anchor="middle" font-size="13" letter-spacing="1.2" fill="#983a22">eye · frame 04</text>
+          </g>
+        </svg>
+      </div>
+
+      <header>
+        <a class="mark" href="#">kiruk</a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">ISM</a></li>
+            <li><a href="#">Writing</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <section class="text" aria-labelledby="t">
+        <p class="kicker">Fig. ii — ascension</p>
+        <h1 id="t">kiruk</h1>
+        <p class="sub">an art + code studio</p>
+        <p class="body">
+          Every idea rises the same way: a scribble, a possibility, a drawing, a build. We show you all four, on one
+          page, in the open.
+        </p>
+      </section>
+
+      <div class="ground"><p><span>studio.kiruk.in · fig. ii</span><span>i. scribble → ii. line → iii. ink → iv. code</span></p></div>
+    </main>
+
+    <script>
+      // Rays from the risen mark: pen lines every 9°, alternating length (built once, static).
+      let d = '';
+      for (let a = 0; a < 360; a += 9) {
+        const r = (a * Math.PI) / 180;
+        const r0 = 140;
+        const r1 = (a / 9) % 2 ? 250 : 330;
+        d += `M${(1290 + r0 * Math.cos(r)).toFixed(1)} ${(250 + r0 * Math.sin(r)).toFixed(1)}L${(1290 + r1 * Math.cos(r)).toFixed(1)} ${(250 + r1 * Math.sin(r)).toFixed(1)}`;
+      }
+      document.getElementById('rays').setAttribute('d', d);
+      // Phones: show the whole path, sitting on the horizon, instead of cropping it.
+      const svg = document.getElementById('scene');
+      const narrow = matchMedia('(max-width: 760px)');
+      const fit = () => svg.setAttribute('preserveAspectRatio', narrow.matches ? 'xMidYMax meet' : 'xMidYMax slice');
+      narrow.addEventListener('change', fit);
+      fit();
+    </script>
+  </body>
+</html>

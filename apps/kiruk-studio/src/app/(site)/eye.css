@@ -1,0 +1,910 @@
+/*
+ * The eye landing. Geometry lives here, in custom properties; the burin engine
+ * reads the rects of .eye-box, .studies and .platemark back, so the GPU drawing
+ * and the DOM type share one source.
+ * The dawn: two papers, one number. --dawn (0 old … 1 new) is written by the
+ * engine's spring every frame of a crossing, so the DOM type, the instrument and
+ * the GPU paper cross together. Old = Dawn Light #fadfa9 with iron-gall ink;
+ * new = Dawn Departs #ccffff with dawn navy. Tokens: openspec/changes/dawn-paper-tokens.
+ * Type: IM Fell Double Pica (the name) · IM Fell English (the plate's letterpress:
+ * title, key, letters) · IM Fell English SC (plate number, true small caps) ·
+ * EB Garamond (the instrument: old-style tabular figures) · Xanh Mono (measures).
+ * spec-link: ideas/studio-dawn/eye.md
+ */
+
+@property --dawn {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.eye-page {
+  /* Mirrors of color.dawn.* (packages/design-system/tokens/core.json); the studio does not
+     import token CSS yet, see openspec/changes/dawn-paper-tokens/tasks.md. */
+  --dawn-light: #fadfa9; /* color.dawn.light */
+  --dawn-departs: #ccffff; /* color.dawn.departs */
+  --ink-iron-gall: #231a14; /* color.dawn.iron-gall */
+  --ink-dawn-navy: #1d1c2d; /* color.dawn.navy */
+  --d: calc(var(--dawn) * 100%);
+  --paper: color-mix(in oklab, var(--dawn-light), var(--dawn-departs) var(--d));
+  --ink: color-mix(in oklab, var(--ink-iron-gall), var(--ink-dawn-navy) var(--d));
+  --ink-soft: color-mix(in srgb, var(--ink) 35%, transparent);
+  --ink-faint: color-mix(in srgb, var(--ink) 22%, transparent);
+  --rubric: #983a22; /* color.dawn.rubric */
+  --rubric-line: #b5462b; /* color.dawn.rubric-line */
+  --fell: var(--font-fell), "IM Fell English", Palatino, serif;
+  --fell-sc: var(--font-fell-sc), var(--font-fell), Palatino, serif;
+  --xanh: var(--font-xanh), var(--font-mono), ui-monospace, monospace;
+  --fell-dp: var(--font-fell-dp), var(--font-fell), Palatino, serif;
+  --gara: var(--font-garamond), "EB Garamond", Garamond, serif;
+  --jet: var(--font-mono), ui-monospace, monospace;
+
+  --top: 84px;
+  --bottom: 72px;
+  --pad: clamp(14px, 3vw, 44px);
+  --panel: 0px;
+  --gap: 0px;
+  --strip: 0px;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: var(--gara);
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  background: var(--paper);
+}
+@media (min-width: 1180px) {
+  .eye-page {
+    --panel: 288px;
+    --gap: 28px;
+  }
+}
+@media (min-width: 900px) and (min-height: 700px) {
+  .eye-page {
+    --strip: clamp(84px, 14dvh, 128px);
+  }
+}
+.eye-page {
+  --plate-w: calc(100vw - 2 * var(--pad) - var(--panel) - var(--gap));
+  --plate-h: calc(100dvh - var(--top) - var(--bottom));
+  /* 0.338, not more: the plate is a notebook page, and the notes need their margins. */
+  --S: min(calc(var(--plate-w) * 0.245), calc((var(--plate-h) - var(--strip)) * 0.338));
+  --cx: calc(var(--pad) + var(--plate-w) * 0.58);
+  --cy: calc(var(--top) + (var(--plate-h) - var(--strip)) * 0.56);
+}
+@media (max-width: 899px) {
+  .eye-page {
+    --S: min(calc(var(--plate-w) * 0.3), calc(var(--plate-h) * 0.22));
+    --cx: calc(var(--pad) + var(--plate-w) * 0.5);
+    --cy: calc(var(--top) + var(--plate-h) * 0.33);
+  }
+}
+
+/* ── the GPU plate and the printed fallbacks ─────────────────────────────── */
+
+.eye-gpu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  transition: opacity 700ms ease-out;
+}
+.gpu-ready .eye-gpu {
+  opacity: 1;
+}
+.platemark {
+  position: absolute;
+  left: var(--pad);
+  top: var(--top);
+  width: var(--plate-w);
+  height: var(--plate-h);
+  box-shadow:
+    inset 1px 1px 0 color-mix(in srgb, var(--ink) 12%, transparent),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.5);
+  transition: opacity 700ms ease-out;
+}
+.gpu-ready .platemark {
+  opacity: 0;
+}
+.eye-box {
+  position: absolute;
+  left: calc(var(--cx) - 1.6 * var(--S));
+  top: calc(var(--cy) - 1.45 * var(--S));
+  width: calc(3.2 * var(--S));
+  height: calc(2.55 * var(--S));
+}
+.eye-poster {
+  position: absolute;
+  inset: 0;
+  background: url("/eye/engraved-eye.jpg") center / 100% 100% no-repeat;
+  mix-blend-mode: multiply;
+  transition: opacity 700ms ease-out;
+}
+.gpu-ready .eye-poster {
+  opacity: 0;
+}
+.studies {
+  position: absolute;
+  left: calc(var(--cx) - 1.55 * var(--S));
+  width: calc(3.1 * var(--S));
+  top: calc(var(--top) + var(--plate-h) - var(--strip));
+  height: var(--strip);
+}
+@media not ((min-width: 900px) and (min-height: 700px)) {
+  .studies,
+  .studies-labels {
+    display: none !important;
+  }
+}
+
+/* The type layer: printed by the GPU when the browser has HTML-in-Canvas,
+   shown as itself until then (and for good if the GPU is missing). */
+.eye-plate {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  mix-blend-mode: multiply;
+  /* Cross-fades with the GPU canvas: the DOM type leaves as the printed type arrives. */
+  transition: opacity 700ms ease-out;
+}
+.ink-in-paper .eye-plate {
+  /* Not 0: a canvas at opacity 0 stops snapshotting its subtree (Chrome 150 OT).
+     0.004 keeps the paint events alive and is below one 8-bit step. */
+  opacity: 0.004;
+}
+.eye-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  pointer-events: none;
+}
+.eye-overlay :is(header, ol, .fig-no, .g-label, .note-line) {
+  pointer-events: auto;
+}
+.eye-overlay .defs {
+  position: absolute;
+}
+/* A selection prints too (HTML-in-Canvas): make it the rubricator's wash, not a grey slab. */
+.eye-overlay ::selection {
+  background: color-mix(in oklab, var(--rubric-line) 16%, var(--paper));
+  color: var(--ink);
+}
+/* Without the GPU printing it, the type still gets the press: a little spread, a ragged edge. */
+.eye-page:not(.ink-in-paper) :is(.eye-plate-no, .eye-name, .eye-tag, .eye-sub, .eye-key, .fig-no, .fig-letter, .studies-labels) {
+  filter: url(#ink-spread);
+}
+
+/* ── title and key ───────────────────────────────────────────────────────── */
+
+.eye-title {
+  position: absolute;
+  left: calc(var(--pad) + 22px);
+  top: calc(var(--top) + 20px);
+  width: clamp(220px, 19vw, 300px);
+}
+.eye-plate-no {
+  margin: 0;
+  font-family: var(--fell-sc);
+  letter-spacing: 0.1em;
+  font-size: 15px;
+  text-transform: lowercase;
+  color: var(--rubric);
+}
+.eye-plate-no i {
+  font-family: var(--fell);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.eye-name {
+  margin: 2px 0 0;
+  font-family: var(--fell-dp);
+  font-weight: 400;
+  font-size: clamp(46px, 5.2vw, 80px);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+}
+.eye-tag {
+  margin: 6px 0 0;
+  font-family: var(--fell);
+  font-size: 21px;
+  line-height: 1.25;
+}
+.eye-sub {
+  margin: 12px 0 0;
+  font-family: var(--fell);
+  font-size: 15.5px;
+  line-height: 1.48;
+  max-width: 31ch;
+}
+
+/* The dawn, chosen in the title block: two paper samples tipped in. */
+.dawn-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+/* Visually hidden, still read. */
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.dawn-toggle button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--fell);
+  font-size: 14.5px;
+  color: color-mix(in oklab, var(--ink) 52%, var(--paper));
+  cursor: pointer;
+  user-select: none;
+  transition: color 160ms ease-out;
+}
+.dawn-toggle button[aria-pressed="true"] {
+  color: var(--ink);
+  text-decoration: underline 1px var(--rubric-line);
+  text-underline-offset: 4px;
+}
+.dawn-toggle button:focus-visible {
+  outline: 1.5px solid var(--rubric-line);
+  outline-offset: 2px;
+}
+.dawn-dot {
+  width: 13px;
+  height: 13px;
+  border: 0.75px solid var(--ink);
+  box-shadow: 1px 1px 0 var(--ink-faint);
+}
+@media (max-width: 899px) {
+  .dawn-toggle {
+    justify-content: center;
+  }
+}
+.eye-key {
+  position: absolute;
+  left: calc(var(--pad) + 22px);
+  bottom: calc(var(--bottom) + var(--strip) + 18px);
+  width: clamp(220px, 19vw, 300px);
+  margin: 0;
+  padding: 10px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--ink-soft);
+  font-family: var(--fell);
+  font-size: 14.5px;
+  line-height: 1.42;
+}
+.eye-key b {
+  font-family: var(--fell);
+  font-weight: 400;
+  display: inline-block;
+  width: 1.1em;
+}
+.eye-key i {
+  font-style: italic;
+}
+@media (max-height: 820px) {
+  .eye-key {
+    columns: 2;
+    column-gap: 14px;
+    font-size: 13px;
+    width: clamp(260px, 24vw, 340px);
+  }
+}
+
+/* ── the figure: guides, letters, Fig. ───────────────────────────────────── */
+
+.eye-guides {
+  position: absolute;
+  left: calc(var(--cx) - 1.6 * var(--S));
+  top: calc(var(--cy) - 1.45 * var(--S));
+  width: calc(3.2 * var(--S));
+  height: calc(2.55 * var(--S));
+  overflow: visible;
+}
+.eye-guides path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.g-line {
+  stroke: var(--rubric-line);
+  stroke-width: 0.8;
+  stroke-dasharray: 9 3.5 1.2 3.5;
+  opacity: 0.6;
+}
+.g-scale,
+.g-rub {
+  stroke: var(--rubric-line);
+  stroke-width: 1;
+}
+.g-label {
+  position: absolute;
+  left: calc(var(--cx) + 1.56 * var(--S) + 6px);
+  top: calc(var(--cy) + var(--S) * var(--y));
+  transform: translate(0, -50%);
+  font-family: var(--xanh);
+  font-size: 12.5px;
+  color: var(--rubric);
+  white-space: nowrap;
+}
+.g-label i {
+  font-family: var(--gara);
+  font-size: 13px;
+  margin-left: 1px;
+}
+.g-label-d {
+  left: calc(var(--cx) + var(--S) * var(--x));
+  transform: translate(-50%, 3px);
+}
+.fig-no {
+  position: absolute;
+  left: calc(var(--cx) + 1.12 * var(--S));
+  top: calc(var(--cy) - 1.42 * var(--S));
+  font-family: var(--fell);
+  font-size: clamp(18px, calc(var(--S) * 0.12), 30px);
+}
+.fig-letter {
+  position: absolute;
+  left: calc(var(--cx) + var(--S) * var(--x));
+  top: calc(var(--cy) + var(--S) * var(--y));
+  transform: translate(-50%, -55%);
+  font-family: var(--fell);
+  font-size: clamp(14px, calc(var(--S) * 0.085), 26px);
+  line-height: 1;
+  color: var(--ink);
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 4px var(--paper),
+    0 0 6px var(--paper);
+}
+.ink-in-paper .fig-letter {
+  /* The GPU knocks the engraving out round the letter; a CSS halo would print as a flat patch. */
+  text-shadow: none;
+}
+.studies-labels {
+  position: absolute;
+  left: calc(var(--cx) - 1.55 * var(--S));
+  width: calc(3.1 * var(--S));
+  top: calc(var(--top) + var(--plate-h) - var(--strip));
+  height: var(--strip);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: end;
+  font-family: var(--fell);
+  font-size: 13.5px;
+  text-align: center;
+}
+.studies-labels .roman {
+  font-family: var(--fell);
+  color: var(--rubric);
+}
+@media (max-width: 899px) {
+  .eye-title {
+    left: 50%;
+    top: calc(var(--cy) + 1 * var(--S));
+    transform: translateX(-50%);
+    width: min(360px, calc(100vw - 2 * var(--pad)));
+    text-align: center;
+  }
+  .eye-sub {
+    margin-inline: auto;
+    max-width: none;
+  }
+  .dawn-toggle {
+    margin-top: 4px;
+  }
+  .dawn-toggle button {
+    position: relative;
+    min-height: 30px;
+  }
+  /* 44px to the finger (design-tokens: touch target), 30px to the eye. */
+  .dawn-toggle button::before {
+    content: "";
+    position: absolute;
+    inset: -7px -4px;
+  }
+  .g-label {
+    display: none;
+  }
+  .eye-key {
+    left: var(--pad);
+    right: var(--pad);
+    bottom: calc(var(--bottom) + 8px);
+    width: auto;
+    padding-top: 6px;
+    columns: 2;
+    column-gap: 14px;
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+  /* A phone keeps the plain names; the Latin waits for a wider sheet. */
+  .eye-key .la {
+    display: none;
+  }
+}
+/* A short phone keeps the figure and its title; the key needs another 40px it does not have. */
+@media (max-width: 899px) and (max-height: 799px) {
+  .eye-key {
+    display: none;
+  }
+}
+
+/* ── the instrument ──────────────────────────────────────────────────────── */
+
+.instrument {
+  position: absolute;
+  right: var(--pad);
+  top: var(--top);
+  bottom: var(--bottom);
+  width: var(--panel);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 16px 16px 20px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--ink);
+  outline: 0.5px solid var(--ink);
+  outline-offset: -5px;
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums oldstyle-nums;
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+}
+@media (max-width: 1179px) {
+  .instrument {
+    display: none;
+  }
+}
+.ins-head {
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 0.75px solid var(--ink);
+}
+.ins-kicker {
+  margin: 0;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.22em;
+  font-size: 14px;
+  color: var(--rubric);
+}
+.ins-title {
+  margin: 2px 0 0;
+  font-family: var(--fell);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 23px;
+}
+.ins-eq {
+  margin: 6px 0 0;
+  font-size: 16px;
+}
+.ins-sec {
+  margin-top: 14px;
+}
+.ins-sec h3 {
+  margin: 0 0 4px;
+  font-weight: 400;
+  font-size: 17px;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.06em;
+}
+.ins-sec h3 .sc {
+  font-family: var(--fell);
+  color: var(--rubric);
+  margin-right: 4px;
+}
+.ins-chart {
+  display: block;
+  overflow: visible;
+}
+.ins-grat {
+  stroke: var(--ink-faint);
+  stroke-width: 0.6;
+  stroke-dasharray: 1 2.5;
+}
+.ins-frame {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 0.8;
+}
+.ins-bar {
+  fill: var(--ink);
+  stroke: var(--ink);
+  stroke-width: 0.6;
+}
+.ins-bar-open {
+  fill: none;
+}
+.ins-x {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+.ins-v {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.9;
+}
+.ins-dot {
+  fill: var(--rubric-line);
+}
+.ins-read {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 10px;
+  margin: 6px 0 0;
+}
+.ins-read dt {
+  font-style: italic;
+  color: var(--rubric);
+}
+.ins-read dd {
+  margin: 0;
+}
+.ins-note {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  line-height: 1.42;
+}
+.ins-btn,
+.ins-toggle button,
+.ins-units button {
+  font: inherit;
+  font-size: 13.5px;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--rubric-line);
+  background: transparent;
+  color: var(--rubric);
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  transition: background-color 140ms ease-out, color 140ms ease-out, transform 140ms ease-out;
+}
+.ins-btn:active,
+.ins-toggle button:active,
+.ins-units button:active {
+  transform: scale(0.97);
+}
+.ins-btn[aria-pressed="true"],
+.ins-toggle button[aria-checked="true"],
+.ins-units button[aria-pressed="true"] {
+  background: var(--rubric-line);
+  color: #fff;
+}
+.ins-btn:focus-visible,
+.ins-toggle button:focus-visible,
+.ins-units button:focus-visible {
+  outline: 2px solid var(--rubric-line);
+  outline-offset: 2px;
+}
+.ins-toggle {
+  display: inline-flex;
+}
+.ins-toggle button + button {
+  border-left: 0;
+}
+.instrument kbd {
+  font-family: var(--xanh);
+  font-size: 12px;
+  padding: 0 4px;
+  border: 1px solid var(--ink-soft);
+}
+
+/* iv. Dawn — the two papers as samples, each with its name and its number. */
+.ins-dawn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.ins-dawn button {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 7px;
+  border: 0.75px solid var(--ink-soft);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 160ms ease-out, background-color 160ms ease-out, transform 140ms ease-out;
+}
+.ins-dawn button:active {
+  transform: scale(0.98);
+}
+.ins-dawn button[aria-pressed="true"] {
+  border-color: var(--rubric-line);
+  background: color-mix(in srgb, var(--rubric-line) 7%, transparent);
+}
+.ins-dawn button:focus-visible {
+  outline: 2px solid var(--rubric-line);
+  outline-offset: 2px;
+}
+.ins-swatch {
+  grid-row: 1 / span 2;
+  width: 26px;
+  height: 26px;
+  border: 0.75px solid var(--ink);
+  box-shadow: 1.5px 1.5px 0 var(--ink-faint);
+}
+.ins-dawn-name {
+  font-family: var(--fell);
+  font-style: italic;
+  font-size: 14.5px;
+  line-height: 1.1;
+}
+.ins-dawn-hex {
+  font-family: var(--xanh);
+  font-size: 11.5px;
+  line-height: 1.2;
+  color: var(--rubric);
+}
+.ins-engine .ins-read {
+  font-size: 13.5px;
+}
+
+/* ── the notes: written into the margins the layout leaves (Pretext) ─────── */
+
+.notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--fell);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink);
+}
+.note {
+  position: absolute;
+  margin: 0;
+  transform-origin: 0 0;
+}
+.note-line {
+  position: absolute;
+  white-space: nowrap;
+}
+.note-no {
+  font-weight: inherit;
+  color: var(--rubric);
+}
+.note-mirror .note-line {
+  transform: scaleX(-1);
+  color: color-mix(in oklab, var(--ink) 70%, var(--paper));
+}
+.note-leaders {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.note-leader {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.75;
+  stroke-linecap: round;
+  opacity: 0.85;
+  transition: stroke-width 160ms ease-out;
+}
+.note-dot {
+  fill: var(--rubric-line);
+}
+.note-leaders .is-hot .note-leader {
+  stroke-width: 1.5;
+  opacity: 1;
+}
+.note.is-hot .note-line {
+  text-decoration: underline 0.5px var(--rubric-line);
+  text-underline-offset: 3px;
+}
+@media (max-width: 899px) {
+  .notes {
+    display: none;
+  }
+}
+
+/* ── the live measures: the code's line over the plate (not printed) ────── */
+
+.eye-live {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.m-line,
+.m-tick,
+.m-cross {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.9;
+}
+.m-tick {
+  stroke-width: 1.1;
+}
+.m-text {
+  font-family: var(--xanh);
+  font-size: 11.5px;
+  fill: var(--rubric);
+  /* A paper halo keeps the figures legible where they cross the engraving. */
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.m-small {
+  font-size: 10.5px;
+}
+.m-bar-fill {
+  fill: var(--rubric-line);
+}
+.m-bar-open {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.8;
+}
+.m-snap {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 1.2;
+}
+.m-cal .m-line {
+  stroke-width: 1.3;
+}
+.eye-page[data-calipers="on"] {
+  cursor: crosshair;
+}
+@media (max-width: 899px) {
+  .m-a,
+  .m-small {
+    display: none;
+  }
+}
+
+/* vi. Measure — the units as a row of toggles. */
+.ins-units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.ins-units button {
+  min-height: 30px;
+  padding: 0 9px;
+}
+
+/* ── the construction's writing (printed; shown with the construction) ───── */
+
+.cons-notes,
+.neatline {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.eye-page[data-wire="0"] .cons-notes {
+  display: none;
+}
+.cons-text {
+  font-family: var(--fell);
+  font-style: italic;
+  fill: var(--ink);
+}
+.cons-swing {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.8;
+  stroke-dasharray: 5 3;
+}
+.cons-head {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 1;
+}
+.cons-r {
+  font-family: var(--fell);
+  font-style: italic;
+  fill: var(--rubric);
+}
+.cons-step circle {
+  fill: none;
+  stroke: var(--rubric-line);
+  stroke-width: 0.8;
+}
+.cons-step text {
+  font-family: var(--fell);
+  font-size: 10.5px;
+  fill: var(--rubric);
+}
+
+/* ── the neatline: the plate's border as a graduated scale (printed) ─────── */
+
+.nl-rule {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 0.9;
+}
+.nl-thin {
+  stroke-width: 0.5;
+}
+.nl-fill {
+  fill: var(--ink);
+}
+.nl-axis {
+  fill: var(--rubric-line);
+}
+.nl-text {
+  font-family: var(--xanh);
+  font-size: 9.5px;
+  fill: var(--ink);
+}
+.nl-unit {
+  fill: var(--rubric);
+}
+
+/* ── revisions in the notes: struck, corrected above, a deleatur in the margin ── */
+
+.note-del {
+  position: relative;
+  text-decoration: line-through 0.8px var(--ink);
+}
+.note-ins {
+  position: absolute;
+  left: 50%;
+  bottom: 0.78em;
+  transform: translateX(-50%) rotate(-3deg);
+  font-size: 0.8em;
+  white-space: nowrap;
+  color: var(--ink);
+  text-decoration: none;
+}
+.note-dele {
+  position: absolute;
+  right: calc(100% + 5px);
+  color: var(--rubric);
+  font-style: normal;
+}
+
+/* ── making it again: the study being cut is marked in the strip ─────────── */
+
+.eye-page[data-pass="1"] .studies-labels li:nth-child(1),
+.eye-page[data-pass="2"] .studies-labels li:nth-child(2),
+.eye-page[data-pass="3"] .studies-labels li:nth-child(3),
+.eye-page[data-pass="4"] .studies-labels li:nth-child(4) {
+  color: var(--rubric);
+  text-decoration: underline 1px var(--rubric-line);
+  text-underline-offset: 3px;
+}

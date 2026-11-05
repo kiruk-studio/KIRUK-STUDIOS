@@ -1,0 +1,658 @@
+<!doctype html>
+<!--
+  Dawn hero — one composed frame for the studio landing.
+  The kiruk logogram (founder's Figma paths, unchanged) rises on the horizon at dawn:
+  above the line it is a Da Vinci notebook study in sepia ink on a blurred dawn sky with
+  ink splashed into it (design); below the line the same mark goes on as a futuristic
+  wireframe in the dark earth (engineering). Static: no motion yet.
+  Colours: sampled from ideas/studio-dawn/references/ (see dawn.md). Exploration values.
+  spec-link: ideas/studio-dawn/hero-roadmap.md · ideas/studio-dawn/plan.md §2 Phase 2
+-->
+<html lang="en" data-variant="a">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — dawn hero (proto)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        /* horizon height, study centre, and the logogram's width in px */
+        --h: 62%;
+        --cx: 60%;
+        --s: min(54vw, 780px);
+
+        --ink: #242327;
+        --sepia: #3b2f2a;
+        --earth-ink: #d3d9de;
+        --earth-soft: #8a9096;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: #0c0c0f;
+      }
+      body {
+        font-family: 'Courier Prime', 'Courier New', monospace;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      .scene {
+        position: relative;
+        height: 100svh;
+        min-height: 620px;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .layer {
+        position: absolute;
+        pointer-events: none;
+      }
+
+      /* ── Sky: the calm before sunrise ─────────────────────────── */
+      .sky {
+        inset: 0 0 calc(100% - var(--h)) 0;
+        background:
+          radial-gradient(ellipse 38% 48% at var(--cx) 100%, rgba(255, 238, 210, 0.95) 0%, rgba(247, 213, 166, 0.72) 24%, rgba(236, 195, 140, 0) 64%),
+          radial-gradient(ellipse 34% 30% at 10% 26%, rgba(149, 126, 141, 0.3), transparent 70%),
+          radial-gradient(ellipse 26% 24% at 90% 64%, rgba(236, 195, 140, 0.4), transparent 70%),
+          linear-gradient(
+            to bottom,
+            #c3ccd4 0%,
+            #d3d9de 18%,
+            #d9d6dc 36%,
+            #e6d6c8 54%,
+            #efd2b0 70%,
+            #e7b7a8 82%,
+            #d98d98 93%,
+            #cd798f 100%
+          );
+      }
+      /* the thin layer of rays, fanning up from below the line */
+      .rays {
+        inset: 0 0 calc(100% - var(--h)) 0;
+        background: repeating-conic-gradient(
+          from 180deg at var(--cx) 100%,
+          rgba(255, 246, 232, 0) 0deg 4deg,
+          rgba(255, 246, 232, 0.5) 5deg,
+          rgba(255, 246, 232, 0) 6deg 10deg
+        );
+        -webkit-mask-image: radial-gradient(ellipse 46% 78% at var(--cx) 100%, #000 0%, rgba(0, 0, 0, 0.45) 38%, transparent 72%);
+        mask-image: radial-gradient(ellipse 46% 78% at var(--cx) 100%, #000 0%, rgba(0, 0, 0, 0.45) 38%, transparent 72%);
+        mix-blend-mode: soft-light;
+        opacity: 0.8;
+      }
+
+      /* ── Ink splashed in the sky ──────────────────────────────── */
+      .blooms {
+        inset: 0 0 calc(100% - var(--h)) 0;
+        width: 100%;
+        height: var(--h);
+        mix-blend-mode: multiply;
+      }
+
+      /* ── Earth: where it becomes a product ────────────────────── */
+      .earth {
+        inset: var(--h) 0 0 0;
+        background:
+          radial-gradient(ellipse 30% 26% at var(--cx) 0%, rgba(205, 121, 143, 0.42), transparent 70%),
+          linear-gradient(to bottom, #532f4c 0%, #2b2034 5%, #1d1c2d 16%, #131419 46%, #0c0c0f 100%);
+      }
+      .ground {
+        inset: var(--h) 0 0 0;
+        width: 100%;
+        height: calc(100% - var(--h));
+        -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
+        mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
+      }
+
+      /* ── The line: the logo's support line is the horizon ─────── */
+      .horizon {
+        left: 0;
+        right: 0;
+        top: var(--h);
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 230, 205, 0) 0%,
+          rgba(255, 230, 205, 0.7) 22%,
+          #fff3e4 var(--cx),
+          rgba(255, 230, 205, 0.7) 88%,
+          rgba(255, 230, 205, 0) 100%
+        );
+        box-shadow:
+          0 0 14px 2px rgba(247, 213, 166, 0.55),
+          0 0 52px 12px rgba(205, 121, 143, 0.28);
+      }
+
+      /* ── The study ────────────────────────────────────────────── */
+      .study {
+        left: var(--cx);
+        top: var(--h);
+        width: calc(var(--s) * 2.5);
+        aspect-ratio: 2400 / 1520;
+        transform: translate(-50%, -50%);
+      }
+      .study .nss {
+        vector-effect: non-scaling-stroke;
+      }
+      .study .note {
+        font-family: 'Courier Prime', monospace;
+        font-size: 23px;
+        fill: var(--sepia);
+      }
+      .study .tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 17px;
+        letter-spacing: 0.04em;
+        fill: var(--earth-ink);
+      }
+
+      /* ── Film grain over everything ───────────────────────────── */
+      .grain {
+        inset: 0;
+        opacity: 0.42;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      /* ── Words ────────────────────────────────────────────────── */
+      header {
+        position: absolute;
+        z-index: 5;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 22px clamp(16px, 4vw, 56px);
+      }
+      .mark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: 0.02em;
+      }
+      .mark svg {
+        width: 30px;
+        height: 30px;
+      }
+      nav ul {
+        display: flex;
+        gap: clamp(14px, 2.4vw, 32px);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      nav a {
+        color: var(--ink);
+        text-decoration: none;
+        font-size: 16px;
+        letter-spacing: 0.02em;
+        padding: 6px 0;
+        background: linear-gradient(currentColor, currentColor) left 88% / 0 1px no-repeat;
+        transition: background-size 200ms ease-out;
+      }
+      nav a:hover {
+        background-size: 100% 1px;
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 3px;
+      }
+
+      .hero {
+        position: absolute;
+        z-index: 4;
+        left: clamp(16px, 6vw, 96px);
+        top: 17svh;
+        max-width: 34ch;
+      }
+      .fig {
+        margin: 0 0 6px;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--sepia);
+      }
+      h1 {
+        margin: 0;
+        font-weight: 700;
+        font-size: clamp(76px, 11.5vw, 172px);
+        line-height: 0.92;
+        letter-spacing: -0.035em;
+        color: var(--ink);
+        filter: url(#ink-bleed);
+      }
+      .lede {
+        margin: 18px 0 0;
+        font-size: clamp(17px, 1.35vw, 20px);
+        line-height: 1.5;
+        color: #2e2a2c;
+      }
+
+      .caption,
+      .status {
+        position: absolute;
+        z-index: 4;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--earth-soft);
+      }
+      .caption {
+        left: clamp(16px, 6vw, 96px);
+        top: calc(var(--h) + 28px);
+      }
+      .caption b {
+        font-weight: 500;
+        color: var(--earth-ink);
+      }
+      .status {
+        left: clamp(16px, 6vw, 96px);
+        right: clamp(16px, 6vw, 96px);
+        bottom: 22px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        letter-spacing: 0.06em;
+      }
+
+      /* proto-only: compare the two readings */
+      .variants {
+        position: fixed;
+        z-index: 9;
+        right: 16px;
+        bottom: 56px;
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid rgba(211, 217, 222, 0.28);
+        background: rgba(12, 12, 15, 0.7);
+        backdrop-filter: blur(6px);
+      }
+      .variants button {
+        font: 500 11px/1 'JetBrains Mono', monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--earth-soft);
+        background: none;
+        border: 0;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+      .variants button[aria-pressed='true'] {
+        color: #0c0c0f;
+        background: var(--earth-ink);
+      }
+
+      @media (max-width: 760px) {
+        :root {
+          --h: 61%;
+          --cx: 50%;
+          --s: 84vw;
+        }
+        .hero {
+          top: 12svh;
+        }
+        .study .note,
+        .study .tag,
+        .study .leader {
+          display: none;
+        }
+        /* a phone's sky has no free space beside the name; the live TSL ink can claim it later */
+        .blooms .ink-splash {
+          display: none;
+        }
+        .caption {
+          top: auto;
+          bottom: 52px;
+        }
+        nav a {
+          font-size: 14px;
+        }
+        .mark span {
+          display: none;
+        }
+        .status span:last-child {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Filters shared by the HTML type -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <filter id="ink-bleed" x="-6%" y="-20%" width="112%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="7" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3" xChannelSelector="R" yChannelSelector="G" result="rough" />
+        <feGaussianBlur in="rough" stdDeviation="5" result="halo" />
+        <feComponentTransfer in="halo" result="haloSoft"><feFuncA type="linear" slope="0.42" /></feComponentTransfer>
+        <feGaussianBlur in="rough" stdDeviation="0.5" result="edge" />
+        <feMerge><feMergeNode in="haloSoft" /><feMergeNode in="edge" /></feMerge>
+      </filter>
+    </svg>
+
+    <main class="scene">
+      <div class="layer sky" aria-hidden="true"></div>
+      <div class="layer rays" aria-hidden="true"></div>
+
+      <!-- Ink splashed in the sky: watercolour blooms (static SVG filters) -->
+      <svg class="layer blooms" viewBox="0 0 1600 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <filter id="wc-a" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.009" numOctaves="4" seed="4" result="warp" />
+            <feDisplacementMap in="SourceGraphic" in2="warp" scale="150" xChannelSelector="R" yChannelSelector="G" result="shape" />
+            <feGaussianBlur in="shape" stdDeviation="9" result="soft" />
+            <feGaussianBlur in="shape" stdDeviation="30" result="wide" />
+            <feComposite in="soft" in2="wide" operator="arithmetic" k2="1.75" k3="-0.8" result="edge" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="2" result="g" />
+            <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.3" result="ga" />
+            <feComposite in="edge" in2="ga" operator="in" result="gran" />
+            <feComponentTransfer in="wide" result="wash"><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
+            <feMerge><feMergeNode in="wash" /><feMergeNode in="gran" /></feMerge>
+          </filter>
+          <filter id="wc-b" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="4" seed="19" result="warp" />
+            <feDisplacementMap in="SourceGraphic" in2="warp" scale="110" xChannelSelector="R" yChannelSelector="G" result="shape" />
+            <feGaussianBlur in="shape" stdDeviation="6" result="soft" />
+            <feGaussianBlur in="shape" stdDeviation="22" result="wide" />
+            <feComposite in="soft" in2="wide" operator="arithmetic" k2="1.8" k3="-0.85" result="edge" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="5" result="g" />
+            <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.2 1.3" result="ga" />
+            <feComposite in="edge" in2="ga" operator="in" result="gran" />
+            <feComponentTransfer in="wide" result="wash"><feFuncA type="linear" slope="0.3" /></feComponentTransfer>
+            <feMerge><feMergeNode in="wash" /><feMergeNode in="gran" /></feMerge>
+          </filter>
+          <!-- one wash layer: a warped edge, softened; applied to the group so overlaps stack like glazes -->
+          <filter id="wash" x="-60%" y="-80%" width="220%" height="260%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="4" seed="21" result="warp" />
+            <feDisplacementMap in="SourceGraphic" in2="warp" scale="64" xChannelSelector="R" yChannelSelector="G" result="shape" />
+            <feGaussianBlur in="shape" stdDeviation="5" result="soft" />
+            <feGaussianBlur in="shape" stdDeviation="20" result="wide" />
+            <feComposite in="soft" in2="wide" operator="arithmetic" k2="1.5" k3="-0.45" result="rim" />
+            <feComponentTransfer in="wide" result="bloom"><feFuncA type="linear" slope="0.5" /></feComponentTransfer>
+            <feMerge><feMergeNode in="bloom" /><feMergeNode in="rim" /></feMerge>
+          </filter>
+          <filter id="wc-ink-2" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="3" seed="31" result="warp" />
+            <feDisplacementMap in="SourceGraphic" in2="warp" scale="40" xChannelSelector="R" yChannelSelector="G" result="shape" />
+            <feGaussianBlur in="shape" stdDeviation="1.6" result="soft" />
+            <feGaussianBlur in="shape" stdDeviation="9" result="wide" />
+            <feComposite in="soft" in2="wide" operator="arithmetic" k2="2.3" k3="-1.45" result="rim" />
+            <feComponentTransfer in="wide" result="halo"><feFuncA type="linear" slope="0.18" /></feComponentTransfer>
+            <feMerge><feMergeNode in="halo" /><feMergeNode in="rim" /></feMerge>
+          </filter>
+          <filter id="spatter" x="-100%" y="-100%" width="300%" height="300%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="8" result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale="9" xChannelSelector="R" yChannelSelector="G" result="d" />
+            <feGaussianBlur in="d" stdDeviation="0.8" />
+          </filter>
+        </defs>
+        <!-- one splash, spilled on the page above the study, in open sky:
+             a hard watercolour edge and a rim darker than the body -->
+        <!-- layered washes: translucent indigo and violet; density comes from where they overlap -->
+        <g class="ink-splash" filter="url(#wash)">
+          <ellipse cx="780" cy="180" rx="150" ry="78" fill="#2a3350" opacity="0.2" />
+          <ellipse cx="850" cy="214" rx="104" ry="60" fill="#3b2f4a" opacity="0.2" />
+          <ellipse cx="720" cy="226" rx="86" ry="44" fill="#2a3350" opacity="0.16" />
+          <ellipse cx="836" cy="166" rx="64" ry="40" fill="#1f1d2b" opacity="0.18" />
+          <ellipse cx="904" cy="262" rx="40" ry="26" fill="#3b2f4a" opacity="0.18" />
+        </g>
+        <!-- plum, close to the line -->
+        <ellipse cx="1260" cy="560" rx="230" ry="46" fill="#532f4c" opacity="0.2" filter="url(#wc-a)" />
+        <!-- spatter thrown off the splash -->
+        <g class="ink-splash" fill="#1f1d2b" opacity="0.6" filter="url(#spatter)">
+          <circle cx="948" cy="214" r="5" />
+          <circle cx="972" cy="230" r="2.4" />
+          <circle cx="930" cy="296" r="3" />
+          <circle cx="664" cy="132" r="3.4" />
+          <circle cx="644" cy="252" r="2.2" />
+          <circle cx="1004" cy="262" r="1.8" />
+        </g>
+      </svg>
+
+      <div class="layer earth" aria-hidden="true"></div>
+
+      <!-- Ground: a perspective grid converging on the sun (Renaissance perspective, and a wireframe floor) -->
+      <svg class="layer ground" viewBox="0 0 1600 380" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+        <g stroke="#d3d9de" stroke-opacity="0.13" stroke-width="1" fill="none" vector-effect="non-scaling-stroke">
+          <path vector-effect="non-scaling-stroke" d="M960 0 L-1440 380 M960 0 L-840 380 M960 0 L-240 380 M960 0 L360 380 M960 0 L660 380 M960 0 L960 380 M960 0 L1260 380 M960 0 L1560 380 M960 0 L2160 380 M960 0 L2760 380 M960 0 L3360 380" />
+          <path vector-effect="non-scaling-stroke" d="M0 14 H1600 M0 34 H1600 M0 62 H1600 M0 100 H1600 M0 152 H1600 M0 222 H1600 M0 316 H1600" />
+        </g>
+      </svg>
+
+      <div class="layer horizon" aria-hidden="true"></div>
+
+      <!-- The study: the founder's logogram, drawn above the line and built below it -->
+      <svg
+        class="layer study"
+        viewBox="-1200 -760 2400 1520"
+        role="img"
+        aria-label="A study of the kiruk eye at dawn: above the horizon it is drawn in sepia ink with construction lines and notes; below the horizon the same eye continues as a wireframe."
+      >
+        <defs>
+          <!-- Logogram paths: unchanged from apps/kiruk-web/public/favicon.svg (Figma node 44:127) -->
+          <g id="logo-needles" transform="translate(-1000 -1000)">
+            <path class="nss" d="M1071.91 1266.79L1051.2 1189.51M1135 1241.28L1095 1172M1311.56 1178L1173 1098M1402.5 1100.94L1190 1044M927.798 1266.79L948.504 1189.51M857.707 1236.28L897.707 1167M687.142 1171L825.706 1091M597.203 1100.94L809.706 1044M1071.91 738L1051.2 815.274M1132 760.503L1092 829.785M1306.56 822.785L1168 902.785M1402.5 903.845L1190 960.785M927.798 738L948.504 815.274M860.707 762.503L900.707 831.785M689.142 830.785L827.706 910.785M597.203 903.845L809.706 960.785" />
+          </g>
+          <g id="logo-body" transform="translate(-1000 -1000)">
+            <path class="nss" d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z" />
+            <path class="nss" d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z" />
+            <path class="nss" d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z" />
+            <path class="nss" d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z" />
+            <path class="nss" d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z" />
+            <path class="nss" d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z" />
+            <path class="nss" d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z" />
+            <path class="nss" d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z" />
+          </g>
+          <!-- Construction: the geometry the mark sits on -->
+          <g id="construction" fill="none">
+            <circle class="nss" r="280" stroke-dasharray="6 7" />
+            <circle class="nss" r="480" stroke-dasharray="6 7" />
+            <circle class="nss" r="60" />
+            <path class="nss" d="M-90 0H90M0 -90V90" />
+            <path class="nss" d="M0 -560V560" stroke-dasharray="2 9" />
+            <!-- each needle, followed back to the centre -->
+            <path
+              class="nss"
+              stroke-dasharray="3 8"
+              d="M17.9 66.3L120.3 445.4M33.3 60.2L223.3 404.2M60.6 34.3L406.6 230.3M66.5 15.4L446.5 103.4M-18 66.3L-121 445.4M-35.8 58.5L-240.4 392.5M-61 31.9L-409.6 213.9M-66.6 15.4L-447.2 103.4M17.9 -64.7L120.3 -434.1M32.2 -59.6L216.2 -400M58.8 -34L394.8 -228.5M66.5 -13.7L446.5 -92.2M-18 -64.7L-121 -434.1M-34.8 -58.9L-233.3 -395.3M-60.3 -31.2L-404.9 -209.7M-66.6 -13.7L-447.2 -92.2"
+            />
+            <!-- the dial: 24 hour ticks, the eight directions longer -->
+            <circle r="446" stroke-width="12" stroke-dasharray="2 114.75" stroke-dashoffset="1" />
+            <circle r="458" stroke-width="34" stroke-dasharray="3 356.7" stroke-dashoffset="1.5" />
+          </g>
+          <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#3b2f2a" stroke-width="1.3" />
+          </pattern>
+          <pattern id="hatch-x" width="11" height="11" patternUnits="userSpaceOnUse" patternTransform="rotate(42)">
+            <line x1="0" y1="0" x2="0" y2="11" stroke="#3b2f2a" stroke-width="1" />
+          </pattern>
+          <mask id="pupil-hole" maskUnits="userSpaceOnUse" x="-1200" y="-760" width="2400" height="1520">
+            <rect x="-1200" y="-760" width="2400" height="1520" fill="#fff" />
+            <circle r="60" fill="#000" />
+          </mask>
+          <filter id="pen" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="w" />
+            <feDisplacementMap in="SourceGraphic" in2="w" scale="4.5" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="b" />
+            <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <clipPath id="above"><rect x="-1200" y="-760" width="2400" height="760" /></clipPath>
+          <clipPath id="below"><rect x="-1200" y="0" width="2400" height="760" /></clipPath>
+          <linearGradient id="depth" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="700">
+            <stop offset="0" stop-color="#fff" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0.12" />
+          </linearGradient>
+          <mask id="fade-down" maskUnits="userSpaceOnUse" x="-1200" y="0" width="2400" height="760">
+            <rect x="-1200" y="0" width="2400" height="760" fill="url(#depth)" />
+          </mask>
+        </defs>
+
+        <!-- ABOVE THE LINE — the notebook: sepia ink, hatching, notes -->
+        <g clip-path="url(#above)">
+          <g id="sketch-side">
+            <g filter="url(#pen)">
+              <use href="#construction" stroke="#3b2f2a" stroke-opacity="0.5" stroke-width="1" />
+              <!-- the mark, hatched the way a left hand hatches -->
+              <use href="#logo-body" fill="url(#hatch)" stroke="#3b2f2a" stroke-width="1.4" mask="url(#pupil-hole)" />
+              <use href="#logo-body" fill="url(#hatch-x)" opacity="0.55" mask="url(#pupil-hole)" clip-path="url(#left-half)" />
+              <use href="#logo-needles" stroke="#3b2f2a" stroke-width="1.6" stroke-linecap="round" />
+              <!-- a second, searching pass of the pen -->
+              <use href="#logo-needles" stroke="#3b2f2a" stroke-width="1" opacity="0.4" transform="translate(2.5 -1.5) rotate(0.3)" />
+              <use href="#logo-body" fill="none" stroke="#3b2f2a" stroke-width="0.9" opacity="0.35" transform="translate(-2 1.2) rotate(-0.25)" />
+              <text class="note" x="0" y="-578" text-anchor="middle" font-size="26">N</text>
+              <text class="note" x="-505" y="-14" text-anchor="end" font-size="26">W</text>
+              <text class="note" x="505" y="-14" font-size="26">E</text>
+            </g>
+            <!-- notes, typewritten into the margin -->
+            <g class="leader" fill="none" stroke="#3b2f2a" stroke-width="1" opacity="0.8">
+              <path class="nss" d="M336 -480 C 290 -420, 250 -300, 222 -224" />
+              <circle cx="219" cy="-218" r="5" />
+              <path class="nss" d="M376 -326 C 350 -270, 330 -220, 314 -182" />
+              <circle cx="309" cy="-178" r="5" />
+            </g>
+            <g class="note-group">
+              <text class="note" x="690" y="-500" text-anchor="end">eight directions:</text>
+              <text class="note" x="690" y="-472" text-anchor="end">four points, four petals.</text>
+              <text class="note" x="690" y="-344" text-anchor="end">a needle for each hour</text>
+              <text class="note" x="690" y="-316" text-anchor="end">between — 15° apart.</text>
+            </g>
+          </g>
+          <!-- this note is about the horizon itself, so it stays on the line in both readings -->
+          <g class="leader" fill="none" stroke="#3b2f2a" stroke-width="1" opacity="0.8">
+            <path class="nss" d="M-780 -58 C -700 -40, -640 -20, -560 -4" />
+            <circle cx="-556" cy="-3" r="4" />
+          </g>
+          <text class="note" x="-790" y="-86" text-anchor="end" font-style="italic">the line beneath</text>
+          <text class="note" x="-790" y="-58" text-anchor="end" font-style="italic">holds it.</text>
+        </g>
+
+        <!-- BELOW THE LINE — the build: the same mark as a wireframe -->
+        <g clip-path="url(#below)">
+          <g mask="url(#fade-down)">
+            <g id="wire-side">
+              <g filter="url(#glow)">
+                <use href="#construction" stroke="#d3d9de" stroke-opacity="0.22" stroke-width="1" />
+                <use href="#logo-body" fill="none" stroke="#d3d9de" stroke-opacity="0.8" stroke-width="1" />
+                <use href="#logo-needles" stroke="#d3d9de" stroke-opacity="0.85" stroke-width="1" />
+              </g>
+              <!-- nodes -->
+              <g fill="#0f1112" stroke="#d3d9de" stroke-width="1">
+                <rect class="nss" x="-6" y="274" width="12" height="12" />
+                <rect class="nss" x="396.5" y="94.9" width="12" height="12" />
+                <rect class="nss" x="-408.8" y="94.9" width="12" height="12" />
+                <rect class="nss" x="305.6" y="172" width="12" height="12" />
+                <rect class="nss" x="-318.9" y="165" width="12" height="12" />
+                <rect class="nss" x="-6" y="54" width="12" height="12" />
+                <rect class="nss" x="474" y="-6" width="12" height="12" />
+                <rect class="nss" x="-486" y="-6" width="12" height="12" />
+              </g>
+              <!-- dimensions -->
+              <g fill="none" stroke="#d3d9de" stroke-opacity="0.55" stroke-width="1">
+                <path class="nss" d="M-480 336H480M-480 322V350M480 322V350" />
+                <path class="nss" d="M560 0V280M546 280H574" />
+                <path class="nss" d="M0 0L402.5 100.9" stroke-dasharray="4 6" />
+                <path class="nss" d="M230 0A230 230 0 0 1 223.4 53.5" />
+              </g>
+              <g class="tag-group">
+                <text class="tag" x="0" y="378" text-anchor="middle">W 960</text>
+                <text class="tag" x="580" y="150">H 280</text>
+                <text class="tag" x="250" y="40">θ 15°</text>
+                <text class="tag" x="190" y="96" transform="rotate(14 190 96)">r 415</text>
+                <text class="tag" x="20" y="312">(0, 280)</text>
+                <text class="tag" x="0" y="440" text-anchor="middle">S</text>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <clipPath id="left-half"><rect x="-1200" y="-760" width="1200" height="1520" /></clipPath>
+      </svg>
+
+      <div class="layer grain" aria-hidden="true"></div>
+
+      <header>
+        <a class="mark" href="#" aria-label="kiruk — home">
+          <svg viewBox="500 500 1000 1000" aria-hidden="true">
+            <mask id="mark-hole" maskUnits="userSpaceOnUse" x="-500" y="-500" width="1000" height="1000">
+              <rect x="-500" y="-500" width="1000" height="1000" fill="#fff" />
+              <circle r="60" fill="#000" />
+            </mask>
+            <!-- centred space: the mask and the shared paths both live around (0, 0) -->
+            <g transform="translate(1000 1000)">
+              <!-- the needle paths carry non-scaling strokes, so this width is in screen px -->
+              <use href="#logo-needles" fill="none" stroke="#242327" stroke-width="1.5" />
+              <use href="#logo-body" fill="#242327" mask="url(#mark-hole)" />
+            </g>
+          </svg>
+          <span>kiruk</span>
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">ISM</a></li>
+            <li><a href="#">Writing</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="fig">fig. i — the eye at dawn</p>
+        <h1 id="hero-title">kiruk</h1>
+        <p class="lede">An art + code studio.<br />The sketch above the line,<br />the build below it.</p>
+      </section>
+
+      <p class="caption">fig. i (b) — <b>the same eye, built</b></p>
+      <p class="status"><span>studio.kiruk.in · build 0.1</span><span>rebuilding in the open</span></p>
+    </main>
+
+    <div class="variants" role="group" aria-label="Prototype reading">
+      <button type="button" data-v="a" aria-pressed="true">A · rising</button>
+      <button type="button" data-v="b" aria-pressed="false">B · reflection</button>
+    </div>
+
+    <script>
+      // Proto-only: compare reading A (the mark rises through the line) with
+      // reading B (the drawn mark in the sky, its built reflection in the earth).
+      const sketch = document.getElementById('sketch-side');
+      const wire = document.getElementById('wire-side');
+      for (const btn of document.querySelectorAll('.variants button')) {
+        btn.addEventListener('click', () => {
+          const b = btn.dataset.v === 'b';
+          document.documentElement.dataset.variant = btn.dataset.v;
+          if (b) {
+            sketch.setAttribute('transform', 'translate(0 -300) scale(0.78)');
+            wire.setAttribute('transform', 'translate(0 300) scale(0.78 -0.78)');
+          } else {
+            sketch.removeAttribute('transform');
+            wire.removeAttribute('transform');
+          }
+          for (const other of document.querySelectorAll('.variants button')) {
+            other.setAttribute('aria-pressed', String(other === btn));
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

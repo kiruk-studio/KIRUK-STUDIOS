@@ -1,0 +1,289 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f4ecdf;
+  --ink: #1a120e;
+  --rubric: #983a22;
+  --font-fell: "IM Fell English", "Palatino Linotype", Palatino, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --z-page: 1;
+  --z-lid: 5;
+  --z-nav: 6;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-fell), "IM Fell English", Palatino, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #e7d3c4;
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+.eye-frame {
+  min-height: 100dvh;
+  background: radial-gradient(120% 80% at 50% 42%, #fbf6ec 0%, var(--paper) 55%, #e7dcc8 100%);
+}
+
+.eye-lids {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-lid);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sheet-opening {
+  --sheet-col: 576;
+  position: relative;
+  z-index: var(--z-page);
+  isolation: isolate;
+  box-sizing: border-box;
+  width: min(36rem, calc(100% - 3rem));
+  min-height: 100dvh;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: calc(
+    var(--eye-mid, 12px) + (var(--simple-game-nav-bottom, 72px) - var(--eye-mid, 12px)) *
+      min(1, var(--sheet-col) / var(--eye-vw, 1440)) * min(1, var(--sheet-col) / var(--eye-vw, 1440)) + 24px
+  );
+  padding-bottom: calc(var(--eye-lid-bottom, 60px) + 24px + env(safe-area-inset-bottom));
+}
+
+.sheet-opening > main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.sheet-mark {
+  width: 4.5rem;
+  height: 4.5rem;
+  margin: 0 0 1.25rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.sheet-kicker {
+  margin: 0;
+  font-family: var(--font-fell), Palatino, serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eye-nav {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-nav);
+  pointer-events: none;
+  color: var(--paper);
+}
+
+.eye-nav-brand,
+.eye-nav-links {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.eye-nav-brand {
+  left: max(1.25rem, env(safe-area-inset-left));
+}
+
+.eye-nav-links {
+  right: max(1.25rem, env(safe-area-inset-right));
+  gap: 0.1rem;
+}
+
+.eye-nav a {
+  pointer-events: auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--paper);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+  padding: 0.2rem 0.45rem;
+  transform-origin: center bottom;
+}
+
+.eye-nav a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
+.eye-nav-label {
+  display: inline-block;
+  transition: transform 150ms ease-out;
+}
+
+.eye-nav a:hover {
+  color: #fff;
+}
+
+.eye-nav a:active .eye-nav-label {
+  transform: scale(0.96);
+}
+
+.eye-nav a:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.eye-nav a[aria-current="page"] {
+  color: #f3d2c4;
+}
+
+.eye-nav img {
+  display: block;
+  filter: invert(1);
+}
+
+.sheet-word {
+  margin: 0;
+  font-family: var(--font-fell), Palatino, serif;
+  font-weight: 400;
+  font-size: clamp(3.4rem, 8vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.sheet-opening h1 {
+  margin: 0;
+  font-family: var(--font-fell), Palatino, serif;
+  font-weight: 400;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.sheet-opening h1.sheet-word {
+  font-size: clamp(3.4rem, 8vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.sheet-section {
+  margin-top: 2rem;
+}
+
+.sheet-section h2 {
+  margin: 0;
+  font-family: var(--font-fell), Palatino, serif;
+  font-weight: 400;
+  font-size: 1.65rem;
+}
+
+.sheet-section h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sheet-section h2 a:hover {
+  color: var(--rubric);
+}
+
+.sheet-section p {
+  margin: 0.6rem 0 0;
+}
+
+.sheet-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0;
+}
+
+.sheet-foot a,
+.sheet-links a {
+  color: var(--ink);
+  font-weight: 400;
+  text-underline-offset: 0.18em;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  transition: color 150ms ease-out;
+}
+
+.sheet-foot a:hover,
+.sheet-links a:hover {
+  color: var(--rubric);
+}
+
+.sheet-foot a:focus-visible,
+.sheet-links a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.sheet-foot .sheet-colo {
+  margin: 0;
+}
+
+.sheet-claim {
+  max-width: 36ch;
+  margin: 1.1rem 0 0;
+  font-size: 1.15rem;
+  line-height: 1.45;
+}
+
+.sheet-rule {
+  width: min(28rem, 70%);
+  height: 1px;
+  margin: 1.6rem auto 1.2rem;
+  background: var(--rubric);
+  transform: translate(1px, 0);
+}
+
+.sheet-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.05rem;
+}
+
+.sheet-links a {
+  text-underline-offset: 0.18em;
+}
+
+.sheet-colo {
+  margin: 2.5rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}

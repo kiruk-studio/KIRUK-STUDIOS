@@ -1,0 +1,147 @@
+/*
+  Blend prototypes — shared ground.
+  One sheet: dawn light on old paper. Ink is the pen (sepia, hatched, slightly broken);
+  the modern line is crisp and coloured, laid over the same drawing to show intent.
+  Colours: sampled from ideas/studio-dawn/references/ (dawn.md). Exploration values.
+  spec-link: ideas/studio-dawn/blend-roadmap.md
+*/
+:root {
+  /* dawn, from the founder's references */
+  --sky: #d3d9de;
+  --sky-hi: #c9d1d8;
+  --cream: #ebd6b5;
+  --peach: #f7d5a6;
+  --rose: #cd798f;
+  --pink: #d2bac7;
+  --lavender: #957e8d;
+  --plum: #532f4c;
+  --navy: #1d1c2d;
+  --earth: #121318;
+
+  /* the pen */
+  --ink: #2a2226; /* iron-gall black-brown */
+  --sepia: #3b2f2a;
+  --sepia-soft: #6b5a4e;
+
+  /* the modern line: medieval rubric red = a design tool's selection colour */
+  --rubric: #b5462b;
+  --rubric-text: #983a22; /* 6:1 on cream */
+  --ultramarine: #2e4a8f;
+
+  --earth-h: 12svh;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--earth);
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  color: var(--ink);
+}
+
+/* The sheet: dawn light falling on old paper. Brightest low, where the sun is coming from. */
+.sheet {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 70% 58% at var(--sun-x, 50%) 100%, rgba(255, 238, 210, 0.95) 0%, rgba(247, 213, 166, 0.55) 38%, rgba(247, 213, 166, 0) 72%),
+    radial-gradient(ellipse 40% 34% at 8% 18%, rgba(149, 126, 141, 0.22), transparent 70%),
+    linear-gradient(to bottom, #d2d8dd 0%, #dedbd8 26%, #eadbca 50%, #f0d6b8 70%, #ebbfab 87%, #db96a0 100%);
+}
+/* paper tooth */
+.sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0.38;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.38 0 0 0 0 0.32 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* aged edges: the page darkens toward its margins, like the founder's Da Vinci references */
+.sheet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 21;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background: radial-gradient(ellipse 85% 80% at 50% 45%, transparent 58%, rgba(92, 64, 44, 0.26) 100%);
+}
+
+/* The ground: a thin dark band. It anchors; it does not pull the eye down. */
+.ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--earth-h);
+  z-index: 2;
+  background: linear-gradient(to bottom, var(--plum) 0%, #2b2034 22%, var(--navy) 55%, var(--earth) 100%);
+}
+.ground::before {
+  /* the horizon: a thin line of light where the sun is about to come through */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 230, 205, 0) 0%, rgba(255, 230, 205, 0.8) 25%, #fff4e6 var(--sun-x, 50%), rgba(255, 230, 205, 0.8) 85%, rgba(255, 230, 205, 0) 100%);
+  box-shadow:
+    0 0 14px 2px rgba(247, 213, 166, 0.6),
+    0 0 46px 10px rgba(205, 121, 143, 0.3);
+}
+.ground p {
+  position: absolute;
+  left: clamp(16px, 5vw, 80px);
+  right: clamp(16px, 5vw, 80px);
+  bottom: 18px;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font: 400 11px/1.4 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8a9096;
+}
+
+/* SVG helpers */
+.nss {
+  vector-effect: non-scaling-stroke;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--rubric);
+  outline-offset: 3px;
+}
+
+/* Proto label, so nobody mistakes a variation for the site */
+.proto-tag {
+  position: fixed;
+  z-index: 50;
+  right: 12px;
+  bottom: calc(var(--earth-h) + 10px);
+  font: 500 10px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #f4ece2;
+  background: rgba(18, 19, 24, 0.78);
+  padding: 7px 9px;
+}
+
+@media (max-width: 760px) {
+  .ground p span:last-child {
+    display: none;
+  }
+}

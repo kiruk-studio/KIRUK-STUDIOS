@@ -1,0 +1,37 @@
+{
+  "name": "@kiruk/studio",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Studio front door — the kiruk.in eye and opening, one manuscript look.",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chenglou/pretext": "1.0.0",
+    "@kiruk/burin": "workspace:*",
+    "@react-three/fiber": "^9.1.2",
+    "framer-motion": "^12.23.0",
+    "next": "^15.5.7",
+    "postprocessing": "^6.39.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.186.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

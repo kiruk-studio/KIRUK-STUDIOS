@@ -1,0 +1,203 @@
+<!doctype html>
+<!--
+  Blend — gallery of the four prototypes, with scores against the founder's brief.
+  spec-link: ideas/studio-dawn/blend-roadmap.md
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>kiruk — blend prototypes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Xanh+Mono&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <style>
+      :root {
+        --ink: #2a2226;
+        --sepia: #3b2f2a;
+        --rubric: #983a22;
+        --paper: #efe4d4;
+        --rule: rgba(59, 47, 42, 0.25);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 17px/1.55 'Xanh Mono', monospace;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+      }
+      h1 {
+        font: 400 clamp(44px, 6vw, 76px) / 1 'IM Fell English', serif;
+        margin: 0;
+      }
+      .lede {
+        max-width: 64ch;
+        margin: 14px 0 36px;
+        color: #4a3f39;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+      }
+      .card {
+        border: 1px solid var(--rule);
+        background: #f6eee3;
+      }
+      .frame {
+        position: relative;
+        aspect-ratio: 1440 / 900;
+        overflow: hidden;
+        border-bottom: 1px solid var(--rule);
+      }
+      .frame iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1440px;
+        height: 900px;
+        border: 0;
+        transform-origin: 0 0;
+        pointer-events: none;
+      }
+      .meta {
+        padding: 14px 16px 18px;
+      }
+      .meta h2 {
+        margin: 0;
+        font: italic 400 26px/1.1 'IM Fell English', serif;
+      }
+      .meta h2 a {
+        color: var(--ink);
+      }
+      .meta p {
+        margin: 6px 0 0;
+        font-size: 15px;
+        color: #4a3f39;
+      }
+      .score {
+        float: right;
+        font: 500 13px/1 'JetBrains Mono', monospace;
+        color: var(--rubric);
+        border: 1px solid var(--rubric);
+        padding: 6px 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 44px;
+        font: 400 14px/1.4 'JetBrains Mono', monospace;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid var(--rule);
+      }
+      th {
+        font-weight: 500;
+        color: var(--rubric);
+      }
+      td:not(:first-child),
+      th:not(:first-child) {
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .rec {
+        margin-top: 36px;
+        padding: 20px 22px;
+        border-left: 2px solid var(--rubric);
+        background: #f6eee3;
+      }
+      .rec h3 {
+        margin: 0 0 8px;
+        font: italic 400 26px/1.2 'IM Fell English', serif;
+      }
+      .rec ol {
+        margin: 0;
+        padding-left: 22px;
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        table {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Old pen, new line</h1>
+      <p class="lede">
+        Four prototypes for the brief: the design rises; a medieval / Da Vinci pen illustration; a crisp modern line laid
+        over the same drawing to show the intent; type that links the old hand and the new. Each differs in metaphor, not
+        a setting. Open one to see it full size.
+      </p>
+
+      <div class="grid">
+        <article class="card">
+          <div class="frame"><iframe src="codex.html" title="V1 Codex" loading="lazy" tabindex="-1"></iframe></div>
+          <div class="meta"><span class="score">33 / 40</span><h2><a href="codex.html">V1 · Codex</a></h2><p>A manuscript folio: illuminated initial, sun-eye over the earth's curve, a red selection laid on the ink.</p></div>
+        </article>
+        <article class="card">
+          <div class="frame"><iframe src="ascension.html" title="V2 Ascension" loading="lazy" tabindex="-1"></iframe></div>
+          <div class="meta"><span class="score">34 / 40</span><h2><a href="ascension.html">V2 · Ascension</a></h2><p>The eye rises across the sky in four states — scribble, line, ink, code — along a red timeline.</p></div>
+        </article>
+        <article class="card">
+          <div class="frame"><iframe src="plates.html" title="V3 Two plates" loading="lazy" tabindex="-1"></iframe></div>
+          <div class="meta"><span class="score">32 / 40</span><h2><a href="plates.html">V3 · Two plates</a></h2><p>Ink and code printed on one sheet, a little out of register; the title's own metrics measured over it.</p></div>
+        </article>
+        <article class="card">
+          <div class="frame"><iframe src="folio.html" title="V4 Folio" loading="lazy" tabindex="-1"></iframe></div>
+          <div class="meta"><span class="score">36 / 40</span><h2><a href="folio.html">V4 · Folio</a></h2><p>The blend on a writing page: a Da Vinci mechanism rising like a sun, explained by a red overlay. Example subject only.</p></div>
+        </article>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Against the brief (1–5)</th><th>V1</th><th>V2</th><th>V3</th><th>V4</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Rises, no downward pull</td><td>4</td><td>5</td><td>3</td><td>4</td></tr>
+          <tr><td>Old-world illustration</td><td>5</td><td>4</td><td>4</td><td>5</td></tr>
+          <tr><td>Overlay clarifies intent</td><td>4</td><td>5</td><td>4</td><td>5</td></tr>
+          <tr><td>Type links old + new</td><td>5</td><td>4</td><td>4</td><td>4</td></tr>
+          <tr><td>Blended, not split</td><td>5</td><td>5</td><td>5</td><td>5</td></tr>
+          <tr><td>Dreamy yet clear</td><td>4</td><td>5</td><td>4</td><td>4</td></tr>
+          <tr><td>Extends to articles</td><td>3</td><td>3</td><td>4</td><td>5</td></tr>
+          <tr><td>Phone</td><td>3</td><td>3</td><td>4</td><td>4</td></tr>
+          <tr><th>Total / 40</th><th>33</th><th>34</th><th>32</th><th>36</th></tr>
+        </tbody>
+      </table>
+
+      <section class="rec">
+        <h3>Recommendation: a small system, not one winner</h3>
+        <ol>
+          <li>Landing = V2 Ascension, set in V1's type (IM Fell) — the strongest rise, and it shows the method without a word.</li>
+          <li>Writing pages = V4 Folio — a pen figure per article, explained by the red line.</li>
+          <li>Type: IM Fell (the old hand) · Xanh Mono (typescript, the bridge) · JetBrains Mono (overlay labels).</li>
+          <li>Park V3 as a page; keep its type-metrics overlay as an accent.</li>
+        </ol>
+      </section>
+    </div>
+    <script>
+      // Scale each 1440×900 preview to its card.
+      const fit = () => {
+        for (const f of document.querySelectorAll('.frame')) {
+          f.querySelector('iframe').style.transform = `scale(${f.clientWidth / 1440})`;
+        }
+      };
+      addEventListener('resize', fit);
+      fit();
+    </script>
+  </body>
+</html>
