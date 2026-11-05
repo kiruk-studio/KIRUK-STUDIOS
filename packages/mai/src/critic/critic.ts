@@ -639,6 +639,25 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
       target: 'decreasing',
       why: 'Line weight hierarchy (research 02 R14).',
     });
+  // the share of wet pen ink that runs starved: some is the act, a lot is a dry pen
+  const penMarks = free.filter(
+    (m) => !INKS[m.ink].dry && m.instrument !== 'brush' && m.stats.length > 0,
+  );
+  const penLen = penMarks.reduce((a, m) => a + m.stats.length, 0);
+  if (penLen > 0) {
+    const starvedShare =
+      penMarks.reduce((a, m) => a + m.stats.starved * m.stats.length, 0) / penLen;
+    add({
+      id: 'style.starved',
+      dimension: 'style',
+      title: 'The pen runs low sometimes, not all the time',
+      status: starvedShare >= env.starved[0] && starvedShare <= env.starved[1] ? 'pass' : 'warn',
+      value: `${pct(starvedShare)} of ${r2(penLen / 1000)} m of pen ink runs starved`,
+      target: `${pct(env.starved[0])}–${pct(env.starved[1])} (${S.id})`,
+      why: 'A starved line breaks on the paper’s peaks; a few passages show the dip rhythm, a plate of them shows a dry pen (anomaly 5, research 01 §1).',
+      fix: 'Shorten strokes or let the hand dip (do not hold the reservoir); a heavier pressure spends ink faster.',
+    });
+  }
   const dipped = free.filter((m) => m.stats.dip && m.role !== 'hatch');
   const poolRate = dipped.length
     ? dipped.filter((m) => m.stats.pools > 0).length / dipped.length
@@ -879,6 +898,27 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     target: '≥ 4.5:1',
     why: 'WCAG 1.4.3, read on the rendered pixels when a proof is run (codex KC-8: estimates lied once), at 12 px/mm where a lettering stroke is three pixels wide, so the reading is the ink as laid and not the screen’s antialiasing.',
   });
+  // a measured value is type: never lettered in an ink the tokens keep for strokes
+  const lineInked = texts.filter((t) => {
+    if (!t.drawn || !(t.kind === 'dimension' || t.kind === 'scale')) return false;
+    return marks.some((m) => m.group === t.id && !!INKS[m.ink].typeInk);
+  });
+  if (texts.some((t) => t.drawn && (t.kind === 'dimension' || t.kind === 'scale')))
+    add({
+      id: 'type.value-ink',
+      dimension: 'typography',
+      title: 'Values are lettered in a type ink, not a line ink',
+      status: lineInked.length ? 'fail' : 'pass',
+      value: lineInked.length
+        ? `${lineInked.length} values in a strokes-only ink: ${lineInked
+            .slice(0, 4)
+            .map((t) => t.id)
+            .join(', ')}`
+        : 'every value in an ink meant for type',
+      target: '0 values in rubric-line or another strokes-only ink',
+      why: 'The tokens keep the rubric line (#B5462B) for rules, guides and leaders and give measure type its own red (#983A22); values lettered in the line red read 2.9–4.1:1 on Dawn Departs (ledger MA-17).',
+      fix: 'Letter values with valueInk(plate, role), which takes the ink’s type twin.',
+    });
   const unglyphed = texts.filter((t) => t.drawn && t.missing);
   add({
     id: 'type.glyphs',

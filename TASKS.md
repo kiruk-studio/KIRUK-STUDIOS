@@ -134,3 +134,19 @@ See `ROADMAP.md` Phases 4.5–7.
 - Move completed items to `## Done` with date.
 - Dropped tasks → delete; log the "why" in `CHANGELOG.md`.
 - Priority: **P0** = blocks phase exit · **P1** = phase scope · **P2** = nice-to-have.
+
+## mai round two — unfinished (2026-11-05, branch `claude/determined-lamport-r0vfo2`)
+
+Done and pushed: engine v0.2 (outer measurement, line types, projection, labels, night sheet, parts, traces), critic v0.2 (+ `style.starved`, `type.value-ink`), Plate IV and Plate III's outer measurement, the calculus page (`pnpm --filter @kiruk/mai calculus`; artifact https://claude.ai/artifact/U2JdH8xkhcByd8NTkk4rA7), 55 tests (13 skill evals), ledger MA-11 to MA-30, parts docs hand/pen/paper/light/line-types/projection.
+
+Still to do:
+
+- [ ] **Skills to anatomy depth.** Restructure `.claude/commands/kiruk-mai.md`, `kiruk-mai-proof.md`, `kiruk-mai-style.md` as ordered procedures (size → truth → object → list the parts → construct → search → ink → tone → letter → measure inside → measure outside → overlay → verify), each rule with its why, routing to `packages/mai/docs/parts/`, and a `## Sources` block (ways-of-working §3.3). Add the night style and `valueInk` rule to `/kiruk-mai-style`.
+- [ ] **New skill `/kiruk-mai-measure`** (`.claude/commands/kiruk-mai-measure.md`): outer measurement of diagrams and UI — neatlines, `extents` (with `clear`, tier stepping), `chainDims`, `angleDim`, `sweep`, `frame`/`redline`/`padding`, `centreLines`, line types, units stated once, never dimension a break line, rounded boxes at tangent points, values in the type red. Add it to the AGENTS.md tool allowlist line.
+- [ ] **Remaining parts docs:** `docs/parts/measure.md`, `outer.md`, `letter.md`, `layout.md`, `anatomy.md`, `critic.md` (already linked from `docs/parts/README.md`).
+- [ ] **`docs/evals.md`** (E-1…E-13 from `test/evals.test.ts`, plus the agent-eval protocol: fresh subagents with the skill forbidden vs loaded, scored by the critic) and **`docs/examples.md`** (gold set candidates: Plate III, Plate IV, the measure and anomalies specimens — pending founder approval).
+- [ ] **Update `docs/checks.md`** (new checks: measure.outer, tiers-order, tier-gap, neatline, angle, line.hidden, line.dashes, connect.axes-named, type.near, type.blots, type.glyphs, type.value-ink, style.starved, create.anatomy; contrast read at 12 px/mm), **`docs/styles.md`** (night), **README** (new modules, the calculus page, the parts index).
+- [ ] **Re-proof and re-bake** after the last engine/critic changes: `node packages/mai/scripts/proof.ts packages/mai/plates/volute.ts ideas/kiruk-codex/plates/plate-03-volute/proof --px 4 --commit` (and `axes.ts` → plate-04-axes), `node packages/mai/scripts/specimen.ts` (short centred centre lines are now continuous), update both NOTES.md check counts (now 74 and 55), then `node packages/mai/scripts/calculus.ts` and republish the artifact.
+- [ ] **Calculus of Interfaces:** the founder's reference https://calculus-of-interfaces.vercel.app/ is denied by this environment's network policy (allow it under Network access → Allowed domains). Read it, then align the calculus page with its approach and cite it properly; it is only linked so far.
+- [ ] **Session discipline:** CHANGELOG entry under `## Unreleased`; LEARNINGS entry (values were lettered in rubric-line, which the tokens reserve for strokes — a spec miss; guard `type.value-ink`); `ideas/log.ndjson` line via `/kiruk-capture`.
+- [ ] **Founder decisions:** the night sheet as a third paper (`eye.md` Q8); a phone layout for landscape plates (`type.phone` is the one open warn on every plate); approve or reject the gold set.

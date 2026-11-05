@@ -57,6 +57,8 @@ export function dashes(
   const first = (pat[0] as number) * unit;
   const fit = (L - first) / period;
   const n = Math.max(0, o.centred ? 2 * Math.round(fit / 2) : Math.round(fit));
+  // a centre line too short for two periods is drawn continuous (ISO 128, small circles)
+  if (o.centred && n === 0) return [{ pts: path.map((p) => [p[0], p[1]] as MVec), dot: false }];
   const k = n > 0 ? (L - first) / (n * period + 1e-9) : 1;
   const out: Dash[] = [];
   let s = 0;
