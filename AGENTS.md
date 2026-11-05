@@ -62,4 +62,4 @@ Terse navigation for any AI coding agent (Claude Code, Cursor, etc.) working in 
 - `npm run tokens:build` — regenerate packages/design-system/build/
 - `npm run session:capture` — manual `capture-session.mjs` (optional; see Cursor & Composer)
 - `/kiruk-intake`, `/kiruk-spec`, `/kiruk-artifact`, `/kiruk-capture`, `/kiruk-brand-thinking`, `/kiruk-ism-new` — in Claude Code as slash commands; in Cursor, use the same definitions under `.claude/commands/`
-- `/kiruk-mai` (draw a plate with the ink engine), `/kiruk-mai-proof` (curate it: numbers, 4× look, verdict), `/kiruk-mai-style` (a reference into a measured style) — engine `packages/mai`; proof with `node packages/mai/scripts/proof.ts <plate.ts> <out> --commit`
+- `/kiruk-mai` (draw a plate with the ink engine), `/kiruk-mai-proof` (curate it: numbers, 4× look, verdict), `/kiruk-mai-style` (a reference into a measured style), `/kiruk-mai-measure` (measure a diagram or UI from the outside) — engine `packages/mai`; proof with `node packages/mai/scripts/proof.ts <plate.ts> <out> --commit`
