@@ -10,6 +10,30 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ### Added
 
+- **The ink opening (2026-11-05).** On a first visit to `apps/kiruk-studio`, a hand now draws the engraved eye in ink, and then the eye opens. This replaces 1970's tube and the live 3D eye in a 1-bit look on black. The loader's own screen-reader line already promised _"a pen draws an eye on paper, then the eye opens"_.
+  - **The eye as strokes.** `@kiruk/burin` gains `./hand`. It is the third writing of the same eye: rig.ts in numbers, shader.ts as GPU fields, and now strokes in a hand's order.
+    - It uses the same curves, line families and tones as the plate. A line swells in shade and breaks into dots and flicks in light.
+    - The order is the plate's own: I construction in sanguine (① – ⑧), II contour, III hatching, IV cross-hatching and hair, V the pupil inked round the kiruk star.
+    - The pen lays each stroke at a hand's pace. Fresh iron-gall goes down blue-black and browns as it dries.
+  - **The loading animation.** The drawing wakes: its lids fall, then lift, catch and open like a waking eye. It then follows the pointer, makes saccades and blinks, while the page underneath finishes loading. On the landing, that means until the engine has printed the plate.
+  - **The way in.** _Click the eye · enter_ appears once the page is ready. On the landing, the drawing settles onto the plate's own eye as the sheet lifts.
+  - **How it runs.**
+    - It draws on the visitor's paper (Dawn Light or Dawn Departs).
+    - It runs in a worker on OffscreenCanvas, falling back to the main thread, and needs no WebGL.
+    - A press, wheel or key hurries the hand. Reduced motion shows the finished drawing, still. Phones get the tap fingertip.
+    - The loader's pointer events no longer reach the hidden page under it.
+
+  Concept, sequence and open questions: [`ideas/studio-dawn/ink-opening.md`](ideas/studio-dawn/ink-opening.md).
+  - **Why:** The founder asked for a loading page with a complex, medieval-style eye built from the existing eye work, drawn as if in ink before the loading animation starts.
+  - **Verified:**
+    - Burin and the studio typecheck, and `next build` passes. The shared layout chunk dropped from 30.3 kB to 21.2 kB, and route sizes are unchanged.
+    - Production build in headless Chromium, with no console errors: the phases with WebGL on (first stroke 1.4 s, the wake and hint 6.8 s, awake 8.7 s), a phone tap, reduced motion, hurrying, Enter, the new paper, a resize mid-drawing, `/work`, and a same-session refresh skipping the loader.
+    - The pen costs about 3 ms a frame in software raster, in its worker.
+  - **Not done:**
+    - The hand-off onto the live GPU plate is unverified. This container renders WebGL in software, and once revealed the landing stalls there in native code. The original loader never reached its eye in this container at all. It needs a hardware check.
+    - The tube and live 3D era eye files are no longer imported by the studio but are still in the tree, waiting on the founder.
+    - The founder has not reviewed the pace, the corner words, or open versus shut.
+
 - **The plate shows its making (2026-11-04).** Eight old pages, read for what each teaches, gave the eye plate on `apps/kiruk-studio` `/` five new parts:
   - **Make it again (C).** The plate replays: the construction first, then each pass cut as a front across the eye, while the strip underlines the study being cut. The engine's plate passes are now a uniform (`make`).
   - **Construction that writes on itself.** Notes run along the globe's arc and up the orbit (SVG `textPath`, printed in ink so the engine knocks the engraving out round them). Steps ① – ⑧ give the order of drawing, and a dashed compass radius has its arrow.

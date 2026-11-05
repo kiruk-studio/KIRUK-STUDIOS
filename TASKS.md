@@ -47,6 +47,9 @@
 - [ ] (P0) **Phase 1 — IA:** Velite pieces + articles collections, listing rules as tested functions, six routes + piece pages + `/writing/rss.xml` as plain HTML
 - [ ] (P0) **Phase 2 — Base layer:** clean, readable design (type, layout, diagrams); must stand alone without the sketch layer
 - [ ] (P1) **Phase 3 — Ideation** in `ideas/studio-dawn/`: dawn loop, ink-bleed TSL prototype, sketch layer, eye link
+- [x] (P1) 2026-11-05 Ink opening on `apps/kiruk-studio`: the first-visit loader draws the burin eye in ink, then it wakes — spec: ideas/studio-dawn/ink-opening.md
+- [ ] (P1) Founder checkpoint on the ink opening (pace, open vs shut, corner words) and a real-GPU check of the hand-off onto the plate — spec: ideas/studio-dawn/ink-opening.md
+- [ ] (P2) Decide whether to delete the unused 1970 tube and live 3D era eye from `apps/kiruk-studio` (no longer imported by the loader)
 - [~] (P1) **kiruk-codex skill** (`.claude/skills/kiruk-codex/`, plan `ideas/kiruk-codex/plan.md`): drafted 2026-10-20; Plate I tested twice and fixed; marks / depth / live added (untested on a mark plate); then founder review (name, rubric vs ultramarine, "TypeScript", type trio) and keep/delete the parked blend prototypes
 - [ ] (P1) Founder: drop ink-bleed + dawn references into `ideas/studio-dawn/references/` (gitignored)
 - [ ] (P1) **Phase 4 — Stack + spec:** revise tech-stack, spec dawn palette tokens, mark old sketch/grease-pencil requirements superseded, close `openspec/changes/grease-pencil-scene`

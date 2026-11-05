@@ -60,3 +60,30 @@ Use this shape (markdown `##` heading + bullets):
 - **Root cause:** A directory listing piped through `head -40` cut off before the day files, so they looked absent. They were also untracked, so git could not restore them.
 - **Fix:** Pulled the previous versions out of the earlier session transcript, diffed line by line, restored the one dropped detail (back-link to the series README).
 - **Guard:** Never decide a file is missing from a truncated listing; list the exact folder before writing. Untracked notes in `ideas/` have no git safety net — read before overwrite, and commit `ideas/` notes in the same session they are filed.
+
+## 2026-11-05 — A page under an overlay still answered the visitor's hand
+
+- **Mistake:** While the first-visit loader covered the studio landing, the landing kept reacting to the visitor's pointer, on a page nobody could see.
+  - Every move over the loader turned the hidden plate's eye and re-cut its ink pass.
+  - A press on the loader's eye made the hidden eye blink.
+  - A drag would have started its wet-paper simulation, which runs for 40 s.
+- **Root cause:** `EyeEngine` listens on `window` (pointermove, pointerdown, pointerup). `inert` and `visibility: hidden` on the page's wrapper stop focus and hit-testing inside it. They do not stop listeners on `window`, so the loader's own events bubbled through to them. The tube loader before it had the same leak.
+- **Fix:** The ink loader's pointer handlers call `stopPropagation()`. React's handlers run at the document root, so the native event never reaches `window`.
+  - Measured on the production build: 15 ink passes over 2.5 s of sweeping the loader, which is the hidden eye's idle saccades only.
+- **Guard:** An overlay that owns the screen stops its pointer events from bubbling. Before shipping a new overlay over the landing, sweep the pointer over it and compare `window.__burin.debug().ink` before and after.
+
+## 2026-11-05 — The cloud container cannot prove a WebGL hand-off
+
+- **Mistake (near-miss):** Hours went into a stall that appeared only after the loader's way in. Bisecting found it was the landing's WebGL blocking the main thread in native code under SwiftShader, not the loader.
+  - Along the way, a production server left running on the test port served stale chunks against a fresh build, and one run read as a regression.
+- **Root cause:** The container has no GPU. WebGL runs in SwiftShader and the headless shell composites in software.
+  - The visible landing costs about 300 ms a frame there, and some reveal and teardown sequences block for minutes.
+  - The original tube loader never reached its own eye in that container at all.
+- **Fix:**
+  - Loader logic was verified with `--disable-3d-apis` (the landing falls back to its poster) and on routes without the plate.
+  - Timing was verified with WebGL on, up to the way in.
+  - The hand-off onto the live plate is left for a hardware check.
+- **Guard:**
+  - In the cloud container, test overlay and loader logic with `--disable-3d-apis`.
+  - Treat a stall that appears only with WebGL as unproven until it is seen on hardware (the founder's `burin-check`).
+  - Before trusting a result from a local server, confirm which process owns the port: check `NEXT_DIST_DIR` in `/proc/<pid>/environ`, and restart it after every build.
