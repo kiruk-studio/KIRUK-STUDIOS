@@ -160,15 +160,25 @@ export function createHand(opts: {
           status.error = 'the worker did not answer';
           resolve(false);
         }, 8000);
+        let started = false;
         worker.addEventListener('error', (e) => {
           clearTimeout(timer);
-          status.error = `worker: ${e.message || 'failed to start'}`;
-          resolve(false);
+          if (!started) {
+            status.error = `worker: ${e.message || 'failed to start'}`;
+            resolve(false);
+            return;
+          }
+          // A crash mid-sheet (an uncaught throw, a lost context) posts no 'error' message:
+          // fail every waiting paint so pump() hands over to the page instead of hanging.
+          const err = new Error(`worker: ${e.message || 'crashed'}`);
+          for (const w of waiting.values()) w(err);
+          waiting.clear();
         });
         worker.addEventListener('message', (e: MessageEvent<HandFromWorker>) => {
           const m = e.data;
           if (m.type === 'ready') {
             clearTimeout(timer);
+            started = true;
             if (!m.webgl2) status.error = 'no WebGL 2 in the worker';
             resolve(m.webgl2);
           } else if (m.type === 'sheet') {
@@ -214,6 +224,11 @@ export function createHand(opts: {
     if (inflight || !queued || disposed) return;
     const job = queued;
     queued = null;
+    if (mode === 'none') {
+      // No hand anywhere: answer at once and keep saying so.
+      job.resolve(null);
+      return;
+    }
     inflight = job;
     status.state = 'painting';
     let sheet: HandSheet | null = null;

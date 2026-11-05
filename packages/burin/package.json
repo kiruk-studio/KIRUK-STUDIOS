@@ -18,7 +18,8 @@
     "./plate": "./src/plate/htmlPlate.ts"
   },
   "scripts": {
-    "check-types": "tsc -p tsconfig.json --noEmit"
+    "check-types": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "three": ">=0.186.0"
@@ -26,7 +27,8 @@
   "devDependencies": {
     "@types/three": "^0.186.0",
     "three": "^0.186.1",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
   },
   "engines": {
     "node": ">=22"
