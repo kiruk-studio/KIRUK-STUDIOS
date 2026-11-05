@@ -21,7 +21,7 @@ import {
   type LidBase,
   lidBase,
   lidStrokes,
-  openingOutline,
+  windowOutline,
 } from '../subjects/eye/strokes';
 import { type Clips, type Ctx2D, type InkColors, outlinePath, paintStrokes } from './ink';
 
@@ -113,7 +113,7 @@ export class LiveEye {
     g.restore();
     // The globe, turned by the gaze, seen through the lids.
     g.save();
-    g.clip(open >= 1 ? this.clips.window : outlinePath(openingOutline(S, at, 0.016)));
+    g.clip(open >= 1 ? this.clips.window : outlinePath(windowOutline(S, at)));
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.drawImage(
       this.ball as CanvasImageSource,

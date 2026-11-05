@@ -2,74 +2,76 @@
  * The engraved eye as strokes — the third writing of the same eye.
  *
  * rig.ts holds the eye in numbers; shader.ts cuts it as line fields on the GPU;
- * this file lays it as a list of strokes in the order a hand makes them, so a
- * pen can draw it at a pace:
+ * this file lays it as a list of strokes in the order a hand makes them, so a pen
+ * can draw it at a pace (the pen's vocabulary is hand/pen.ts):
  *
- *   I    construction, in chalk: the axis, the corners, the globe swung by
- *        compass with its parallels and meridians, the iris, the lids, the
- *        crease, the brow, the orbit (the plate's own ① – ⑧)
+ *   I    construction, in chalk: the axis, the corners, the globe swung by compass
+ *        with its parallels and meridians, the iris, the lids, the crease, the brow,
+ *        the orbit (the plate's own ① – ⑧)
  *   II   contour: the lash line, the lower lid, the crease, the limbus, the pupil
- *   III  hatching: the lid's band, the skin above the crease and below the lid,
- *        arcs on the white, spokes in the iris
- *   IV   cross-hatching and detail: the diagonal family in the deep shade, the
- *        iris rings and collarette, vessels, lashes and brow as flicked hairs,
- *        crow's feet, the plica, the lower fold
+ *   III  hatching, each family following its form: the upper lid's band, the lower
+ *        lid's pillow, the socket's rings, arcs on the white, fibres in the iris
+ *   IV   cross-hatching where the form turns from the light, the face's shade on the
+ *        white, then the detail: the iris's limbal ring, collarette and crypts, veins,
+ *        the caruncle, lashes and brow as flicked hairs
  *   V    the plate: the pupil inked round the kiruk star, and the cornea's window
  *
- * The families, their tones and their widths follow shader.ts: a line swells in
- * shade and thins in light, and in the lightest passages it breaks into dots and
- * flicks (gpu/lines engrave). What the GPU decides per pixel is decided here per
- * sample along each line. Change one writing, change the others.
+ * Light. One light from the upper left, as on the plate. The socket round the eye
+ * is a height field (a bowl rising from the lids to its rim, the brow ridge, the
+ * nose's wall, the cheekbone), and the tone of every ring follows its slope, held
+ * to a mid tone, so the shadows fall where the form puts them: under the brow,
+ * down the nose's wall, in the crescent under the eye. Black is never one family
+ * flooded but two crossed. The whites are left as paper.
+ *
+ * The socket. Following the anatomical plates, the skin round the eye is one
+ * family of rings, nested between the loop where the lids fold into the socket
+ * (the crease above, the lower lid's fold below) and the rim of the orbit, and
+ * fading past it to a ragged edge, spent before ±1.72 across and 1.56 above (the
+ * loader's frame is ±1.78, -1.62 … 1.22). Spiral families cross them only in the
+ * shade.
  *
  * Layers say how each stroke lives once the eye is drawn:
  *   cons  the chalk underdrawing, faded under the ink
- *   skin  everything that never moves (brow, skin, crease, lower lid)
- *   ball  the globe: white and iris, moved by the gaze, clipped by the lids
- *   lid   the upper lid: its band, its margin, its lashes, redrawn as it blinks
+ *   skin  everything that never moves (brow, socket, crease, lower lid)
+ *   ball  the globe: white and iris, moved by the gaze, clipped by the lids and
+ *         cut at the plica
+ *   lid   the upper lid, and what the face lays over the globe: the shade on the
+ *         white, the caruncle and the plica; redrawn as it blinks
  *
  * Units: CSS px from the eye's centre (x right, y down). S is CSS px per eye unit.
  * Pure TypeScript, no DOM: it runs in a worker.
  *
- * spec-link: ideas/studio-dawn/ink-opening.md · ideas/studio-dawn/eye.md
+ * spec-link: ideas/studio-dawn/ink-opening.md · ideas/studio-dawn/ink-strokes.md
  */
+import {
+  byAngle,
+  byParam,
+  byX,
+  chalkWidth,
+  clamp,
+  cutWidth,
+  fract,
+  HAIRLINE,
+  Hand,
+  hairWidth,
+  hash1,
+  hash2,
+  type LayOpts,
+  type Meta,
+  mix,
+  type Pen,
+  parseAbsPath,
+  type Stroke,
+  type StrokeLayer,
+  smooth,
+  TAU,
+  vnoise,
+} from '../../hand/pen';
 import { LOGOGRAM_FILLS, LOGOGRAM_NEEDLES, LOGOGRAM_VIEW } from '../../logogram';
-import { brow, crease, EYE, GLOBE, lowerLid, type Pose, REST, skewBump, upperLid } from './rig';
+import { brow, crease, EYE, GLOBE, lowerLid, type Pose, REST, upperLid } from './rig';
 
-/** What a stroke lays down: ink, the chalk of the construction, or paper (a highlight kept clear). */
-export type StrokeInk = 'ink' | 'chalk' | 'clear';
-export type StrokeLayer = 'cons' | 'skin' | 'ball' | 'lid';
-/** How the pen moves along a stroke. */
-export type Pen = 'chalk' | 'contour' | 'hatch' | 'flick' | 'fill';
-
-export interface Stroke {
-  /** Samples, CSS px from the eye's centre: x0, y0, x1, y1, … about one px apart. */
-  p: Float32Array;
-  /** Unit normal at each sample, interleaved like p. */
-  n: Float32Array;
-  /** Half-width at each sample, CSS px. 0 lifts the pen: a gap. */
-  w: Float32Array;
-  ink: StrokeInk;
-  layer: StrokeLayer;
-  /** I … V */
-  pass: 1 | 2 | 3 | 4 | 5;
-  /** The family it belongs to; the hand lays a family in its own window of time. */
-  group: string;
-  pen: Pen;
-  /** The samples the resting eye shows (ball strokes reach under the lids, for the gaze). */
-  from: number;
-  to: number;
-  /** Ball strokes: 1 where the resting lids show the sample (wet ink is masked, not clipped). */
-  vis?: Uint8Array;
-  /** A closed outline filled when the stroke is done (the pupil, the star's points), CSS px. */
-  fill?: Float32Array;
-  /** Clipped to the pupil or the iris as well as to the lids (the star, the cornea's window). */
-  clip?: 'pupil' | 'iris';
-  /** Opacity of a fill (the window is cleared to 0.92, as on the plate). */
-  alpha?: number;
-  /** Set by the schedule: when the pen starts it, and how long it takes, s. */
-  t0: number;
-  dur: number;
-}
+export type { Pen, Stroke, StrokeInk, StrokeLayer } from '../../hand/pen';
+export { parseAbsPath } from '../../hand/pen';
 
 export interface EyeDrawing {
   strokes: Stroke[];
@@ -78,7 +80,7 @@ export interface EyeDrawing {
   pose: Pose;
   /** The lids' opening as a closed outline, px: the upper lid out, the lower lid back. */
   opening: Float32Array;
-  /** The opening the white shows through: its lower edge sits above the tear meniscus. */
+  /** The opening the white shows through: off the tear meniscus, and cut at the plica. */
   window: Float32Array;
   /** The pupil's outline and the iris's, px (clips for the star and the cornea's window). */
   pupil: Float32Array;
@@ -87,42 +89,11 @@ export interface EyeDrawing {
   end: number;
 }
 
-// ── small maths, the shader's own ──────────────────────────────────────────
+// ── light ───────────────────────────────────────────────────────────────────
 
-const TAU = Math.PI * 2;
-const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v);
-const mix = (a: number, b: number, t: number) => a + (b - a) * t;
-const smooth = (a: number, b: number, x: number) => {
-  const t = clamp((x - a) / (b - a), 0, 1);
-  return t * t * (3 - 2 * t);
-};
-const fract = (x: number) => x - Math.floor(x);
-/** The GPU's hash (gpu/lines hash1), so a family's jitter matches the plate's. */
-const hash1 = (x: number) => fract(Math.sin(x * 91.3458) * 47453.5453);
-
-function hash2(ix: number, iy: number, seed: number) {
-  let h = (ix * 374761393 + iy * 668265263 + seed * 1442695041) | 0;
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
-/** Smooth value noise on a unit lattice, 0…1. */
-function vnoise(x: number, y: number, seed: number) {
-  const xi = Math.floor(x);
-  const yi = Math.floor(y);
-  const fx = x - xi;
-  const fy = y - yi;
-  const sx = fx * fx * (3 - 2 * fx);
-  const sy = fy * fy * (3 - 2 * fy);
-  const a = hash2(xi, yi, seed);
-  const b = hash2(xi + 1, yi, seed);
-  const c = hash2(xi, yi + 1, seed);
-  const d = hash2(xi + 1, yi + 1, seed);
-  return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
-}
-/** The shader's n0 channels, in eye units: r the lines' wobble, g patina, a the fade's edge. */
+/** The shader's n0 channels, in eye units: r the lines' wobble, g patina. */
 const n0r = (x: number, y: number) => vnoise(x * 2.3 + 7.1, y * 2.3 + 3.7, 11);
 const n0g = (x: number, y: number) => vnoise(x * 5.1 + 1.3, y * 5.1 + 9.2, 23);
-const n0a = (x: number, y: number) => vnoise(x * 1.6 + 4.4, y * 1.6 + 2.2, 37);
 
 /** The plate's resting light: from the upper left, 37° above the sheet (EyeEngine's default). */
 const SUN = (() => {
@@ -138,34 +109,11 @@ const shade = (nx: number, ny: number) =>
 const gauss = (dx: number, dy: number, sx: number, sy: number) =>
   Math.exp(-(dx * dx) / sx - (dy * dy) / sy);
 
-/**
- * The burin's width for a tone (gpu/lines engrave): half-width in CSS px, 0 for a gap.
- *   t      tone, 0 paper … 1 solid
- *   pitch  px between this line and the next
- *   idx    the line's number (each cut is its own: a little heavier or lighter)
- *   psi    along the line, in dash lengths
- */
-export function burinWidth(t: number, pitch: number, idx: number, psi: number) {
-  if (!(t > 0.012)) return 0;
-  const tt = Math.min(t, 1);
-  const jitter = hash1(idx) * 0.3 + 0.85;
-  const burr = (hash1(idx * 7.13 + Math.floor(psi * 2.7)) - 0.5) * 0.14 + 1;
-  const full = mix(0.2, pitch * 0.52, tt ** 1.12) * jitter * burr;
-  const light = smooth(0.24, 0.32, tt);
-  if (light >= 1) return full;
-  // Dot and flick: below ~0.3 the line is cut as lozenges whose length follows the tone.
-  const duty = clamp(tt / 0.3, 0.07, 1);
-  const dp = fract(psi + hash1(idx + 17.31));
-  if (dp >= duty) return light > 0.5 ? full * light : 0;
-  const lozenge = Math.sin((dp / duty) * Math.PI) ** 0.55 * 1.25;
-  return full * mix(lozenge, 1, light);
-}
-
 // ── the eye's curves for a pose, as lookup tables (rig.ts is the truth) ─────
 
-const LUT_X0 = -2;
-const LUT_N = 2001;
-const LUT_DX = 4 / (LUT_N - 1);
+const LUT_X0 = -2.2;
+const LUT_N = 2201;
+const LUT_DX = 4.4 / (LUT_N - 1);
 
 function lut(f: (x: number) => number) {
   const t = new Float32Array(LUT_N);
@@ -173,15 +121,12 @@ function lut(f: (x: number) => number) {
   return (x: number) => {
     const u = clamp((x - LUT_X0) / LUT_DX, 0, LUT_N - 1.001);
     const i = u | 0;
-    const k = u - i;
-    return t[i] + (t[i + 1] - t[i]) * k;
+    return t[i] + (t[i + 1] - t[i]) * (u - i);
   };
 }
 
-const midline = (x: number) => mix(EYE.canthus.inY, EYE.canthus.outY, (x + 1) / 2);
 /** The upper lid has a thickness: the lash line in front, the edge on the eye behind. */
 const marginAt = (x: number) => (1 - smooth(0.86, 1.03, Math.abs(x))) * 0.02 + 0.002;
-
 /** px across a curve per px of height: the slope's correction for a line's pitch. */
 const slopeOf = (f: (x: number) => number) =>
   lut((x) => Math.hypot((f(x + 0.012) - f(x - 0.012)) / 0.024, 1));
@@ -193,10 +138,11 @@ interface Curves {
   yL: Curve;
   yC: Curve;
   yB: Curve;
+  /** The lower lid's fold: the pillow of the lid ends here and the socket begins. */
+  yF: Curve;
   kU: Curve;
-  kL: Curve;
-  kC: Curve;
 }
+
 /**
  * The curves for a pose. Only the upper lid moves with the aperture, so a blink passes
  * the resting curves as `base` and rebuilds that one alone.
@@ -206,13 +152,297 @@ function curvesFor(pose: Pose, base?: Curves): Curves {
   const kU = slopeOf(yU);
   if (base && base.gy === pose.gy) return { ...base, yU, kU };
   const yL = lut((x) => lowerLid(x, pose));
-  const yC = lut((x) => crease(x, pose));
-  return { gy: pose.gy, yU, yL, yC, yB: lut(brow), kU, kL: slopeOf(yL), kC: slopeOf(yC) };
+  const yF = lut(
+    (x) => lowerLid(x, pose) + 0.165 * (1 - 0.62 * smooth(0.55, 1.05, Math.abs(x - 0.05))),
+  );
+  return { gy: pose.gy, yU, yL, yC: lut((x) => crease(x, pose)), yB: lut(brow), yF, kU };
 }
 
-/** The tones of the plate, for a pose, under the resting light (shader.ts, region by region). */
-function tonesFor(c: Curves, pose: Pose) {
-  const { yU, yL, yC, yB } = c;
+// ── the socket: the loop where the lids fold in, and the rings round it ─────
+
+const ORBIT_C = [0.02, -0.12] as const;
+const NB = 1440;
+
+interface Orbit {
+  /** Where a point sits between the loop (0) and the orbit's rim (1); negative inside the loop. */
+  t(x: number, y: number): number;
+  /** Inside the loop (the lids' own ground), the cheap test strokes ask per sample. */
+  inLoop(x: number, y: number): boolean;
+  /** The point at ring coordinate t and angle a about the socket's centre. */
+  at(t: number, a: number): [number, number];
+  /** Eye units from ring t to the rim along angle a: ring t's share of it is its pitch. */
+  span(a: number, t: number): number;
+}
+
+/** How far a ring has relaxed the loop's corners, by its t: none at the loop, round at the rim. */
+const RELAX_T = [0, 0.12, 0.3, 0.55, 0.85, 1.4] as const;
+const RELAX_A = [0, 0.035, 0.08, 0.14, 0.22, 0.32] as const;
+
+/**
+ * The loop runs along the crease above and the lower lid's fold below, closing round
+ * both corners; the rim is an egg, nearer on the nose's side and under the eye.
+ * Rings are nested between them, so they wrap the corners with no seam, and each ring
+ * relaxes the loop's corners the further out it lies, the way contour lines soften away
+ * from a fold: the first rings hug the lids, the last are the orbit's smooth egg.
+ */
+function orbitFor(C: Curves): Orbit {
+  const [cx, cy] = ORBIT_C;
+  const xs: number[] = [];
+  const ys: number[] = [];
+  const XC = 1.163;
+  const quad = (
+    a: readonly [number, number],
+    b: readonly [number, number],
+    c: readonly [number, number],
+    t: number,
+  ) => {
+    const u = 1 - t;
+    return [
+      u * u * a[0] + 2 * u * t * b[0] + t * t * c[0],
+      u * u * a[1] + 2 * u * t * b[1] + t * t * c[1],
+    ];
+  };
+  for (let i = 0; i <= 400; i++) {
+    const x = -XC + (2 * XC * i) / 400;
+    xs.push(x);
+    ys.push(C.yC(x));
+  }
+  for (let i = 1; i < 40; i++) {
+    const [x, y] = quad([XC, C.yC(XC)], [1.215, 0.035], [1.0, C.yF(1.0)], i / 40);
+    xs.push(x);
+    ys.push(y);
+  }
+  for (let i = 0; i <= 300; i++) {
+    const x = 1.0 - (1.95 * i) / 300;
+    xs.push(x);
+    ys.push(C.yF(x));
+  }
+  for (let i = 1; i < 40; i++) {
+    const [x, y] = quad([-0.95, C.yF(-0.95)], [-1.205, 0.16], [-XC, C.yC(-XC)], i / 40);
+    xs.push(x);
+    ys.push(y);
+  }
+  const n = xs.length;
+  const th = xs.map((x, i) => Math.atan2(ys[i] - cy, x - cx));
+  const rr = xs.map((x, i) => Math.hypot(x - cx, ys[i] - cy));
+  const order = th.map((_, i) => i).sort((a, b) => th[a] - th[b]);
+  const rIn = new Float32Array(NB);
+  const rOut = new Float32Array(NB);
+  let k = 0;
+  for (let b = 0; b < NB; b++) {
+    const a = -Math.PI + (b / NB) * TAU;
+    while (k < n && th[order[k]] < a) k++;
+    const i1 = order[k % n];
+    const i0 = order[(k - 1 + n) % n];
+    let a0 = th[i0];
+    let a1 = th[i1];
+    if (k === 0) a0 -= TAU;
+    if (k >= n) a1 += TAU;
+    const f = a1 > a0 ? (a - a0) / (a1 - a0) : 0;
+    rIn[b] = mix(rr[i0], rr[i1], f);
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    const ax = mix(1.78, 1.95, smooth(-0.25, 0.25, c));
+    const by = mix(1.5, 1.32, smooth(-0.25, 0.25, s));
+    rOut[b] = 1 / Math.hypot(c / ax, s / by);
+  }
+  const look = (tab: Float32Array, a: number) => {
+    const u = ((a + Math.PI) / TAU) * NB;
+    const i = Math.floor(u);
+    const f = u - i;
+    const i0 = ((i % NB) + NB) % NB;
+    const i1 = (i0 + 1) % NB;
+    return tab[i0] + (tab[i1] - tab[i0]) * f;
+  };
+  // The loop relaxed by a circular gaussian over the angle, one table per level.
+  const levels = RELAX_A.map((sig) => {
+    if (sig === 0) return rIn;
+    const sb = (sig / TAU) * NB;
+    const K = Math.ceil(sb * 3);
+    const wts = new Float32Array(2 * K + 1);
+    let sum = 0;
+    for (let k = -K; k <= K; k++) sum += wts[k + K] = Math.exp(-((k / sb) ** 2) / 2);
+    const out = new Float32Array(NB);
+    for (let i = 0; i < NB; i++) {
+      let acc = 0;
+      for (let k = -K; k <= K; k++) acc += rIn[(i + k + NB * 4) % NB] * wts[k + K];
+      out[i] = acc / sum;
+    }
+    return out;
+  });
+  const riAt = (a: number, t: number) => {
+    if (t <= 0) return look(rIn, a);
+    let k = 0;
+    while (k < RELAX_T.length - 2 && t > RELAX_T[k + 1]) k++;
+    const f = clamp((t - RELAX_T[k]) / (RELAX_T[k + 1] - RELAX_T[k]), 0, 1);
+    return mix(look(levels[k], a), look(levels[k + 1], a), f);
+  };
+  return {
+    t(x, y) {
+      const a = Math.atan2(y - cy, x - cx);
+      const r = Math.hypot(x - cx, y - cy);
+      const ro = look(rOut, a);
+      let ri = look(rIn, a);
+      let t = (r - ri) / (ro - ri);
+      // A ring's own relaxation depends on its t: two steps settle it.
+      for (let q = 0; q < 2 && t > 0; q++) {
+        ri = riAt(a, t);
+        t = (r - ri) / (ro - ri);
+      }
+      return t;
+    },
+    inLoop(x, y) {
+      return Math.hypot(x - cx, y - cy) < look(rIn, Math.atan2(y - cy, x - cx));
+    },
+    at(t, a) {
+      const ri = riAt(a, t);
+      const r = ri + t * (look(rOut, a) - ri);
+      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    },
+    span(a, t) {
+      return look(rOut, a) - riAt(a, t);
+    },
+  };
+}
+
+/** A tone sampled on a grid in eye units and read back bilinearly (the form's light is smooth). */
+interface Grid {
+  at(x: number, y: number): number;
+}
+
+/**
+ * The brow ridge's line: a smooth arc under the brow (the rig's brow curve has cusps
+ * past its ends, and the ridge runs on past them into the nose and the temple).
+ */
+const ridgeY = (x: number) => -1.03 - 0.24 * Math.exp(-(((x - 0.2) / 1.15) ** 2));
+
+/**
+ * The socket's tone. Its height rises from the loop to the rim and rolls away past it;
+ * the brow ridge, the nose's wall and the cheekbone stand out of it. Shade follows the
+ * slope against the light, held to a mid tone so the form reads in line weight, not in
+ * black; occlusion darkens the folds and the hollow at the inner corner under the brow's
+ * head; the brow casts onto the hollow; the drawing frays out past the rim, sooner
+ * below the eye than above it.
+ */
+function socketTone(
+  C: Curves,
+  O: Orbit,
+  S: number,
+  browCast: (x: number, y: number) => number,
+): Grid {
+  const b = EYE.brow;
+  /** Inside the brow's mass (1) or off it (0): there the hair carries the tone, not the rings. */
+  const browIn = (x: number, y: number) => {
+    const s = (x - b.x0) / (b.x1 - b.x0);
+    if (s < -0.08 || s > 1.08) return 0;
+    const half = mix(b.w0, b.w1, clamp(s, 0, 1) ** 0.85);
+    const d = Math.abs(y - C.yB(clamp(x, b.x0, b.x1)) - half * 0.12) / half;
+    return (1 - smooth(0.75, 1.3, d)) * smooth(-0.08, 0.1, s) * (1 - smooth(0.9, 1.06, s));
+  };
+  const cell = Math.max(0.015, 4.5 / S);
+  const X0 = -2.15;
+  const X1 = 2.25;
+  const Y0 = -1.9;
+  const Y1 = 1.6;
+  const nx = Math.ceil((X1 - X0) / cell) + 1;
+  const ny = Math.ceil((Y1 - Y0) / cell) + 1;
+  const tt = new Float32Array(nx * ny);
+  const hh = new Float32Array(nx * ny);
+  for (let j = 0; j < ny; j++) {
+    const y = Y0 + j * cell;
+    for (let i = 0; i < nx; i++) {
+      const x = X0 + i * cell;
+      const t = O.t(x, y);
+      tt[j * nx + i] = t;
+      // The bowl: a gentle rise from the loop to its rim, rolling away past it. Above
+      // the eye the rim is the brow ridge (the forehead beyond it is a lit plane), so
+      // the socket's wall under the brow faces down, away from the light.
+      const up = smooth(0.1, 0.6, -(y - ORBIT_C[1]) / Math.hypot(x - ORBIT_C[0], y - ORBIT_C[1]));
+      const tr = mix(1, 0.6, up);
+      let h =
+        t < tr ? 0.36 * smooth(-0.08, tr, t) : 0.36 * (1 - ((t - tr) / tr) ** 2 * 1.2 * (1 - up));
+      // The brow ridge stands out above the socket and runs on into the nose and the temple.
+      h +=
+        0.15 *
+        Math.exp(-(((y - (ridgeY(x) + 0.02)) / 0.26) ** 2)) *
+        smooth(-1.75, -1.0, x) *
+        (1 - smooth(1.4, 1.95, x));
+      // The nose's wall rises on the inner side, highest level with the brow's head.
+      h += 0.34 * smooth(-1.08, -1.85, x) * (1 - smooth(0.0, 0.9, y)) * smooth(-1.6, -1.0, y);
+      // The cheekbone, a soft swell under the outer half.
+      h += 0.1 * Math.exp(-(((y - 0.98) / 0.32) ** 2)) * smooth(-0.6, 0.7, x);
+      hh[j * nx + i] = h;
+    }
+  }
+  const T = new Float32Array(nx * ny);
+  for (let j = 0; j < ny; j++) {
+    const y = Y0 + j * cell;
+    const j0 = Math.max(j - 1, 0);
+    const j1 = Math.min(j + 1, ny - 1);
+    for (let i = 0; i < nx; i++) {
+      const x = X0 + i * cell;
+      const i0 = Math.max(i - 1, 0);
+      const i1 = Math.min(i + 1, nx - 1);
+      const hx = (hh[j * nx + i1] - hh[j * nx + i0]) / ((i1 - i0) * cell);
+      const hy = (hh[j1 * nx + i] - hh[j0 * nx + i]) / ((j1 - j0) * cell);
+      const t = tt[j * nx + i];
+      const tp = Math.max(t, 0);
+      // Above the eye or below it, blended across the corners so nothing seams.
+      const up = 1 - smooth(-0.22, 0.3, y - 0.02);
+      // The slope's shade, held between a lit plane and a mid tone.
+      const form = clamp(shade(-hx, -hy) * 1.1, -0.12, 0.48);
+      // The fold: deep under the crease, shallow along the lower lid's fold.
+      const fold = Math.exp(-tp / mix(0.05, 0.07, up)) * mix(0.18, 0.34, up);
+      // The hollow at the inner corner, under the brow's head, against the nose.
+      const hollow =
+        gauss(x + 1.16, y + 0.2, 0.03, 0.12) * 0.22 + gauss(x + 1.1, y - 0.03, 0.008, 0.012) * 0.16;
+      // The outer corner's fold, where the lids meet under the crease.
+      const outer = gauss(x - 1.2, y + 0.02, 0.006, 0.01) * 0.26;
+      // The tear trough: a crescent under the inner half of the lower lid.
+      const trough =
+        (1 - up) * Math.exp(-(((t - 0.15) / 0.11) ** 2)) * (0.32 - 0.18 * smooth(-0.2, 0.9, x));
+      let v =
+        0.05 +
+        form +
+        fold +
+        hollow +
+        outer +
+        trough +
+        browCast(x, y) * 0.16 +
+        (vnoise(x * 5 + 2, y * 5 + 7, 41) - 0.5) * 0.06;
+      // Fade: the drawing frays out past the rim, sooner below the eye and toward the temple.
+      const reach = mix(0.8, 1.02, up);
+      const fray = (vnoise(x * 2.4 + 3, y * 2.4 + 1, 43) - 0.5) * mix(0.18, 0.3, up);
+      v *= 1 - smooth(reach - 0.2, reach + mix(0.14, 0.22, up), t + fray);
+      // The sheet: the fray is spent before ±1.72 across and 1.56 above, so a frame cut
+      // round the drawing (the loader's is ±1.78, -1.62 … 1.22) never cuts a line.
+      v *= 1 - smooth(1.36, 1.72, Math.abs(x - 0.02) + fray * 0.7);
+      v *= 1 - smooth(-1.36, -1.56, y + fray * 0.5);
+      v *= 1 - 0.62 * browIn(x, y);
+      // The single family stays a family of lines: the crossing makes the black.
+      T[j * nx + i] = Math.min(v, 0.94);
+    }
+  }
+  return {
+    at(x, y) {
+      const u = (x - X0) / cell;
+      const v = (y - Y0) / cell;
+      if (!(u >= 0 && v >= 0 && u < nx - 1 && v < ny - 1)) return 0;
+      const i = u | 0;
+      const j = v | 0;
+      const fu = u - i;
+      const fv = v - j;
+      const k = j * nx + i;
+      const a = T[k] + (T[k + 1] - T[k]) * fu;
+      const b = T[k + nx] + (T[k + nx + 1] - T[k + nx]) * fu;
+      return a + (b - a) * fv;
+    },
+  };
+}
+
+/** The tones of the eye's own parts, for a pose, under the resting light. */
+function tonesFor(C: Curves, pose: Pose) {
+  const { yU, yL, yC, yB, yF } = C;
   const b = EYE.brow;
   const ic: [number, number] = [EYE.iris.gx * pose.gx, EYE.iris.gy * pose.gy + EYE.iris.cy];
   const rxy: [number, number] = [
@@ -220,98 +450,82 @@ function tonesFor(c: Curves, pose: Pose) {
     EYE.iris.R * Math.cos(pose.gy * 0.44),
   ];
   const inOpen = (x: number, y: number) => Math.abs(x) <= 1 && y >= yU(x) && y <= yL(x);
-  /** Outside the opening and off the lid's pale margin: where the skin's lines may run. */
-  const onSkin = (x: number, y: number) => {
-    if (Math.abs(x) > 1) return true;
-    const u = yU(x);
-    return y < u - marginAt(x) || y > yL(x);
-  };
   const castLid = (x: number, y: number) => {
     const k = 0.075 / LZ;
     return smooth(-0.014, 0.014, yU(x + SUN[0] * k) - (y + SUN[1] * k));
   };
+  /** The lashes' shadow on the white: soft strands, leaning as the lashes lean, never bars. */
   const lashShadow = (x: number, y: number) => {
     const k = 0.17 / LZ;
     const qx = x + SUN[0] * k;
     const qy = y + SUN[1] * k;
-    const yl = yU(qx);
-    return qy >= yl - 0.15 &&
-      qy <= yl - 0.006 &&
-      hash1(Math.floor(qx * 48)) >= 0.42 &&
-      Math.abs(qx) <= 0.95
-      ? 1
-      : 0;
+    const d = yU(qx) - qy;
+    if (d < 0.004 || d > 0.15 || Math.abs(qx) > 0.95) return 0;
+    const u = qx * 44 + d * (14 + 30 * smooth(-0.8, 1, qx));
+    return (
+      smooth(0.5, 0.78, vnoise(u, 3.7, 29)) *
+      smooth(0.004, 0.03, d) *
+      (1 - smooth(0.09, 0.15, d)) *
+      (1 - smooth(0.85, 0.95, Math.abs(qx)))
+    );
   };
   const browHalf = (x: number) => mix(b.w0, b.w1, clamp((x - b.x0) / (b.x1 - b.x0), 0, 1) ** 0.85);
+  /** The brow's mass casts a soft shadow down onto the hollow under it. */
   const browCast = (x: number, y: number) => {
-    if (y < yB(x)) return 0;
+    const below = smooth(-0.02, 0.05, y - yB(clamp(x, b.x0, b.x1)));
+    if (below <= 0) return 0;
     const k = 0.13 / LZ;
     const qx = x + SUN[0] * k;
     const qy = y + SUN[1] * k;
     const h = browHalf(qx);
     return (
-      (1 - smooth(h * 0.6, h * 1.4, Math.abs(qy - yB(qx)))) *
+      below *
+      (1 - smooth(h * 0.6, h * 1.6, Math.abs(qy - yB(clamp(qx, b.x0, b.x1))))) *
       smooth(b.x0 - 0.05, b.x0 + 0.12, qx) *
       (1 - smooth(b.x1 - 0.2, b.x1 + 0.05, qx))
     );
   };
-  const browMass = (x: number, y: number) =>
-    Math.exp(-(((y - yB(x)) / (browHalf(x) * 1.25)) ** 2)) *
-    smooth(b.x0 - 0.05, b.x0 + 0.15, x) *
-    (1 - smooth(b.x1 - 0.25, b.x1 + 0.05, x));
-  const corners = (x: number, y: number) =>
-    gauss(x + 1.07, y + 0.22, 0.05, 0.22) * 0.38 + gauss(x - 1.08, y + 0.03, 0.04, 0.07) * 0.3;
-  const fadeAt = (x: number, y: number) =>
-    1 -
-    smooth(0.8, 1.0, Math.hypot((x - 0.06) / 1.52, (y + 0.22) / 1.18) + (n0a(x, y) - 0.5) * 0.16);
   const foldReach = clamp(-SUN[1] / LZ, 0.3, 1.6) * 0.3;
 
-  /** The skin: above the crease, on the lid's band, or below the lower lid (shader Tskin). */
-  const skin = (x: number, y: number) => {
-    let T: number;
-    if (y <= midline(x)) {
-      const cc = yC(x);
-      if (y <= cc) {
-        const dC = cc - y;
-        const sB = clamp(dC / Math.max(cc - yB(x), 0.2), 0, 1);
-        const hollow = shade(x * 0.35, mix(0.5, -0.45, smooth(0.15, 0.85, sB)));
-        T =
-          Math.exp(-dC / 0.1) * 0.46 +
-          smooth(0.1, 1.15, x) * Math.exp(-dC / 0.32) * 0.12 +
-          hollow * 0.55 +
-          browCast(x, y) * 0.3;
-      } else {
-        const u = yU(x);
-        const band = Math.max(u - cc, 0.03);
-        const tl = clamp((u - y) / band, 0, 1);
-        const lidShade = shade(x * 0.45, mix(0.55, -0.22, smooth(0, 0.85, tl)));
-        T =
-          0.07 +
-          smooth(-0.35, 1.05, x) * 0.12 +
-          (1 - smooth(0, 0.16, tl)) * 0.26 +
-          tl * 0.08 +
-          smooth(1 - foldReach, 1, tl) * 0.28 +
-          lidShade * 0.6;
-      }
-    } else {
-      const dLo = Math.max(y - yL(x), 0);
-      const lowNy =
-        dLo < 0.165 ? mix(-0.45, 0.35, dLo / 0.165) : mix(0.35, -0.25, smooth(0.165, 0.45, dLo));
-      T =
-        Math.exp(-dLo / 0.045) * 0.42 +
-        Math.exp(-((dLo - 0.17) ** 2) / 0.004) * 0.2 +
-        smooth(0.25, 1.1, x) * Math.exp(-dLo / 0.3) * 0.08 +
-        shade(x * 0.35, lowNy) * 0.5;
-    }
-    const bm = browMass(x, y);
-    return (T + corners(x, y) + bm * 0.3) * Math.max(fadeAt(x, y), bm * 0.9);
+  /** The upper lid: lit as it rolls over the globe, in shade under the fold and under the lashes. */
+  const lid = (x: number, y: number) => {
+    const u = yU(x);
+    const cc = yC(x);
+    const band = Math.max(u - cc, 0.03);
+    const tl = clamp((u - y) / band, 0, 1);
+    const lidShade = shade(x * 0.45, mix(0.55, -0.22, smooth(0, 0.85, tl)));
+    return (
+      0.04 +
+      smooth(-0.35, 1.05, x) * 0.08 +
+      (1 - smooth(0, 0.16, tl)) * 0.3 +
+      tl * 0.06 +
+      smooth(1 - foldReach, 1, tl) * 0.3 +
+      Math.exp(-(1 - tl) / 0.09) * 0.2 +
+      lidShade * 0.7 +
+      smooth(0.72, 1.12, Math.abs(x)) * 0.16 +
+      (n0g(x, y) - 0.5) * 0.05
+    );
+  };
+
+  /** The lower lid's pillow: it faces up into the light, and turns down into its fold. */
+  const pillow = (x: number, y: number) => {
+    const top = yL(x) + 0.03;
+    const tp = clamp((y - top) / Math.max(yF(x) - top, 0.02), 0, 1);
+    return (
+      0.04 +
+      Math.exp(-tp / 0.16) * 0.26 +
+      smooth(0.62, 1, tp) * 0.3 +
+      shade(x * 0.35, mix(-0.45, 0.42, tp)) * 0.6 +
+      smooth(0.7, 1.05, Math.abs(x)) * 0.25 +
+      (1 - smooth(-0.9, -0.3, x)) * 0.1 +
+      (n0g(x, y) - 0.5) * 0.05
+    );
   };
 
   /**
-   * The white (shader Ts): contact shade under the lid, its cast shadow, the corners, the
-   * globe. The lids' shade is read at the nearest point the opening shows, so the white
-   * that waits under the lids for the gaze comes into view as a continuation of the
-   * white, not as the shadow it sat in.
+   * The white's own form, carried by the globe as it turns: darker away from the cornea,
+   * and a little where the globe curves from the light. Held light, so whatever part of
+   * the white the gaze brings into view arrives as clean as the rest.
    */
   const sclera = (x: number, y: number) => {
     const svx = x - ic[0];
@@ -321,298 +535,74 @@ function tonesFor(c: Curves, pose: Pose) {
     const gz = Math.sqrt(Math.max(1 - gdx * gdx - gdy * gdy, 0.03));
     const shadeGlobe =
       SUN[2] - (gdx * SUN[0] + gdy * SUN[1] + gz * SUN[2]) / Math.hypot(gdx, gdy, gz);
-    const xs = clamp(x, -0.97, 0.97);
-    const ys = clamp(y, yU(xs), yL(xs));
-    const out = Math.hypot(Math.max(Math.abs(x) - 1, 0), Math.max(yU(xs) - y, y - yL(xs), 0));
-    const lids = 1 - smooth(0, 0.12, out);
     return (
-      -0.04 +
-      ((1 - smooth(0, 0.045, ys - yU(xs))) * 0.3 +
-        castLid(xs, ys) * 0.5 +
-        lashShadow(xs, ys) * 0.22 +
-        smooth(0.5, 1.0, Math.abs(xs)) * 0.3) *
-        lids +
-      smooth(0.45, 1.0, Math.hypot(svx * 0.8, svy * 1.25)) * 0.18 +
-      shadeGlobe * 0.75 +
-      (n0g(x, y) - 0.5) * 0.08
+      0.02 +
+      smooth(0.5, 1.0, Math.hypot(svx * 0.8, svy * 1.25)) * 0.14 +
+      clamp(shadeGlobe, -0.1, 0.4) * 0.5 +
+      (n0g(x, y) - 0.5) * 0.06
     );
   };
 
-  /** The iris (shader Ti): streaks, crypts, a dark rim, the lid's shade, the limbal glow. */
+  /**
+   * The shade the face lays on the white, which stays where it is when the globe turns:
+   * the upper lid's band and its lashes' broken shadow, the corners, the lower lid's
+   * contact, and the globe's far side turning from the light.
+   */
+  const whiteShade = (x: number, y: number) => {
+    const xs = clamp(x, -0.97, 0.97);
+    return (
+      -0.04 +
+      (1 - smooth(0, 0.08, y - yU(xs))) * 0.42 +
+      castLid(x, y) * 0.45 +
+      lashShadow(x, y) * 0.16 +
+      smooth(0.5, 1.0, Math.abs(x)) * 0.34 +
+      (1 - smooth(0, 0.035, yL(xs) - y)) * 0.18 +
+      smooth(0.42, 1.0, x) * 0.24 +
+      (n0g(x + 3.1, y + 1.7) - 0.5) * 0.06
+    );
+  };
+
+  /** The collarette, where the iris's two zones meet: a ragged zig-zag, never regular. */
+  const collarR = (th: number) => {
+    const lobe = 1 - 4 * Math.abs(fract((th * 17) / TAU + 0.06 * Math.sin(th * 3) + 0.25) - 0.5);
+    const amp = 0.45 + 0.9 * vnoise(Math.cos(th) * 1.7 + 3, Math.sin(th) * 1.7 + 5, 57);
+    return (
+      0.56 +
+      0.032 * lobe * amp +
+      (vnoise(Math.cos(th) * 3 + 1, Math.sin(th) * 3 + 2, 59) - 0.5) * 0.03
+    );
+  };
+
+  /**
+   * The iris: a dark limbal ring, a darker pupillary zone inside the collarette and a
+   * light ridge just outside it, streaks, the lid's shadow across its top, and the light
+   * that passes the cornea to brighten its far side.
+   */
   const iris = (x: number, y: number) => {
     const qx = (x - ic[0]) / rxy[0];
     const qy = (y - ic[1]) / rxy[1];
     const r = Math.hypot(qx, qy);
     const th = Math.atan2(qy, qx);
+    const rc = collarR(th);
     const streak = vnoise((th / TAU) * 15 + 2, r * 1.05 + 5, 51);
-    const cu = (th / TAU) * 26;
-    const ci = Math.floor(cu);
-    const rc = 0.66 + hash1(ci + 11.1) * 0.14;
-    const crypt =
-      hash1(ci + 5.5) >= 0.38
-        ? 1 -
-          smooth(
-            0.7,
-            1.0,
-            Math.hypot((fract(cu) - 0.5) / 0.36, (r - rc) / (0.06 + hash1(ci + 3.3) * 0.04)),
-          )
-        : 0;
     return (
-      0.4 +
-      (r <= 0.54 ? 0.16 : 0) +
+      0.34 +
+      (r < rc ? 0.1 : 0) -
+      Math.exp(-(((r - rc - 0.03) / 0.032) ** 2)) * 0.3 +
       (streak - 0.5) * 0.42 +
-      crypt * 0.42 +
-      smooth(0.8, 0.99, r) * 0.5 +
-      (1 - smooth(0, 0.06, y - yU(x))) * 0.2 +
-      castLid(x, y) * 0.36 +
-      ((qx * SUN[0] + qy * SUN[1]) / LXY) * 0.11
+      smooth(0.8, 0.97, r) * 0.62 +
+      (1 - smooth(0, 0.08, y - yU(x))) * 0.16 +
+      castLid(x, y) * 0.22 +
+      ((qx * SUN[0] + qy * SUN[1]) / LXY) * 0.12
     );
   };
 
-  return { ic, rxy, inOpen, onSkin, skin, sclera, iris, fadeAt };
+  return { ic, rxy, inOpen, lid, pillow, sclera, whiteShade, iris, collarR, browCast };
 }
 
 /** The pupil's crenellated ruff, as a radius in iris units (shader: ruffR). */
 const ruffAt = (th: number, pupilK: number) =>
   pupilK + 0.045 + Math.sin(th * 42) * 0.012 + hash1(Math.floor(fract(th / TAU) * 42)) * 0.012;
-
-// ── laying strokes ──────────────────────────────────────────────────────────
-
-type Meta = Pick<Stroke, 'ink' | 'layer' | 'pass' | 'group' | 'pen'> &
-  Partial<Pick<Stroke, 'clip' | 'alpha'>>;
-
-/** Half-width of a sample: eye units (x, y) and px along the stroke (s). */
-type WidthAt = (x: number, y: number, s: number) => number;
-/** Whether the resting eye shows a sample (ball strokes only). */
-type Shown = (x: number, y: number) => boolean;
-
-class Hand {
-  out: Stroke[] = [];
-  constructor(readonly S: number) {}
-
-  /**
-   * Lay one line: resample a curve (eye units) every `step` px, give each sample
-   * its half-width, drop the pen-up ends, split where the pen would travel a long
-   * way lifted, and keep what is left.
-   */
-  lay(curve: number[], width: WidthAt, meta: Meta, shown?: Shown, gapSplit = 14, step = 1) {
-    const S = this.S;
-    const n0 = curve.length / 2;
-    if (n0 < 1) return;
-    const xs: number[] = [];
-    const ys: number[] = [];
-    const ss: number[] = [];
-    if (n0 === 1) {
-      xs.push(curve[0]);
-      ys.push(curve[1]);
-      ss.push(0);
-    }
-    let acc = 0;
-    let next = 0;
-    for (let i = 0; i < n0 - 1; i++) {
-      const ax = curve[2 * i];
-      const ay = curve[2 * i + 1];
-      const bx = curve[2 * i + 2];
-      const by = curve[2 * i + 3];
-      const L = Math.hypot(bx - ax, by - ay) * S;
-      while (next <= acc + L) {
-        const t = L > 0 ? (next - acc) / L : 0;
-        xs.push(ax + (bx - ax) * t);
-        ys.push(ay + (by - ay) * t);
-        ss.push(next);
-        next += step;
-      }
-      acc += L;
-    }
-    const m = xs.length;
-    if (m < 1) return;
-    const w = new Float32Array(m);
-    for (let i = 0; i < m; i++) w[i] = Math.max(0, width(xs[i], ys[i], ss[i]) || 0);
-    let i = 0;
-    while (i < m) {
-      while (i < m && !(w[i] > 0)) i++;
-      if (i >= m) break;
-      let j = i;
-      let lastInk = i;
-      while (j < m) {
-        if (w[j] > 0) lastInk = j;
-        else if ((j - lastInk) * step > gapSplit) break;
-        j++;
-      }
-      this.push(xs, ys, w, i, lastInk, meta, shown);
-      i = j;
-    }
-  }
-
-  private push(
-    xs: number[],
-    ys: number[],
-    w: Float32Array,
-    a: number,
-    b: number,
-    meta: Meta,
-    shown?: Shown,
-  ) {
-    const S = this.S;
-    const k = b - a + 1;
-    const p = new Float32Array(k * 2);
-    const n = new Float32Array(k * 2);
-    const ww = new Float32Array(k);
-    for (let i = 0; i < k; i++) {
-      p[2 * i] = xs[a + i] * S;
-      p[2 * i + 1] = ys[a + i] * S;
-      ww[i] = w[a + i];
-    }
-    for (let i = 0; i < k; i++) {
-      const q = Math.min(k - 1, i + 1);
-      const r = Math.max(0, i - 1);
-      const dx = p[2 * q] - p[2 * r];
-      const dy = p[2 * q + 1] - p[2 * r + 1];
-      const d = Math.hypot(dx, dy);
-      n[2 * i] = d > 0 ? -dy / d : 0;
-      n[2 * i + 1] = d > 0 ? dx / d : 1;
-    }
-    let from = 0;
-    let to = k - 1;
-    let vis: Uint8Array | undefined;
-    if (shown) {
-      from = -1;
-      vis = new Uint8Array(k);
-      for (let i = 0; i < k; i++) {
-        if (shown(xs[a + i], ys[a + i])) {
-          vis[i] = 1;
-          if (ww[i] > 0) {
-            if (from < 0) from = i;
-            to = i;
-          }
-        }
-      }
-      if (from < 0) {
-        // Never seen at rest: the hand skips it, the live eye still has it for the gaze.
-        from = 0;
-        to = -1;
-      }
-    }
-    this.out.push({ ...meta, p, n, w: ww, from, to, vis, t0: 0, dur: 0 });
-  }
-
-  /** A filled outline (eye units) with nothing to draw on the way: it lands when its time comes. */
-  fill(poly: number[], meta: Meta, at: readonly [number, number]) {
-    const S = this.S;
-    const f = new Float32Array(poly.length);
-    for (let i = 0; i < poly.length; i++) f[i] = poly[i] * S;
-    this.out.push({
-      ...meta,
-      p: new Float32Array([at[0] * S, at[1] * S]),
-      n: new Float32Array([0, 1]),
-      w: new Float32Array([0]),
-      from: 0,
-      to: 0,
-      fill: f,
-      t0: 0,
-      dur: 0,
-    });
-  }
-}
-
-/** Points along y = f(x), dense enough to resample (eye units). */
-function byX(x0: number, x1: number, S: number, f: (x: number) => number) {
-  const n = Math.max(2, Math.ceil(Math.abs(x1 - x0) * S * 0.75));
-  const out: number[] = [];
-  for (let i = 0; i <= n; i++) {
-    const x = x0 + ((x1 - x0) * i) / n;
-    out.push(x, f(x));
-  }
-  return out;
-}
-/** Points round an ellipse from angle a0 to a1 (screen angles, y down); r scales the radius by angle. */
-function byAngle(
-  cx: number,
-  cy: number,
-  rx: number,
-  ry: number,
-  a0: number,
-  a1: number,
-  S: number,
-  r?: (a: number) => number,
-) {
-  const n = Math.max(8, Math.ceil(Math.abs(a1 - a0) * Math.max(rx, ry) * S * 0.75));
-  const out: number[] = [];
-  for (let i = 0; i <= n; i++) {
-    const a = a0 + ((a1 - a0) * i) / n;
-    const k = r ? r(a) : 1;
-    out.push(cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k);
-  }
-  return out;
-}
-function byParam(n: number, f: (t: number) => readonly [number, number]) {
-  const out: number[] = [];
-  for (let i = 0; i <= n; i++) {
-    const [x, y] = f(i / n);
-    out.push(x, y);
-  }
-  return out;
-}
-
-/** Absolute M/L/H/V/C/Z path data → polygons, in the path's own units. */
-export function parseAbsPath(d: string): number[][] {
-  const tok = d.match(/[MLHVCZ]|-?\d*\.?\d+(?:e-?\d+)?/gi) ?? [];
-  const polys: number[][] = [];
-  let cur: number[] = [];
-  let x = 0;
-  let y = 0;
-  let i = 0;
-  let cmd = '';
-  const num = () => Number(tok[i++]);
-  while (i < tok.length) {
-    const t = tok[i];
-    if (/^[MLHVCZ]$/i.test(t)) {
-      cmd = t.toUpperCase();
-      i++;
-      if (cmd === 'Z') {
-        if (cur.length) polys.push(cur);
-        cur = [];
-      }
-      continue;
-    }
-    if (cmd === 'M') {
-      if (cur.length) polys.push(cur);
-      x = num();
-      y = num();
-      cur = [x, y];
-      cmd = 'L';
-    } else if (cmd === 'L') {
-      x = num();
-      y = num();
-      cur.push(x, y);
-    } else if (cmd === 'H') {
-      x = num();
-      cur.push(x, y);
-    } else if (cmd === 'V') {
-      y = num();
-      cur.push(x, y);
-    } else if (cmd === 'C') {
-      const x1 = num();
-      const y1 = num();
-      const x2 = num();
-      const y2 = num();
-      const x3 = num();
-      const y3 = num();
-      for (let k = 1; k <= 8; k++) {
-        const t = k / 8;
-        const u = 1 - t;
-        cur.push(
-          u * u * u * x + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3,
-          u * u * u * y + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3,
-        );
-      }
-      x = x3;
-      y = y3;
-    } else i++;
-  }
-  if (cur.length) polys.push(cur);
-  return polys;
-}
 
 /** The lids' opening for a pose, px; `meniscus` lifts its lower edge off the wet line. */
 export function openingOutline(S: number, pose: Pose, meniscus = 0): Float32Array {
@@ -632,8 +622,25 @@ export function openingOutline(S: number, pose: Pose, meniscus = 0): Float32Arra
   return out;
 }
 
+/**
+ * The plica's fold, x at height y. The white shows only to its right: the caruncle and
+ * the plica sit in front of the globe, fixed to the face, so the turning white never
+ * slides over them.
+ */
+const plicaX = (y: number) => -0.83 + ((y - 0.04) / 0.17) ** 2 * 0.05;
+
+/** The opening the white shows through, px: off the tear meniscus, and cut at the plica. */
+export function windowOutline(S: number, pose: Pose): Float32Array {
+  const o = openingOutline(S, pose, 0.016);
+  for (let i = 0; i < o.length; i += 2) o[i] = Math.max(o[i], plicaX(o[i + 1] / S) * S);
+  return o;
+}
+
 /** The pitch for an eye drawn at S: a big eye is cut a little coarser, as a big plate was. */
 export const pitchFor = (S: number) => clamp(3.4 + (S - 200) * 0.004, 3.2, 4.2);
+
+/** Contrast: the darks pushed toward black, the lights left to the paper. */
+const deep = (t: number) => (t <= 0 ? t : t ** 0.92 * 1.08);
 
 const ink = (
   group: string,
@@ -642,6 +649,9 @@ const ink = (
   pen: Pen,
   extra: Partial<Meta> = {},
 ): Meta => ({ ink: 'ink', layer, pass, group, pen, ...extra });
+
+/** Hatching: every run tapers in and out over a few px. */
+const HATCH: LayOpts = { taper: 7 };
 
 // ── the eye ─────────────────────────────────────────────────────────────────
 
@@ -656,7 +666,9 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
   const hand = new Hand(S);
   const C = curvesFor(pose);
   const { yU, yL, yC, yB } = C;
+  const O = orbitFor(C);
   const T = tonesFor(C, pose);
+  const socket = socketTone(C, O, S, T.browCast);
   const { ic, rxy } = T;
   const b = EYE.brow;
   const pupilK = pose.pupil;
@@ -667,7 +679,8 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
     ic[0] + rxy[0] * r * Math.cos(th),
     ic[1] + rxy[1] * r * Math.sin(th),
   ];
-  const shownBall = (x: number, y: number) => Math.abs(x) <= 1 && y >= yU(x) && y <= yL(x) - 0.016;
+  const shownBall = (x: number, y: number) =>
+    Math.abs(x) <= 1 && y >= yU(x) && y <= yL(x) - 0.016 && x >= plicaX(y);
   /** How far the white reaches under the lids: enough for the gaze to turn it. */
   const underLids = (x: number, y: number) => {
     const xc = clamp(x, -1, 1);
@@ -682,52 +695,56 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
     group,
     pen: 'chalk',
   });
-  const HAIR = 0.45; // half-width, px (the plate's `near`)
-  /** The centre line's long-short dash, every 22 px. */
-  const centreDash = (s: number) => {
+  const CH = 0.5; // chalk half-width, px
+  let chalkIdx = 0;
+  /** The centre line's long-short dash, every 22 px, in chalk. */
+  const centreDash = (id: number) => (_x: number, _y: number, s: number) => {
     const f = fract(s / 22);
-    return f < 0.55 || (f > 0.68 && f < 0.78) ? HAIR : 0;
+    return f < 0.55 || (f > 0.68 && f < 0.78) ? chalkWidth(CH, s, id) : 0;
   };
   /** Hidden lines dashed (6 on, 4 off); lines the opening shows are lighter, and kept off the cornea. */
-  const hiddenDash = (x: number, y: number, s: number) => {
-    if (T.inOpen(x, y)) return rOf(x, y) <= 1.02 ? 0 : HAIR * 0.7;
-    return fract(s / 10) < 0.6 ? HAIR : 0;
+  const hiddenDash = (id: number) => (x: number, y: number, s: number) => {
+    if (T.inOpen(x, y)) return rOf(x, y) <= 1.02 ? 0 : chalkWidth(CH * 0.7, s, id);
+    return fract(s / 10) < 0.6 ? chalkWidth(CH, s, id) : 0;
   };
+  const solid = (id: number) => (_x: number, _y: number, s: number) => chalkWidth(CH, s, id);
+  const NOSPLIT: LayOpts = { gapSplit: 1e9 };
   // ① the axis: the centre lines through the globe
   hand.lay(
     byX(-1.5, 1.5, S, () => GLOBE.cy),
-    (_x, _y, s) => centreDash(s),
+    centreDash(chalkIdx++),
     chalk('cons-1'),
+    NOSPLIT,
   );
   hand.lay(
     byParam(Math.ceil(2.38 * S), (t) => [GLOBE.cx, -1.38 + t * 2.38]),
-    (_x, _y, s) => centreDash(s),
+    centreDash(chalkIdx++),
     chalk('cons-1'),
+    NOSPLIT,
   );
   // ② the corners
   for (const cx of [-1, 1])
     hand.lay(
       byParam(Math.ceil(0.9 * S), (t) => [cx, -0.45 + t * 0.9]),
-      () => HAIR,
+      solid(chalkIdx++),
       chalk('cons-2'),
+      NOSPLIT,
     );
   // ③ the globe, swung by compass from the upper left, then its parallels and meridians
   const R = GLOBE.R;
   hand.lay(
     byAngle(GLOBE.cx, GLOBE.cy, R, R, -2.0, -2.0 + TAU, S),
-    hiddenDash,
+    hiddenDash(chalkIdx++),
     chalk('cons-3'),
-    undefined,
-    1e9,
+    NOSPLIT,
   );
   for (let k = 1; k <= 5; k++) {
     const rr = R * Math.sin((k * Math.PI) / 12);
     hand.lay(
       byAngle(GLOBE.cx, GLOBE.cy, rr, rr, -Math.PI / 2, -Math.PI / 2 + TAU, S),
-      hiddenDash,
+      hiddenDash(chalkIdx++),
       chalk('cons-3'),
-      undefined,
-      1e9,
+      NOSPLIT,
     );
   }
   for (let k = 0; k < 12; k++) {
@@ -738,42 +755,49 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
         GLOBE.cx + Math.cos(a) * mix(R, r0, t),
         GLOBE.cy + Math.sin(a) * mix(R, r0, t),
       ]),
-      hiddenDash,
+      hiddenDash(chalkIdx++),
       chalk('cons-3'),
-      undefined,
-      1e9,
+      NOSPLIT,
     );
   }
   // ④ the iris and the pupil, with a cross on the pole
-  hand.lay(byAngle(ic[0], ic[1], rxy[0], rxy[1], -2.2, -2.2 + TAU, S), () => HAIR, chalk('cons-4'));
+  hand.lay(
+    byAngle(ic[0], ic[1], rxy[0], rxy[1], -2.2, -2.2 + TAU, S),
+    solid(chalkIdx++),
+    chalk('cons-4'),
+    NOSPLIT,
+  );
   hand.lay(
     byAngle(ic[0], ic[1], rxy[0] * pupilK, rxy[1] * pupilK, -2.2, -2.2 + TAU, S),
-    () => HAIR,
+    solid(chalkIdx++),
     chalk('cons-4'),
+    NOSPLIT,
   );
   hand.lay(
     byX(ic[0] - 0.07, ic[0] + 0.07, S, () => ic[1]),
-    () => HAIR,
+    solid(chalkIdx++),
     chalk('cons-4'),
   );
   hand.lay(
     byParam(Math.ceil(0.14 * S), (t) => [ic[0], ic[1] - 0.07 + t * 0.14]),
-    () => HAIR,
+    solid(chalkIdx++),
     chalk('cons-4'),
   );
   // ⑤ the lids, ⑥ the crease, ⑦ the brow
-  hand.lay(byX(-1.25, 1.25, S, yU), () => HAIR, chalk('cons-5'));
-  hand.lay(byX(-1.25, 1.25, S, yL), () => HAIR, chalk('cons-5'));
-  hand.lay(byX(-1.25, 1.25, S, yC), () => HAIR, chalk('cons-6'));
-  hand.lay(byX(b.x0 - 0.05, b.x1 + 0.05, S, yB), () => HAIR, chalk('cons-7'));
+  hand.lay(byX(-1.25, 1.25, S, yU), solid(chalkIdx++), chalk('cons-5'), NOSPLIT);
+  hand.lay(byX(-1.25, 1.25, S, yL), solid(chalkIdx++), chalk('cons-5'), NOSPLIT);
+  hand.lay(byX(-1.25, 1.25, S, yC), solid(chalkIdx++), chalk('cons-6'), NOSPLIT);
+  hand.lay(byX(b.x0 - 0.05, b.x1 + 0.05, S, yB), solid(chalkIdx++), chalk('cons-7'), NOSPLIT);
   // ⑧ the orbit, the socket's rim, dashed
-  hand.lay(
-    byAngle(0.05, -0.22, 1.46, 1.1, Math.PI * 0.95, Math.PI * 0.95 + TAU, S),
-    (_x, _y, s) => (fract(s / 10) < 0.6 ? HAIR * 0.85 : 0),
-    chalk('cons-8'),
-    undefined,
-    1e9,
-  );
+  {
+    const id = chalkIdx++;
+    hand.lay(
+      byAngle(0.05, -0.22, 1.46, 1.1, Math.PI * 0.95, Math.PI * 0.95 + TAU, S),
+      (_x, _y, s) => (fract(s / 10) < 0.6 ? chalkWidth(CH * 0.85, s, id) : 0),
+      chalk('cons-8'),
+      NOSPLIT,
+    );
+  }
 
   // ── II · contours ──
   lidContours(hand, S, C);
@@ -781,321 +805,326 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
     const taperL = (x: number) => 1 - smooth(0.84, 1.03, Math.abs(x));
     hand.lay(
       byX(-1.04, 1.04, S, yL),
-      (x) => 0.7 * taperL(x) + 0.1,
+      (x) => 0.6 * taperL(x) + 0.1,
       ink('contour-lower', 'skin', 2, 'contour'),
     );
+    // The lower lash line: the lid's outer edge, heavier toward the temple.
     hand.lay(
       byX(-1.04, 1.04, S, (x) => yL(x) + 0.03),
-      (x) => (0.95 * taperL(x) + 0.1) * 0.85,
+      (x) => (0.85 + 0.55 * smooth(-0.2, 0.9, x)) * taperL(x) + 0.1,
       ink('contour-lower', 'skin', 2, 'contour'),
     );
     const taperC = (x: number) => 1 - smooth(0.9, 1.16, Math.abs(x));
     hand.lay(
       byX(-1.16, 1.16, S, yC),
-      (x) => (0.6 + (1 - smooth(-0.6, 0.6, x)) * 0.8) * taperC(x),
+      (x) => (0.75 + (1 - smooth(-0.6, 0.6, x)) * 0.85) * taperC(x),
       ink('contour-crease', 'skin', 2, 'contour'),
     );
   }
   hand.lay(
     byAngle(ic[0], ic[1], rxy[0], rxy[1], -2.2, -2.2 + TAU, S),
-    () => 1.05,
+    () => 1.1,
     ink('contour-iris', 'ball', 2, 'contour'),
-    shownBall,
-    1e9,
+    { shown: shownBall, gapSplit: 1e9 },
   );
   hand.lay(
     byAngle(ic[0], ic[1], rxy[0] * pupilK, rxy[1] * pupilK, -2.2, -2.2 + TAU, S),
     () => 0.9,
     ink('contour-iris', 'ball', 2, 'contour'),
-    shownBall,
-    1e9,
+    { shown: shownBall, gapSplit: 1e9 },
   );
 
   // ── III · hatching ──
-  // The lid's band: copies of the lid's own curve, compressing into the crease.
-  lidBand(hand, S, P, C, T.skin);
-  // Above the crease: copies of the crease, rising to the brow.
+  // The upper lid's band: copies of the lid's own curve, compressing into the crease.
+  lidBand(hand, S, P, C, O, T.lid);
+  // The lower lid's pillow: copies of the lower lid, compressing into its fold.
   {
-    const top = -1.52;
-    const M = Math.ceil((yC(0) - top) * (S / P)) + 6;
-    for (let m = 1; m <= M; m++) {
-      const curve = byX(-1.72, 1.74, S, (x) => {
-        const c = yC(x);
-        return c - ((m - (n0r(x, c - (m * P) / S) - 0.5) * 0.55) * P) / S;
+    const nP = Math.max(3, Math.round((0.135 * S) / P));
+    for (let j = 1; j < nP; j++) {
+      const curve = byX(-0.97, 1.05, S, (x) => {
+        const top = yL(x) + 0.03;
+        return top + ((j - (n0r(x, top) - 0.5) * 0.4) / nP) * (C.yF(x) - top);
       });
       hand.lay(
         curve,
         (x, y, s) => {
-          if (y > yC(x) || y < top || y > midline(x) || !T.onSkin(x, y)) return 0;
-          return burinWidth(T.skin(x, y), P / C.kC(x), 3000 + m, s / 7);
+          if (!O.inLoop(x, y)) return 0;
+          const pitch = ((C.yF(x) - yL(x) - 0.03) * S) / nP;
+          return cutWidth(deep(T.pillow(x, y)), pitch, 1500 + j, s);
         },
-        ink('hatch-above', 'skin', 3, 'hatch'),
+        ink('pillow', 'skin', 3, 'hatch'),
+        HATCH,
       );
     }
   }
-  // Below the lower lid: copies of the lid, falling away down the cheek.
-  {
-    const K = Math.ceil(1.16 * (S / P)) + 2;
-    for (let k = 1; k <= K; k++) {
-      const curve = byX(-1.72, 1.74, S, (x) => {
-        const l = yL(x);
-        return l + ((k - (n0r(x, l + (k * P) / S) - 0.5) * 0.55) * P) / S;
-      });
-      hand.lay(
-        curve,
-        (x, y, s) => {
-          if (y <= midline(x) || y < yL(x) || y > 1.16 || !T.onSkin(x, y)) return 0;
-          return burinWidth(T.skin(x, y), P / C.kL(x), 5000 + k, s / 7);
-        },
-        ink('hatch-below', 'skin', 3, 'hatch'),
-      );
+  // The socket: rings nested between the loop and the rim, frayed out past it.
+  const NR = Math.max(12, Math.round((0.8 * S) / (1.12 * P)));
+  const T_MAX = 1.32;
+  const ringT = (k: number) => ((k - 0.35) / NR) ** 1.12;
+  for (let k = 1; ringT(k) < T_MAX; k++) {
+    const tk = ringT(k);
+    const dt = ringT(k + 1) - tk;
+    // Start where the ring is lightest, so its two ends meet in the paper.
+    let a0 = 0;
+    let lo = 1e9;
+    for (let q = 0; q < 48; q++) {
+      const a = (q / 48) * TAU - Math.PI;
+      const [x, y] = O.at(tk, a);
+      const v = socket.at(x, y);
+      if (v < lo) {
+        lo = v;
+        a0 = a;
+      }
     }
+    const span = (a: number) => O.span(a, tk);
+    // A point every few px is plenty: the pen resamples the ring every px.
+    const n = Math.ceil(TAU * (1.2 + tk * 0.7) * S * 0.35);
+    const curve = byParam(n, (u) => {
+      const a = a0 + u * TAU;
+      const [x0, y0] = O.at(tk, a);
+      const wob = (n0r(x0, y0) - 0.5) * 0.35 * dt;
+      return O.at(tk + wob, a);
+    });
+    hand.lay(
+      curve,
+      (x, y, s) => {
+        const a = Math.atan2(y - ORBIT_C[1], x - ORBIT_C[0]);
+        return cutWidth(deep(socket.at(x, y)), dt * span(a) * S, 6000 + k, s);
+      },
+      ink('orbit', 'skin', 3, 'hatch'),
+      HATCH,
+    );
   }
-  // The white: arcs about the iris, the eyeball's curvature. Each in two halves, top to
-  // bottom, so the hand cuts the side the lids show, not the part they hide.
+  // The white: arcs about the iris, the eyeball's curvature, in two halves top to bottom.
   {
     const k0 = Math.floor((0.3 * S) / P);
     const k1 = Math.ceil((1.32 * S) / P);
     for (let k = k0; k <= k1; k++) {
       const rr = (k * P) / S;
+      // Only the part of the arc the white can show, at any gaze (underLids reaches
+      // about 0.56 above and below the iris's centre).
+      const as = Math.asin(Math.min(1, 0.64 / rr));
       for (const [a0, a1] of [
-        [-Math.PI / 2, Math.PI / 2],
-        [Math.PI * 1.5, Math.PI / 2],
+        [-as, as],
+        [Math.PI + as, Math.PI - as],
       ] as const) {
         hand.lay(
           byAngle(ic[0], ic[1], rr, rr / 1.08, a0, a1, S),
           (x, y, s) => {
             if (rOf(x, y) <= 1 || !underLids(x, y)) return 0;
-            return burinWidth(T.sclera(x, y), P / 1.04, k, s / 7);
+            return cutWidth(deep(T.sclera(x, y)), P / 1.04, k, s);
           },
           ink('hatch-sclera', 'ball', 3, 'hatch'),
-          shownBall,
+          { ...HATCH, shown: shownBall },
         );
       }
     }
   }
-  // The iris: spokes converging on the pupil, cut from the rim inward.
-  {
-    const NSP = Math.max(Math.floor((RS * TAU * 0.72) / P), 24);
-    for (let j = 0; j < NSP; j++) {
-      const th = (j * TAU) / NSP - Math.PI / 2;
-      hand.lay(
-        byParam(Math.ceil((1 - pupilK) * RS * 1.5), (t) => fromQ(mix(1, pupilK, t), th)),
-        (x, y) => {
-          const r = rOf(x, y);
-          if (r > 1 || r < pupilK) return 0;
-          return burinWidth(T.iris(x, y), (TAU * r * RS) / NSP, j, (r * RS) / 5);
-        },
-        ink('hatch-spokes', 'ball', 3, 'hatch'),
-        shownBall,
-      );
-    }
+  // The iris: fibres cut from the limbus in to the collarette, nearly straight, each with a
+  // slight bend of its own, sweeping round from twelve o'clock.
+  const NSP = Math.max(Math.floor((RS * TAU * 0.72) / P), 24);
+  for (let j = 0; j < NSP; j++) {
+    const th0 = (j * TAU) / NSP - Math.PI / 2;
+    const h = hash1(j * 2.7 + 1);
+    const bend = (h - 0.5) * 0.08;
+    const rc = T.collarR(th0) + 0.01;
+    hand.lay(
+      byParam(Math.ceil((1 - rc) * RS * 1.5), (t) => {
+        const r = mix(1, rc, t);
+        return fromQ(r, th0 + bend * Math.sin(Math.PI * t) + 0.007 * Math.sin(r * 23 + h * 6.3));
+      }),
+      (x, y, s) => {
+        const r = rOf(x, y);
+        if (r > 1 || r < pupilK) return 0;
+        return cutWidth(deep(T.iris(x, y)), (TAU * r * RS) / NSP, j, s);
+      },
+      ink('hatch-spokes', 'ball', 3, 'hatch'),
+      { ...HATCH, taper: 4, shown: shownBall },
+    );
   }
 
-  // ── IV · cross-hatching and detail ──
-  // The diagonal family, cut across the first where the shade is deepest.
-  {
-    const g = 1.2 * P;
-    const c0 = Math.floor((-2.2 * S) / g);
-    const c1 = Math.ceil((1.9 * S) / g);
-    for (let k = c0; k <= c1; k++) {
-      const c = (k * g) / S;
-      const curve = byParam(Math.ceil(4.4 * S * 0.4), (t) => {
-        const u = -2.2 + t * 4.4;
-        const x0 = c * 0.5 + u * 0.866;
-        const y0 = c * 0.866 - u * 0.5;
-        const off = (-(n0r(x0, y0) - 0.5) * 0.55 * 0.6 * g) / S;
-        return [x0 + off * 0.5, y0 + off * 0.866];
-      });
-      hand.lay(
-        curve,
-        (x, y, s) => {
-          if (x < -1.66 || x > 1.66 || y < -1.52 || y > 1.16 || !T.onSkin(x, y)) return 0;
-          return burinWidth((T.skin(x, y) - 0.44) / 0.56, g, 9000 + k, s / 7);
-        },
-        ink('cross', 'skin', 4, 'hatch'),
-        undefined,
-        14,
-        1.5,
-      );
-    }
-  }
-  // The iris's rings (in the dark only), the collarette, the contraction furrows.
-  {
-    const kr0 = Math.ceil((pupilK * RS) / (0.82 * P));
-    const kr1 = Math.floor(RS / (0.82 * P));
-    for (let k = kr0; k <= kr1; k++) {
-      const rr = (k * 0.82 * P) / RS;
-      hand.lay(
-        byAngle(ic[0], ic[1], rxy[0] * rr, rxy[1] * rr, -Math.PI / 2, -Math.PI / 2 + TAU, S),
-        (x, y, s) => burinWidth((T.iris(x, y) - 0.5) * 1.6, 0.82 * P, 700 + k, s / 6),
-        ink('rings', 'ball', 4, 'hatch'),
-        shownBall,
-      );
-    }
-    hand.lay(
-      byAngle(
-        ic[0],
-        ic[1],
-        rxy[0],
-        rxy[1],
-        -Math.PI / 2,
-        -Math.PI / 2 + TAU,
-        S,
-        (a) => 0.54 + Math.sin(a * 13) * 0.035,
-      ),
-      () => 0.95,
-      ink('rings', 'ball', 4, 'contour'),
-      shownBall,
-      1e9,
-    );
-    for (const [rr, seed] of [
-      [0.86, 7],
-      [0.925, 13],
-    ] as const) {
-      hand.lay(
-        byAngle(ic[0], ic[1], rxy[0] * rr, rxy[1] * rr, -Math.PI / 2, -Math.PI / 2 + TAU, S),
-        (x, y) => (fract((thOf(x, y) * 2.3) / Math.PI + hash1(seed)) >= 0.42 ? 0.5 : 0),
-        ink('rings', 'ball', 4, 'hatch'),
-        shownBall,
-      );
-    }
-  }
-  // A few vessels, fine and wandering, toward the corners only.
-  for (let i = -9; i < 9; i++) {
-    if (hash1(i + 41) < 0.58) continue;
-    const curve = byParam(Math.ceil(0.8 * S), (t) => {
-      const sr = mix(0.42, 1.18, t);
-      let a = (i * Math.PI) / 9;
-      for (let it = 0; it < 2; it++) {
-        const x = ic[0] + Math.cos(a) * sr;
-        const y = ic[1] + (Math.sin(a) * sr) / 1.08;
-        a = ((i - (n0r(x, y) - 0.5) * 3.2 - Math.sin(sr * 17) * 0.16) * Math.PI) / 9;
+  // ── IV · cross-hatching where the form turns from the light, then the detail ──
+  // Two spiral families over the socket's rings: one where it is in shade, both in the deepest.
+  for (const [twist, from, group] of [
+    [0.85, 0.42, 'orbit-cross'],
+    [-0.85, 0.66, 'orbit-cross'],
+  ] as const) {
+    const pitch = 1.25 * P;
+    const count = Math.round((TAU * 1.05 * S) / pitch);
+    const Q = 24;
+    for (let j = 0; j < count; j++) {
+      const th0 = (j / count) * TAU - Math.PI;
+      // Only the stretch of the spiral that reaches the shade is cut; one that never
+      // does is not cut at all.
+      let q0 = -1;
+      let q1 = -1;
+      for (let q = 0; q <= Q; q++) {
+        const t = (q / Q) * 1.25;
+        const [x, y] = O.at(t, th0 + twist * t);
+        if (socket.at(x, y) > from - 0.04) {
+          if (q0 < 0) q0 = q;
+          q1 = q;
+        }
       }
-      return [ic[0] + Math.cos(a) * sr, ic[1] + (Math.sin(a) * sr) / 1.08];
-    });
+      if (q0 < 0) continue;
+      const tA = (Math.max(q0 - 1, 0) / Q) * 1.25;
+      const tB = (Math.min(q1 + 1, Q) / Q) * 1.25;
+      hand.lay(
+        byParam(Math.ceil((tB - tA) * S * 0.6), (u) => {
+          const t = mix(tA, tB, u);
+          return O.at(t, th0 + twist * t);
+        }),
+        (x, y, s) => {
+          if (O.inLoop(x, y)) return 0;
+          return cutWidth(
+            deep((socket.at(x, y) - from) / (1 - from)),
+            pitch,
+            7000 + j * 2 + (twist > 0 ? 0 : 1),
+            s,
+          );
+        },
+        ink(group, 'skin', 4, 'hatch'),
+        { ...HATCH, gapSplit: 10 },
+      );
+    }
+  }
+  lidCross(hand, S, P, C, O, T.lid);
+  whiteShadeLines(hand, S, P, C, T.whiteShade);
+  // The pillow's shade, crossed where it turns into its fold.
+  {
+    const g = 1.25 * P;
+    for (let x0 = -1.0; x0 <= 1.1; x0 += g / S) {
+      hand.lay(
+        byParam(Math.ceil(0.2 * S), (u) => {
+          const x = x0 - 0.12 * u;
+          const top = C.yL(x) + 0.03;
+          return [x, top + u * (C.yF(x) - top)];
+        }),
+        (x, y, s) => {
+          if (!O.inLoop(x, y)) return 0;
+          return cutWidth(deep((T.pillow(x, y) - 0.5) / 0.5), g, 8000 + Math.round(x0 * 997), s);
+        },
+        ink('pillow-cross', 'skin', 4, 'hatch'),
+        HATCH,
+      );
+    }
+  }
+  // The iris's detail: the limbal ring, the collarette's zig-zag, the crypts, the pupillary fibres.
+  {
+    for (let k = 0; k < 5; k++) {
+      const rr = 0.875 + k * 0.025;
+      hand.lay(
+        byAngle(ic[0], ic[1], rxy[0] * rr, rxy[1] * rr, -Math.PI / 2, -Math.PI / 2 + TAU, S),
+        (x, y, s) => {
+          const fleck = vnoise(thOf(x, y) * 9 + k * 3, rr * 4, 61);
+          return cutWidth(
+            deep(0.78 + (fleck - 0.5) * 0.5 + (T.iris(x, y) - 0.6) * 0.3),
+            0.025 * RS,
+            700 + k,
+            s,
+          );
+        },
+        ink('iris', 'ball', 4, 'hatch'),
+        { ...HATCH, shown: shownBall },
+      );
+    }
     hand.lay(
-      curve,
-      (x, y) => {
-        if (rOf(x, y) <= 1 || !underLids(x, y)) return 0;
-        const sr = Math.hypot(x - ic[0], (y - ic[1]) * 1.08);
-        return 0.32 * 0.85 * smooth(0.62, 0.95, Math.abs(x)) * smooth(0.42, 0.62, sr);
-      },
-      ink('vessels', 'ball', 4, 'hatch'),
-      shownBall,
+      byAngle(ic[0], ic[1], rxy[0], rxy[1], -Math.PI / 2, -Math.PI / 2 + TAU, S, (a) =>
+        T.collarR(a),
+      ),
+      () => 0.62,
+      ink('iris', 'ball', 4, 'contour'),
+      { shown: shownBall, gapSplit: 1e9 },
     );
+    // Finer fibres inside the collarette, the pupillary zone.
+    const NP2 = Math.round(NSP * 1.5);
+    for (let j = 0; j < NP2; j++) {
+      const th = (j * TAU) / NP2 + 0.5 / NP2;
+      const rc = T.collarR(th);
+      hand.lay(
+        byParam(Math.ceil((rc - pupilK) * RS * 1.5), (t) =>
+          fromQ(mix(rc - 0.01, pupilK + 0.04, t), th),
+        ),
+        (x, y, s) => cutWidth(deep(T.iris(x, y) * 0.8), (TAU * 0.45 * RS) / NP2, 900 + j, s),
+        ink('iris', 'ball', 4, 'hatch'),
+        { ...HATCH, taper: 3, shown: shownBall },
+      );
+    }
+    // Crypts of Fuchs: lens-shaped hollows among the fibres, dark and drawn along them.
+    for (let i = 0; i < 22; i++) {
+      const th = hash1(i * 3.1 + 0.7) * TAU;
+      const r0 = 0.6 + hash1(i * 5.3 + 1.1) * 0.24;
+      const len = 0.07 + hash1(i * 7.7 + 2.9) * 0.08;
+      const wmax = 0.9 + hash1(i * 1.9 + 4.4) * 0.9;
+      hand.lay(
+        byParam(Math.ceil(len * RS * 1.5), (t) => fromQ(r0 + t * len, th + (t - 0.5) * 0.04)),
+        (_x, _y, s) => wmax * Math.sin(Math.PI * clamp(s / (len * RS), 0, 1)) ** 0.7,
+        ink('iris', 'ball', 4, 'flick'),
+        { shown: shownBall },
+      );
+    }
+  }
+  // A few veins on the white, wandering in from the corners and branching.
+  for (const [vx, vy, dir, len, seed] of [
+    [-0.97, 0.07, 0.04, 0.4, 1],
+    [-0.92, -0.1, -0.12, 0.28, 2],
+    [0.97, -0.04, Math.PI - 0.06, 0.38, 3],
+    [0.93, 0.13, Math.PI + 0.22, 0.3, 4],
+  ] as const) {
+    const walk = (x0: number, y0: number, a0: number, L: number, sd: number, w0: number) => {
+      const pts: number[] = [x0, y0];
+      let x = x0;
+      let y = y0;
+      let a = a0;
+      const n = Math.ceil(L / 0.008);
+      for (let q = 1; q <= n; q++) {
+        // A vein wanders, but keeps its heading: no curls.
+        a += (vnoise(sd * 7.1, q * 0.09, 71) - 0.5) * 0.22 + (a0 - a) * 0.06;
+        x += Math.cos(a) * 0.008;
+        y += Math.sin(a) * 0.008;
+        if (rOf(x, y) < 1.04) break;
+        pts.push(x, y);
+      }
+      const total = (pts.length / 2 - 1) * 0.008 * S;
+      hand.lay(
+        pts,
+        (_x, _y, s) => mix(w0, 0.12, clamp(s / Math.max(total, 1), 0, 1)),
+        ink('vessels', 'ball', 4, 'flick'),
+        { shown: shownBall },
+      );
+      return pts;
+    };
+    const trunk = walk(vx, vy, dir, len, seed, 0.36);
+    const mid = Math.floor(trunk.length / 4) * 2;
+    if (mid > 4)
+      walk(trunk[mid], trunk[mid + 1], dir + (seed % 2 ? 0.6 : -0.6), len * 0.45, seed + 10, 0.24);
   }
   // Lashes, flicked from the lash line, inner corner to outer.
   upperLashes(hand, S, C);
-  {
-    const NL = 48;
-    const x0 = -0.66;
-    const dx = 1.62 / NL;
-    for (let i = 0; i < NL; i++) {
-      const xr = x0 + (i + 0.5 + (hash1(i + 311) - 0.5) * 0.7) * dx;
-      if (xr < x0 || xr > 0.97) continue;
-      const len = 0.024 + Math.max(skewBump(xr, 0.3, 1), 0) * 0.045 + hash1(i + 377) * 0.035;
-      const sl = xr * 0.35 + 0.1 + (hash1(i + 401) - 0.5) * 0.5;
-      const Lpx = len * S * Math.hypot(sl, 1);
-      hand.lay(
-        byParam(Math.max(3, Math.ceil(Lpx * 1.5)), (t) => {
-          const v = t * len;
-          const x = xr + sl * v;
-          return [x, yL(x) + 0.03 + v];
-        }),
-        (_x, _y, s) => (1 - clamp(s / Lpx, 0, 1)) ** 0.7 * 0.85,
-        ink('lashes-lower', 'skin', 4, 'flick'),
-      );
-    }
-  }
-  // The brow: four layers of hair, each a tapered, bent stroke, swept from its head to its tail.
-  {
-    const span = b.x1 - b.x0;
-    const NH = 96;
-    const ang = (s: number) => mix(mix(-1.15, -0.26, smooth(0, 0.3, s)), 0.2, smooth(0.62, 1, s));
-    const hairs: {
-      root: [number, number];
-      dir: [number, number];
-      L: number;
-      bend: number;
-      s: number;
-    }[] = [];
-    for (let layer = 0; layer < 4; layer++) {
-      for (let j = -2; j < NH + 2; j++) {
-        const s = (j + layer / 4 + (hash1(j + layer * 211) - 0.5) * 0.5) / NH;
-        if (s < 0 || s > 1) continue;
-        const xr = b.x0 + s * span;
-        const half = mix(b.w0, b.w1, clamp(s, 0, 1) ** 0.85);
-        const qr = hash1(j + layer * 97 + 13) * 1.7 - 0.95;
-        const a0 = ang(s) + (hash1(j + layer * 53 + 7) - 0.5) * 0.32;
-        const L = mix(0.19, 0.12, smooth(0.3, 1, s)) * (hash1(j + layer * 29) * 0.4 + 0.78);
-        const bend = (hash1(j + layer * 31 + 3) - 0.35) * 2.4;
-        hairs.push({
-          root: [xr, yB(xr) + qr * half],
-          dir: [Math.cos(a0), Math.sin(a0)],
-          L,
-          bend,
-          s,
-        });
-      }
-    }
-    hairs.sort((p, q) => p.root[0] - q.root[0]);
-    for (const h of hairs) {
-      const nx = h.dir[1];
-      const ny = -h.dir[0];
-      const Lpx = h.L * S;
-      hand.lay(
-        byParam(Math.max(3, Math.ceil(Lpx * 1.5)), (t) => {
-          const a = t * h.L;
-          return [
-            h.root[0] + h.dir[0] * a + nx * h.bend * a * a,
-            h.root[1] + h.dir[1] * a + ny * h.bend * a * a,
-          ];
-        }),
-        (_x, _y, s) => (1 - clamp(s / Lpx, 0, 1)) ** 0.55 * (1.05 + (1 - h.s) * 0.25),
-        ink('brow', 'skin', 4, 'flick'),
-      );
-    }
-  }
-  // Crow's feet, the lower lid's fold, the lacrimal punctum.
-  for (const [a, len, bend] of [
-    [-0.62, 0.3, 0.6],
-    [-0.3, 0.38, 0.4],
-    [0.04, 0.34, -0.2],
-    [0.34, 0.26, -0.5],
-  ] as const) {
-    const ca = Math.cos(a);
-    const sa = Math.sin(a);
-    const Lpx = (len - 0.06) * S;
-    hand.lay(
-      byParam(Math.ceil(Lpx * 1.2), (t) => {
-        const u = 0.06 + t * (len - 0.06);
-        return [1.03 + ca * u + sa * bend * u * u, -0.02 + sa * u - ca * bend * u * u];
-      }),
-      (x, y, s) => (1 - clamp(s / Lpx, 0, 1)) ** 0.7 * 0.6 * T.fadeAt(x, y),
-      ink('detail', 'skin', 4, 'flick'),
-    );
-  }
+  lowerLashes(hand, S, C);
+  // The brow: hair combed along a flow, flicked from its head to its tail.
+  browHair(hand, S, C);
+  // The lower lid's fold, and the lacrimal punctum.
   hand.lay(
-    byX(-0.9, 1.0, S, (x) => yL(x) + 0.165),
-    (x) => 0.5 * (1 - smooth(0.5, 0.88, Math.abs(x - 0.08))),
+    byX(-0.92, 1.02, S, (x) => C.yF(x)),
+    (x) => 0.45 * (1 - smooth(0.55, 0.95, Math.abs(x - 0.05))) + 0.08,
     ink('detail', 'skin', 4, 'contour'),
+    { taper: 10 },
   );
   hand.lay(
     byAngle(-0.8, 0.171, 1.8 / S, 1.8 / S, 0, TAU, S),
     () => 0.5,
     ink('detail', 'skin', 4, 'contour'),
-    undefined,
-    1e9,
+    NOSPLIT,
   );
   openDetail(hand, S, C);
 
   // ── V · the plate: the pupil inked round the kiruk star; the cornea's window ──
   const pupilOutline: number[] = [];
   {
-    const NP = Math.max(48, Math.ceil(pupilK * RS * TAU));
-    for (let i = 0; i < NP; i++) {
-      const th = (i / NP) * TAU;
+    const NPp = Math.max(48, Math.ceil(pupilK * RS * TAU));
+    for (let i = 0; i < NPp; i++) {
+      const th = (i / NPp) * TAU;
       pupilOutline.push(...fromQ(ruffAt(th, pupilK), th));
     }
     // The hand fills the dark in a spiral from the ruff inward; the outline lands at the end.
@@ -1108,7 +1137,7 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
       curve.push(...fromQ(rr, a));
     }
     const at = hand.out.length;
-    hand.lay(curve, () => hw, ink('pupil', 'ball', 5, 'fill'), undefined, 1e9);
+    hand.lay(curve, () => hw, ink('pupil', 'ball', 5, 'fill'), NOSPLIT);
     const st = hand.out[at];
     if (st) {
       const f = new Float32Array(pupilOutline.length);
@@ -1128,7 +1157,8 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
       starC[0] + ((lx - v.cx) / v.size) * starD,
       starC[1] + ((ly - v.cy) / v.size) * starD,
     ];
-    const needleW = Math.max((v.stroke / 2 / v.size) * starD * S, 0.35);
+    // Never finer than a clean hairline: it is the mark, and it has to read.
+    const needleW = Math.max((v.stroke / 2 / v.size) * starD * S, HAIRLINE * 2.2);
     const scratch = (pen: Pen): Meta => ({
       ink: 'clear',
       layer: 'ball',
@@ -1216,7 +1246,7 @@ export function eyeDrawing(o: { S: number; pitch?: number; pose?: Pose }): EyeDr
     pitch: P,
     pose,
     opening: openingOutline(S, pose),
-    window: openingOutline(S, pose, 0.016),
+    window: windowOutline(S, pose),
     pupil,
     iris,
     end,
@@ -1229,132 +1259,357 @@ function lidContours(hand: Hand, S: number, C: Curves, step = 1) {
   const { yU } = C;
   const taperU = (x: number) => 1 - smooth(0.86, 1.03, Math.abs(x));
   const meta = ink('contour-lid', 'lid', 2, 'contour');
+  // The lash line: heavy, heaviest toward the temple, where the lashes crowd.
   hand.lay(
     byX(-1.04, 1.04, S, (x) => yU(x) - marginAt(x)),
-    (x) => (1.3 + (1 - x * x) * 1.25) * taperU(x) + 0.15,
+    (x) => (1.25 + (1 - x * x) * 1.1 + 0.75 * smooth(0.1, 0.9, x)) * taperU(x) + 0.15,
     meta,
-    undefined,
-    14,
-    step,
+    { step },
   );
-  hand.lay(byX(-1.0, 1.0, S, yU), (x) => 0.42 * taperU(x) + 0.05, meta, undefined, 14, step);
+  hand.lay(byX(-1.0, 1.0, S, yU), (x) => 0.42 * taperU(x) + 0.05, meta, { step });
 }
 
+/** The upper lid's band, between the lash line and the crease, inside the socket's loop. */
 function lidBand(
   hand: Hand,
   S: number,
   P: number,
   C: Curves,
-  skin: (x: number, y: number) => number,
+  O: Orbit,
+  tone: (x: number, y: number) => number,
   step = 1,
 ) {
   const { yU, yC, kU } = C;
   const nBand = Math.max(2, Math.floor((S * 0.39) / P + 0.5));
   for (let j = 1; j < nBand; j++) {
-    const curve = byX(-1.45, 1.5, S, (x) => {
-      const u = yU(x);
+    const curve = byX(-1.16, 1.14, S, (x) => {
+      const u = yU(x) - marginAt(x);
       const band = Math.max(u - yC(x), 0.03);
-      return u - ((j - (n0r(x, u - (j * band) / nBand) - 0.5) * 0.55) * band) / nBand;
+      return u - ((j - (n0r(x, u - (j * band) / nBand) - 0.5) * 0.5) * band) / nBand;
     });
     hand.lay(
       curve,
       (x, y, s) => {
-        const u = yU(x);
-        if (y > midline(x) || y < yC(x) || (Math.abs(x) <= 1 && y >= u - marginAt(x))) return 0;
-        const band = Math.max(u - yC(x), 0.03);
-        return burinWidth(skin(x, y), (band * S) / nBand / kU(x), 1000 + j, s / 7);
+        if (y < yC(x) || (Math.abs(x) > 0.95 && !O.inLoop(x, y))) return 0;
+        const band = Math.max(yU(x) - marginAt(x) - yC(x), 0.03);
+        const t = tone(x, y);
+        return cutWidth(deep(t), (band * S) / nBand / kU(x), 1000 + j, s);
       },
       ink('hatch-band', 'lid', 3, 'hatch'),
-      undefined,
-      14,
-      step,
+      { taper: 7, step },
+    );
+  }
+}
+
+/** The lid's shade, crossed: strokes down the lid, slanting, where the fold and the corners darken it. */
+function lidCross(
+  hand: Hand,
+  S: number,
+  P: number,
+  C: Curves,
+  O: Orbit,
+  tone: (x: number, y: number) => number,
+  step = 1,
+) {
+  const { yU, yC } = C;
+  const g = 1.3 * P;
+  const along = (x0: number, u: number): [number, number] => {
+    const x = x0 + 0.2 * u + 0.06 * u * u;
+    const lo = yU(x) - marginAt(x);
+    return [x, lo + u * (yC(x) - lo)];
+  };
+  for (let x0 = -1.2; x0 <= 1.2; x0 += g / S) {
+    // A line that never reaches the lid's shade is not cut at all.
+    let dark = false;
+    for (let q = 0; q <= 10 && !dark; q++) {
+      const [x, y] = along(x0, q / 10);
+      if (tone(x, y) > 0.5) dark = true;
+    }
+    if (!dark) continue;
+    hand.lay(
+      byParam(Math.ceil(0.5 * S), (u) => along(x0, u)),
+      (x, y, s) => {
+        if (y < yC(x) || y > yU(x) - marginAt(x) || (Math.abs(x) > 0.95 && !O.inLoop(x, y)))
+          return 0;
+        const t = (tone(x, y) - 0.5) / 0.5;
+        return cutWidth(deep(t), g, 4000 + Math.round(x0 * 1013), s);
+      },
+      ink('lid-cross', 'lid', 4, 'hatch'),
+      { taper: 7, step },
+    );
+  }
+}
+
+/**
+ * The white's shade, fixed to the face: lines that follow the lids across the opening,
+ * from the upper lid down to the lower, cut only where the lids and the corners shade
+ * the white. They cross the globe's own arcs, so the shade reads as cross-hatching, and
+ * they stay put while the globe turns under them.
+ */
+function whiteShadeLines(
+  hand: Hand,
+  S: number,
+  P: number,
+  C: Curves,
+  tone: (x: number, y: number) => number,
+  step = 1,
+) {
+  const { yU, yL } = C;
+  const bot = (x: number) => Math.max(yU(x), yL(x) - 0.016);
+  const N = Math.max(4, Math.round((0.74 * S) / (1.2 * P)));
+  const inWhite = (x: number, y: number) =>
+    Math.abs(x) <= 1 && y >= yU(x) && y <= bot(x) && x >= plicaX(y);
+  for (let j = 1; j < N; j++) {
+    const f = j / N;
+    hand.lay(
+      byX(-0.96, 1.0, S, (x) => mix(yU(x), bot(x), f) + (n0r(x * 1.3, f * 3) - 0.5) * 0.004),
+      (x, y, s) => {
+        if (!inWhite(x, y)) return 0;
+        const pitch = ((bot(x) - yU(x)) * S) / N;
+        // Where the lines crowd (toward the corners, under a closing lid) only every
+        // second, fourth … line is cut, as an engraver drops lines that converge.
+        const lev = pitch >= P * 0.85 ? 1 : pitch >= P * 0.42 ? 2 : pitch >= P * 0.21 ? 4 : 8;
+        if (j % lev) return 0;
+        return cutWidth(deep(tone(x, y)), pitch * lev, 8800 + j, s);
+      },
+      ink('white-shade', 'lid', 4, 'hatch'),
+      { taper: 6, step },
     );
   }
 }
 
 function upperLashes(hand: Hand, S: number, C: Curves, step = 1) {
   const { yU } = C;
-  const NL = 92;
-  const lx0 = -0.9;
-  const ldx = 1.9 / NL;
-  const list: { xr: number; i: number; rf: number }[] = [];
-  for (let rf = 0; rf < 2; rf++)
-    for (let i = 0; i < NL; i++)
-      list.push({
-        i,
-        rf,
-        xr: lx0 + (i + 0.5 + rf * 0.5 + (hash1(i + rf * 101) - 0.5) * 0.6) * ldx,
-      });
-  list.sort((a, b) => a.xr - b.xr);
-  for (const { xr, i, rf } of list) {
+  const lashes: { x: number; row: number; i: number }[] = [];
+  for (let row = 0; row < 2; row++) {
+    const N = row === 0 ? 74 : 54;
+    for (let i = 0; i < N; i++) {
+      const u = (i + 0.5 + (hash1(i * 1.7 + row * 31) - 0.5) * 0.7) / N;
+      lashes.push({ x: -0.9 + 1.88 * u ** 0.93, row, i });
+    }
+  }
+  lashes.sort((a, b) => a.x - b.x);
+  for (const { x: xr, row, i } of lashes) {
     if (xr < -0.92 || xr > 1.0) continue;
-    const lenB = Math.max(skewBump(xr, 0.28, 1.0), 0);
-    const len = (0.07 + lenB * 0.115 + hash1(i + rf * 31 + 57) * 0.045) * mix(1, 0.72, rf);
-    const sl = xr * 0.55 + 0.18 + (hash1(i + rf * 13 + 9) - 0.5) * 0.28;
-    const curl = 3.4 + hash1(i + rf * 7 + 23) * 1.4;
-    // Lashes clump: the tips of four or five lean together.
-    const cc = lx0 + (Math.floor(i / 4) * 4 + 2) * ldx;
-    const curve = byParam(Math.max(4, Math.ceil(len * S * 2)), (t) => {
-      const v = t * len;
-      const x = xr + sl * v + sl * v * v * curl + (cc - xr) * 0.38 * t * t;
-      return [x, yU(x) - marginAt(x) - v];
-    });
-    let total = 0;
-    for (let q = 2; q < curve.length; q += 2)
-      total += Math.hypot(curve[q] - curve[q - 2], curve[q + 1] - curve[q - 1]) * S;
-    const w0 = mix(1.2, 0.9, rf);
+    const h = (k: number) => hash1(i * 7.13 + row * 101 + k);
+    // Short at the inner corner, longest past the middle, a little shorter at the corner itself.
+    const reach =
+      (0.05 + 0.2 * smooth(-0.9, 0.35, xr) * (1 - 0.4 * smooth(0.78, 1.0, xr))) *
+      (row === 0 ? 1 : 0.76) *
+      (0.82 + h(1) * 0.36);
+    // Lashes lean toward the temple the further out they grow; they curl up and out.
+    const lean = -0.18 + 0.72 * smooth(-0.8, 1.0, xr) + (h(2) - 0.5) * 0.22;
+    const curl = (1.6 + h(3) * 1.6) * Math.sign(lean + 0.05);
+    // Clumps: the tips of four or five lean together.
+    const clump = Math.floor((xr + 1) * 26 + 0.5);
+    const pull = (hash1(clump * 3.9) - 0.5) * 0.06;
+    const n = Math.max(6, Math.ceil(reach * S * 1.6));
+    const pts: number[] = [];
+    let x = xr;
+    let y = yU(xr) - marginAt(xr);
+    let a = -Math.PI / 2 + lean;
+    pts.push(x, y);
+    for (let q = 1; q <= n; q++) {
+      const u = q / n;
+      a += (curl * reach) / n + (u > 0.6 ? pull / n : 0);
+      x += Math.cos(a) * (reach / n);
+      y += Math.sin(a) * (reach / n);
+      pts.push(x, y);
+    }
+    const Lpx = reach * S;
+    const root = (row === 0 ? 1.35 : 0.95) * (0.85 + h(4) * 0.3);
     hand.lay(
-      curve,
-      (_x, _y, s) => (1 - clamp(s / Math.max(total, 1), 0, 1)) ** 0.62 * w0,
+      pts,
+      (_x, _y, s) => hairWidth(s / Lpx, root, 0.62),
       ink('lashes-upper', 'lid', 4, 'flick'),
-      undefined,
-      14,
-      step,
+      { step },
     );
   }
 }
 
-/** Inside the opening, fixed to the face: the plica at the inner corner, and the tear meniscus. */
+function lowerLashes(hand: Hand, S: number, C: Curves) {
+  const { yL } = C;
+  const N = 40;
+  for (let i = 0; i < N; i++) {
+    const h = (k: number) => hash1(i * 5.31 + k);
+    if (h(0) < 0.14) continue;
+    const xr = -0.62 + 1.58 * ((i + 0.5 + (h(1) - 0.5) * 0.8) / N) ** 0.85;
+    const reach =
+      (0.03 + 0.07 * smooth(-0.4, 0.8, xr) * (1 - 0.4 * smooth(0.85, 1, xr))) * (0.75 + h(2) * 0.5);
+    let a = Math.PI / 2 - 0.3 - 0.55 * smooth(-0.4, 1.0, xr) + (h(3) - 0.5) * 0.3;
+    const curl = -0.8 - h(4) * 1.2;
+    const n = Math.max(4, Math.ceil(reach * S * 1.6));
+    let x = xr;
+    let y = yL(xr) + 0.032;
+    const pts: number[] = [x, y];
+    for (let q = 1; q <= n; q++) {
+      a += (curl * reach) / n;
+      x += Math.cos(a) * (reach / n);
+      y += Math.sin(a) * (reach / n);
+      pts.push(x, y);
+    }
+    const Lpx = reach * S;
+    hand.lay(
+      pts,
+      (_x, _y, s) => hairWidth(s / Lpx, 0.78, 0.7),
+      ink('lashes-lower', 'skin', 4, 'flick'),
+    );
+  }
+}
+
+/**
+ * The brow as hair combed along a flow: at its head the hairs rise and fan out, short
+ * and sparse; along its body they lie toward the temple, the lower ones rising and the
+ * upper ones falling to meet on the spine; at the tail they turn down and thin out.
+ * Two layers, as an engraver builds a brow: a sparse underlayer of fine long hairs that
+ * gives it its ground, then the body's darker hairs, densest along the lower edge.
+ * Every hair is a flick: a bite at the root, a long taper to a hairline tip, paper left
+ * between them, so the brow reads as hair and never as a band.
+ */
+function browHair(hand: Hand, S: number, C: Curves) {
+  const b = EYE.brow;
+  const span = b.x1 - b.x0;
+  const half = (s: number) => mix(b.w0, b.w1, clamp(s, 0, 1) ** 0.85);
+  const flow = (s: number, v: number) => {
+    const head = mix(-1.32, -0.55, smooth(0.0, 0.26, s));
+    const body = mix(-0.3, 0.2, smooth(0.32, 0.98, s));
+    const a = s < 0.26 ? mix(head, body, smooth(0.1, 0.26, s)) : body;
+    return a - 0.3 * v * smooth(0.14, 0.38, s);
+  };
+  const hairs: { s: number; pts: number[]; L: number; root: number; layer: number }[] = [];
+  for (const [layer, count, seed] of [
+    [0, 0.42, 0],
+    [1, 0.78, 977],
+  ] as const) {
+    const N = clamp(Math.round(count * S), 70, 300);
+    for (let i = 0; i < N; i++) {
+      const h = (k: number) => hash1((i + seed) * 3.917 + k * 17.3);
+      const s = clamp(h(1) ** 0.92, 0, 1);
+      // Across the brow, -1 its upper edge … 1 its lower; the body crowds low.
+      const v = clamp((h(2) + h(3) + h(4)) / 1.5 - 1 + (layer ? 0.18 : 0), -1.2, 1.2);
+      const keep =
+        (1 - 0.6 * smooth(0.5, 1.1, Math.abs(v))) *
+        (1 - 0.6 * smooth(0.72, 1, s)) *
+        (0.7 + 0.3 * smooth(0.0, 0.2, s));
+      if (h(5) > keep) continue;
+      const x0 = b.x0 + s * span;
+      let x = x0;
+      let y = C.yB(x0) + v * half(s);
+      const L =
+        (0.15 + 0.13 * h(6)) *
+        mix(1.12, 0.7, smooth(0.5, 1, s)) *
+        mix(0.42, 1, smooth(0.04, 0.32, s)) *
+        (layer ? 1 : mix(0.7, 1.18, smooth(0.12, 0.34, s)));
+      const bend = (h(7) - 0.45) * 1.5;
+      const steps = 12;
+      const pts: number[] = [x, y];
+      for (let q = 1; q <= steps; q++) {
+        const ss = clamp((x - b.x0) / span, 0, 1);
+        const vv = clamp((y - C.yB(x)) / Math.max(half(ss), 0.01), -1.4, 1.4);
+        const a = flow(ss, vv) + bend * (q / steps) * 0.38;
+        x += Math.cos(a) * (L / steps);
+        y += Math.sin(a) * (L / steps);
+        pts.push(x, y);
+      }
+      const root =
+        (layer ? 0.78 + h(8) * 0.36 : 0.42 + h(8) * 0.2) *
+        (1.05 - 0.3 * Math.abs(v)) *
+        mix(0.7, 1, smooth(0.0, 0.2, s));
+      hairs.push({ s, pts, L: L * S, root, layer });
+    }
+  }
+  hairs.sort((p, q) => p.layer - q.layer || p.s - q.s);
+  for (const hr of hairs) {
+    hand.lay(
+      hr.pts,
+      (_x, _y, s) => hairWidth(s / hr.L, hr.root, 0.5),
+      ink('brow', 'skin', 4, 'flick'),
+    );
+  }
+}
+
+/**
+ * Inside the opening, fixed to the face: the caruncle at the inner corner, the plica
+ * beside it, the corner's flesh in stipple, and the tear meniscus along the lower lid.
+ */
 function openDetail(hand: Hand, S: number, C: Curves) {
   const { yU, yL } = C;
   const inOpen = (x: number, y: number) => Math.abs(x) <= 1 && y >= yU(x) && y <= yL(x);
   const meta = ink('detail-open', 'lid', 4, 'contour');
-  const xp = (y: number) => -0.8 + ((y - 0.07) / 0.14) ** 2 * 0.06;
+  // The caruncle: a small wet mound, lit from the upper left. Its outline is heavier
+  // underneath; curved hatching gathers on its shaded side; its lit shoulder stays paper.
+  const [mx, my, rx, ry] = [-0.915, 0.04, 0.065, 0.05];
   hand.lay(
-    byParam(Math.ceil(0.26 * S), (t) => {
-      const y = 0.07 - 0.13 + t * 0.26;
-      return [xp(y), y];
-    }),
-    (x, y) => (inOpen(x, y) ? 0.55 : 0),
+    byAngle(mx, my, rx, ry, -2.4, -2.4 + TAU, S),
+    (x, y) => (inOpen(x, y) ? 0.3 + 0.24 * smooth(my - 0.03, my + ry, y) : 0),
     meta,
+    { gapSplit: 1e9, taper: 3 },
   );
-  // Stipple beside the plica: a jittered grid of dots, each its own touch of the pen.
+  for (let k = 1; k <= 7; k++) {
+    const f = k / 8;
+    hand.lay(
+      byAngle(mx + 0.016 * f, my + 0.012 * f, rx * (1 - f * 0.8), ry * (1 - f * 0.8), -0.5, 2.3, S),
+      (x, y, s) => (inOpen(x, y) ? cutWidth(0.62 - f * 0.32, 1.6, 9500 + k, s) : 0),
+      meta,
+      { taper: 4 },
+    );
+  }
+  // The plica: the fold the white turns under, drawn fine.
+  hand.lay(
+    byParam(Math.ceil(0.34 * S), (t) => {
+      const y = -0.15 + t * 0.32;
+      return [plicaX(y), y];
+    }),
+    (x, y) => (inOpen(x, y) ? 0.4 : 0),
+    meta,
+    { taper: 6 },
+  );
+  // The corner's flesh, in stipple: dense in the lids' shadow and against the plica,
+  // thin on the open ground, none on the mound.
   const cell = 2.6;
-  const r = Math.sqrt(0.26) * cell * 0.42;
-  const dots = ink('detail-open', 'lid', 4, 'flick');
-  for (
-    let gy = Math.floor(((0.07 - 0.13) * S) / cell);
-    gy <= Math.ceil(((0.07 + 0.13) * S) / cell);
-    gy++
-  ) {
-    for (let gx = Math.floor((-1.0 * S) / cell); gx <= Math.ceil((-0.72 * S) / cell); gx++) {
-      const x = ((gx + 0.5 + (hash2(gx, gy, 5) - 0.5) * 0.55) * cell) / S;
-      const y = ((gy + 0.5 + (hash2(gx, gy, 9) - 0.5) * 0.55) * cell) / S;
-      if (Math.abs(y - 0.07) > 0.13 || x >= xp(y) || x <= -0.97 || !inOpen(x, y)) continue;
-      hand.lay([x, y], () => r, dots);
+  const r = HAIRLINE * 2;
+  const stipple: { x: number; y: number; r: number; k: number }[] = [];
+  for (let gy = Math.floor((-0.2 * S) / cell); gy <= Math.ceil((0.18 * S) / cell); gy++) {
+    for (let gx = Math.floor((-1 * S) / cell); gx <= Math.ceil((-0.74 * S) / cell); gx++) {
+      const x = ((gx + 0.5 + (hash2(gx, gy, 5) - 0.5) * 0.7) * cell) / S;
+      const y = ((gy + 0.5 + (hash2(gx, gy, 9) - 0.5) * 0.7) * cell) / S;
+      if (!inOpen(x, y) || x >= plicaX(y) - 0.004) continue;
+      if (Math.hypot((x - mx) / rx, (y - my) / ry) < 1.12) continue;
+      const tone =
+        0.2 +
+        (1 - smooth(0, 0.07, y - yU(x))) * 0.5 +
+        (1 - smooth(0, 0.03, plicaX(y) - x)) * 0.3 +
+        (1 - smooth(0, 0.03, yL(x) - y)) * 0.2;
+      if (hash2(gx, gy, 13) > tone) continue;
+      stipple.push({ x, y, r: r * (0.8 + hash2(gx, gy, 17) * 0.4), k: hash2(gx, gy, 23) });
     }
   }
+  // Dotted all over at once, the way a hand stipples, not row by row.
+  stipple.sort((p, q) => p.k - q.k);
+  hand.dots(
+    stipple.flatMap((d) => [d.x, d.y]),
+    stipple.map((d) => d.r),
+    meta,
+  );
   // The tear meniscus: a wet line of light along the lower lid; its top edge is drawn.
   hand.lay(
-    byX(-0.88, 0.88, S, (x) => yL(x) - 0.016),
+    byX(-0.8, 0.88, S, (x) => yL(x) - 0.016),
     (x, y) => (inOpen(x, y) ? 0.3 : 0),
     meta,
+    { taper: 8 },
   );
 }
 
+/** The resting curves and socket, kept so a blink rebuilds only the lid that moves. */
+export type LidBase = { curves: Curves; orbit: Orbit };
+export const lidBase = (pose: Pose = REST): LidBase => {
+  const curves = curvesFor(pose);
+  return { curves, orbit: orbitFor(curves) };
+};
+
 /**
- * The upper lid alone, for an aperture: its band, its margin, its lashes, and what it
- * covers in the corner. The live eye redraws only these as it blinks.
+ * The upper lid alone, for an aperture: its band and its shade crossed, its margin, its
+ * lashes, and what it covers in the corner. The live eye redraws only these as it blinks.
  */
 export function lidStrokes(
   S: number,
@@ -1362,25 +1617,25 @@ export function lidStrokes(
   o: { pitch?: number; step?: number; base?: LidBase } = {},
 ): Stroke[] {
   const hand = new Hand(S);
-  const C = curvesFor(pose, o.base?.curves);
+  const base = o.base ?? lidBase({ ...pose, open: 1 });
+  const C = curvesFor(pose, base.curves);
   const T = tonesFor(C, pose);
   const step = o.step ?? 1;
-  lidBand(hand, S, o.pitch ?? pitchFor(S), C, T.skin, step);
+  const P = o.pitch ?? pitchFor(S);
+  lidBand(hand, S, P, C, base.orbit, T.lid, step);
+  lidCross(hand, S, P, C, base.orbit, T.lid, step);
+  whiteShadeLines(hand, S, P, C, T.whiteShade, step);
   lidContours(hand, S, C, step);
   upperLashes(hand, S, C, step);
   openDetail(hand, S, C);
   return hand.out;
 }
 
-/** The resting curves, kept so a blink rebuilds only the lid that moves. */
-export type LidBase = { curves: Curves };
-export const lidBase = (pose: Pose = REST): LidBase => ({ curves: curvesFor(pose) });
-
 // ── the hand's timing ───────────────────────────────────────────────────────
 
 /**
  * When each family is laid, s, at speed 1. The plate's order: construction, contour,
- * hatching, cross-hatching and hair, the plate. Families of one pass overlap, the way
+ * hatching, cross-hatching and detail, the plate. Families of one pass overlap, the way
  * a hand moves on before the last stroke of a passage has dried.
  */
 export const EYE_TIMELINE: Readonly<Record<string, readonly [number, number]>> = {
@@ -1397,16 +1652,19 @@ export const EYE_TIMELINE: Readonly<Record<string, readonly [number, number]>> =
   'contour-crease': [2.12, 2.42],
   'contour-iris': [2.34, 2.72],
   'hatch-band': [2.62, 3.4],
-  'hatch-above': [2.7, 3.72],
-  'hatch-below': [2.8, 3.72],
+  pillow: [2.7, 3.3],
+  orbit: [2.74, 3.86],
   'hatch-sclera': [2.95, 3.78],
   'hatch-spokes': [3.1, 3.86],
-  cross: [3.66, 4.3],
-  rings: [3.74, 4.26],
+  'orbit-cross': [3.62, 4.4],
+  'lid-cross': [3.66, 4.2],
+  'white-shade': [3.7, 4.28],
+  'pillow-cross': [3.7, 4.2],
+  iris: [3.74, 4.3],
   vessels: [3.96, 4.26],
   'lashes-upper': [3.84, 4.5],
   'lashes-lower': [4.14, 4.5],
-  brow: [3.92, 4.78],
+  brow: [3.9, 4.86],
   detail: [4.36, 4.74],
   'detail-open': [4.3, 4.66],
   pupil: [4.7, 5.06],
@@ -1415,7 +1673,7 @@ export const EYE_TIMELINE: Readonly<Record<string, readonly [number, number]>> =
 };
 
 /** When each pass begins, s at speed 1 (for a caption that names the pass being drawn). */
-export const EYE_PASSES = [0, 1.5, 2.62, 3.66, 4.7] as const;
+export const EYE_PASSES = [0, 1.5, 2.62, 3.62, 4.7] as const;
 
 /** Pen speeds, px/s, and the shortest and longest a stroke may take, s. */
 const PENS: Record<Pen, { speed: number; min: number; max: number }> = {
