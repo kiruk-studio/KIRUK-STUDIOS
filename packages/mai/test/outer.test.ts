@@ -12,7 +12,7 @@ import { HANDS, perform } from '../src/hand/hand.ts';
 import { INKS } from '../src/ink/inks.ts';
 import { placeLabel } from '../src/letter/labels.ts';
 import { letter } from '../src/letter/letter.ts';
-import { dimension, valueInk } from '../src/measure/measure.ts';
+import { dimension, isOverlay, valueInk } from '../src/measure/measure.ts';
 import {
   angleDim,
   centreLines,
@@ -409,5 +409,21 @@ describe('lettering', () => {
     letter(p, 'Σ 3', [10, 40], { cap: 2.5, kind: 'note', id: 'sum' });
     expect(p.texts.find((t) => t.id === 'sum')?.missing).toBe('Σ');
     expect(status(critique(p), 'type.glyphs')).toBe('fail');
+  });
+});
+
+describe('one rule for the exact overlay (MA-31)', () => {
+  it('night: dimensions are as exact as the neatlines beside them', () => {
+    const p = sheet('night-exact', 'night');
+    expect(isOverlay(p, 'dimension')).toBe(true);
+    expect(isOverlay(p, 'overlay')).toBe(true);
+  });
+  it('day: the rubric overlay is exact', () => {
+    const p = sheet('day-exact', 'dawn-new');
+    expect(isOverlay(p, 'dimension')).toBe(true);
+  });
+  it('a historic style keeps its hand-ruled sepia dimensions', () => {
+    const p = sheet('architect-hand', 'architect');
+    expect(isOverlay(p, 'dimension')).toBe(false);
   });
 });

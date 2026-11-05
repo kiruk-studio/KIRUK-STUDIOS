@@ -137,33 +137,33 @@ Plate `plate-03-volute` · style `architect` · verdict **WARN**
   - why: The tokens keep the rubric line (#B5462B) for rules, guides and leaders and give measure type its own red (#983A22); values lettered in the line red read 2.9–4.1:1 on Dawn Departs (ledger MA-17).
 - **PASS** Every character is drawn — every drawn character has a glyph (target 0 blank characters)
   - why: A character with no glyph comes out as a space: “41°” read “41” before the degree sign was drawn. A silent blank changes what a value says.
-- **PASS** A blot never fills a letter — 94 letter strokes, every pool under a third of its cap (target pool diameter ≤ 0.32 × cap height)
+- **PASS** A blot never fills a letter — 110 letter strokes, every pool under a third of its cap (target pool diameter ≤ 0.32 × cap height)
   - why: A fresh dip may blot the first letter, but a blot that fills a counter turns a 4 into a 9: a value nobody can trust (plate III, the 345 mm).
 - **PASS** A label sits near its point, or a leader joins them — all within 8 mm or led (target ≤ 8 mm, or a leader)
   - why: Labels sit within one leader length of their referent (research 03 R10).
 
 ## Bleed
 
-- **PASS** Ink wicks into the sheet as much as this paper allows — 22.53 feathers per 100 mm, median 0.077 mm (sizing 0.6) (target ≤ 30 per 100 mm on sized paper; length ≤ 0.35 mm)
+- **PASS** Ink wicks into the sheet as much as this paper allows — 20.71 feathers per 100 mm, median 0.076 mm (sizing 0.6) (target ≤ 30 per 100 mm on sized paper; length ≤ 0.35 mm)
   - why: Feathering follows fibres and sizing; it stays local (founder, ideas/studio-dawn/ink-bleed.md: only the nearby area).
 - **PASS** Bleed stays near its line — longest mean wisp 0.279 mm (target ≤ 0.6 mm)
   - why: When ink scatters it does not affect the overall area, only the nearby (founder).
-- **PASS** Bleed varies with the sheet (not a filter) — spread CV 0.24 (target ≥ 0.15)
+- **PASS** Bleed varies with the sheet (not a filter) — spread CV 0.22 (target ≥ 0.15)
   - why: Uniform bleed is a filter look; real bleed follows absorbency, load and fibre.
 - **PASS** Chalk, graphite and metalpoint never pool or feather — 0 dry marks with pools or feathers (target 0)
   - why: Dry media sit on the tooth; they have no liquid to move.
-- **PASS** Blots are events, not decoration — 10% of wet strokes pool (target 1%–40%)
+- **PASS** Blots are events, not decoration — 8% of wet strokes pool (target 1%–40%)
   - why: Blots everywhere are costume; none at all is a plotter.
 
 ## Layout
 
 - **PASS** The drawing keeps its margins — 0 ink strokes in the margins (target 0)
   - why: Rule the sheet first: margins, subject zone, key and notes zones (research 02 R1).
-- **PASS** The weight of the ink sits at or above the middle — ink centroid at 51% of the height (target ≤ 52%)
+- **PASS** The weight of the ink sits at or above the middle — ink centroid at 52% of the height (target ≤ 52%)
   - why: The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid.
 - **PASS** The sheet is balanced left to right — ink centroid at 49% of the width (target 50% ± 12%)
   - why: The subject is centred and largest; commentary frames it (research 02 R2).
-- **PASS** White space is reserved on purpose — 44% of the sheet is paper (target 30%–85%)
+- **PASS** White space is reserved on purpose — 43% of the sheet is paper (target 30%–85%)
   - why: Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5).
 
 ## Creativity

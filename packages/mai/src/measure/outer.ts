@@ -24,14 +24,9 @@ import type { Role } from '../hand/hand.ts';
 import { letter } from '../letter/letter.ts';
 import type { LineType } from '../plate/linetype.ts';
 import type { Mark, Plate } from '../plate/plate.ts';
-import { dimension, formatValue, valueInk } from './measure.ts';
+import { dimension, formatValue, isOverlay, valueInk } from './measure.ts';
 
 export type Rect = readonly [x0: number, y0: number, x1: number, y1: number];
-
-const isOverlay = (plate: Plate, role: Role) => {
-  const k = plate.kit(role);
-  return k.layer === 'overlay' && k.instrument === 'ruling';
-};
 
 /** A filled arrowhead, length:width ≈ 3:1 (research 03 §2.2). */
 export function arrowhead(

@@ -30,10 +30,19 @@ export interface Built {
   marks: Mark[];
 }
 
-/** Is this role's kit the crisp overlay (rubric ruling pen), which never wobbles? */
-function isOverlay(plate: Plate, role: Role) {
+/** The inks of the modern line: rubric by day, Dawn Departs on the night sheet. */
+const MODERN_INKS: ReadonlySet<string> = new Set(['rubric', 'departs']);
+
+/**
+ * Is this role’s kit the exact overlay — the ruling pen on the overlay layer, in a modern ink —
+ * which never wobbles? One rule for every measure (MA-31). It used to be two: `outer.ts` asked
+ * only for overlay + ruling, `measure.ts` also for rubric, so on the night sheet the neatlines
+ * were exact while the dimensions beside them were ruled by hand with ticks. Historic styles
+ * (architect’s sepia, engraver’s carbon) keep a hand-ruled overlay throughout.
+ */
+export function isOverlay(plate: Plate, role: Role) {
   const k = plate.kit(role);
-  return k.layer === 'overlay' && k.instrument === 'ruling' && k.ink === 'rubric';
+  return k.layer === 'overlay' && k.instrument === 'ruling' && MODERN_INKS.has(k.ink);
 }
 
 export function ruled(

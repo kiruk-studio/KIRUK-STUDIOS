@@ -482,7 +482,7 @@
       "dimension": "typography",
       "title": "A blot never fills a letter",
       "status": "pass",
-      "value": "94 letter strokes, every pool under a third of its cap",
+      "value": "110 letter strokes, every pool under a third of its cap",
       "target": "pool diameter ≤ 0.32 × cap height",
       "why": "A fresh dip may blot the first letter, but a blot that fills a counter turns a 4 into a 9: a value nobody can trust (plate III, the 345 mm).",
       "fix": "pools on letters are capped at 0.7 × the line width in ink/render.ts; check the renderer was not bypassed"
@@ -492,7 +492,7 @@
       "dimension": "bleed",
       "title": "Ink wicks into the sheet as much as this paper allows",
       "status": "pass",
-      "value": "22.53 feathers per 100 mm, median 0.077 mm (sizing 0.6)",
+      "value": "20.71 feathers per 100 mm, median 0.076 mm (sizing 0.6)",
       "target": "≤ 30 per 100 mm on sized paper; length ≤ 0.35 mm",
       "why": "Feathering follows fibres and sizing; it stays local (founder, ideas/studio-dawn/ink-bleed.md: only the nearby area)."
     },
@@ -510,7 +510,7 @@
       "dimension": "bleed",
       "title": "Bleed varies with the sheet (not a filter)",
       "status": "pass",
-      "value": "spread CV 0.24",
+      "value": "spread CV 0.22",
       "target": "≥ 0.15",
       "why": "Uniform bleed is a filter look; real bleed follows absorbency, load and fibre."
     },
@@ -528,7 +528,7 @@
       "dimension": "bleed",
       "title": "Blots are events, not decoration",
       "status": "pass",
-      "value": "10% of wet strokes pool",
+      "value": "8% of wet strokes pool",
       "target": "1%–40%",
       "why": "Blots everywhere are costume; none at all is a plotter."
     },
@@ -546,7 +546,7 @@
       "dimension": "layout",
       "title": "The weight of the ink sits at or above the middle",
       "status": "pass",
-      "value": "ink centroid at 51% of the height",
+      "value": "ink centroid at 52% of the height",
       "target": "≤ 52%",
       "why": "The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid."
     },
@@ -564,7 +564,7 @@
       "dimension": "layout",
       "title": "White space is reserved on purpose",
       "status": "pass",
-      "value": "44% of the sheet is paper",
+      "value": "43% of the sheet is paper",
       "target": "30%–85%",
       "why": "Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5)."
     },
