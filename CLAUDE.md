@@ -87,7 +87,10 @@ From the founder's manifesto (`content/manifesto.md`) + vision doc §1.3:
 
 **Monorepo root — single repo, multiple deployable units:**
 
-- `apps/kiruk-web/` — public studio website → deploys to studio.kiruk.in (Astro 5)
+- `apps/kiruk-web/` — public studio website → deploys to studio.kiruk.in (Astro 5). **In practice (2026-11-05):** a retired placeholder; studio.kiruk.in serves `apps/kiruk-studio` by hand deploy. Pending `openspec/changes/adopt-next-studio`.
+- `apps/kiruk-studio/` — the studio front door (Next.js 15): the burin eye, the ink opening, the hand. Live on studio.kiruk.in.
+- `packages/burin/` — `@kiruk/burin`, the engraving engine (three.js WebGPU + TSL paper, line fields, bleed, the hand).
+- `packages/mai/` — `@kiruk/mai`, the ink engine for plates (hand, pen, measure, letter, critic). Skills `/kiruk-mai*`.
 - `apps/kiruk-portal/` — internal client management portal → deploys separately (Next.js 15)
 - `apps/kiruk-forge/` — kirukal mark instrument (Toolcraft 0.0.20, internal, not PR1)
 - `apps/kiruk-blogism/` — BLOGISM notebook desk (Toolcraft 0.0.20, internal; publishes into kiruk.in). Not PR1.
