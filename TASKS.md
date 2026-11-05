@@ -148,7 +148,7 @@ See `ROADMAP.md` Phases 4.5–7.
 - [x] (P1) mai: one rule for the exact overlay (MA-31); Plates III and IV re-proofed, calculus page republished
 - [x] (P1) `@kiruk/burin` gets a vitest suite (it had none)
 - [ ] (P0) Founder: approve `openspec/changes/adopt-next-studio`, then Vercel `kiruk-web` → Root Directory `apps/kiruk-studio` (until then pushes do not reach studio.kiruk.in)
-- [ ] (P2) `apps/kiruk-forge` / `apps/kiruk-blogism` Toolcraft tests fail on Windows (symlinks, POSIX launchers) inside the hash-locked kit; expected to pass on Linux CI — confirm on the first CI run
+- [ ] (P2) Toolcraft self-tests in `apps/kiruk-forge` fail 8 of 813 on a clean Linux runner (generated-runtime starter-domain and toolchain sealing tests; more on Windows: symlinks, POSIX launchers). Pre-existing, inside the hash-locked kit. CI gates the kits by `check-toolcraft-docs` + `check-toolcraft-integrity` instead; re-include their `test` once the kit is re-scaffolded at a version that passes
 - [ ] (P2) mai: `A'` is not a prime; decide whether lettering should ever infer one (an apostrophe in "eye's" must stay an apostrophe)
 
 ## mai round two — execution plan for the unfinished work (handoff 2026-11-05)
