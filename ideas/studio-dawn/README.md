@@ -14,6 +14,7 @@ Loose on purpose. This is the kirukal layer for the studio rebuild: notes, sketc
 | [eye-link.md](./eye-link.md)               | How it all links with the eye                                 |
 | [eye.md](./eye.md)                         | The engraved eye plate, cut by the burin engine (the landing) |
 | [ink-opening.md](./ink-opening.md)         | The first visit: a hand draws the eye in ink, then it opens   |
+| [ink-strokes.md](./ink-strokes.md)         | How the hand lays a line: the pen's vocabulary, part by part  |
 | [link-everything.md](./link-everything.md) | How dawn, ink, sketch, eye and the work link with each other  |
 | [both-sides.md](./both-sides.md)           | Parked: engineering and design showing on one page at once    |
 

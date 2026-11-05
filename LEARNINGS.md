@@ -87,3 +87,22 @@ Use this shape (markdown `##` heading + bullets):
   - In the cloud container, test overlay and loader logic with `--disable-3d-apis`.
   - Treat a stall that appears only with WebGL as unproven until it is seen on hardware (the founder's `burin-check`).
   - Before trusting a result from a local server, confirm which process owns the port: check `NEXT_DIST_DIR` in `/proc/<pid>/environ`, and restart it after every build.
+
+## 2026-11-05 — A drawing outgrew the frame that holds it
+
+- **Mistake (caught before commit):** The redrawn eye's socket rings reached past ±1.78 eye units, but the loader's canvases stop at ±1.78 (`INK_BOX` in `apps/kiruk-studio/.../loader/ink/frame.ts`). At the desktop size their frayed edge was cut into a straight vertical line on both sides.
+- **Root cause:** The drawing (`packages/burin`) and the box that holds it (`apps/kiruk-studio`) live in different packages. The art was tuned in a harness with a larger canvas, where nothing was cut.
+- **Fix:** The socket's tone fades out before ±1.72 across and 1.56 above (`socketTone`, "the sheet"), and the fade is ragged with the same noise as the fray.
+- **Guard:**
+  - The art harness outlines the loader's box over the drawing.
+  - `ink-strokes.md` states the drawing's extent next to the box's.
+  - When a drawing grows, check it against the frame in the real loader, not only in the harness.
+
+## 2026-11-05 — A stale server held the test port again
+
+- **Mistake:** After a rebuild, a check ran against the previous production server. It still held port 3200, and the new server had failed with `EADDRINUSE`. The stale pages asked for chunks the new build had replaced, the loader never mounted, and the run read as a regression for a minute. This is the same failure class as the entry above, "The cloud container cannot prove a WebGL hand-off".
+- **Root cause:** The stop step was `pkill -f "next start -p 3200"`, but a running Next server retitles its process `next-server (v15…)`, so the pattern matched nothing. The new server's log, which said `EADDRINUSE`, was not read before the check ran.
+- **Fix:** The old server was stopped by its pid, the new one was started, and its log was read (`Ready`) before the checks were run again. They passed.
+- **Guard (stronger than before):**
+  - Stop a server by the port, not by its command line: find the pid with `ss -ltnp` and kill it.
+  - After starting a server, read its log for `Ready`, not `EADDRINUSE`, before any check.

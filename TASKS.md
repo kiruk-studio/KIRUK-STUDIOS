@@ -49,6 +49,8 @@
 - [ ] (P1) **Phase 3 — Ideation** in `ideas/studio-dawn/`: dawn loop, ink-bleed TSL prototype, sketch layer, eye link
 - [x] (P1) 2026-11-05 Ink opening on `apps/kiruk-studio`: the first-visit loader draws the burin eye in ink, then it wakes — spec: ideas/studio-dawn/ink-opening.md
 - [ ] (P1) Founder checkpoint on the ink opening (pace, open vs shut, corner words) and a real-GPU check of the hand-off onto the plate — spec: ideas/studio-dawn/ink-opening.md
+- [x] (P1) 2026-11-05 Ink opening's eye redrawn after the founder's three engravings: the pen's vocabulary (hairline to swell, tapers, crossing for black), socket rings, held light, the face's shade fixed on the white, caruncle, brow, iris — spec: ideas/studio-dawn/ink-strokes.md
+- [ ] (P2) Founder decides: port the redrawn look (rings, held light, the white's fixed shade) to the GPU plate `packages/burin/src/subjects/eye/shader.ts`, so the landing's hand-off meets the same eye — spec: ideas/studio-dawn/ink-strokes.md
 - [ ] (P2) Decide whether to delete the unused 1970 tube and live 3D era eye from `apps/kiruk-studio` (no longer imported by the loader)
 - [~] (P1) **kiruk-codex skill** (`.claude/skills/kiruk-codex/`, plan `ideas/kiruk-codex/plan.md`): drafted 2026-10-20; Plate I tested twice and fixed; marks / depth / live added (untested on a mark plate); then founder review (name, rubric vs ultramarine, "TypeScript", type trio) and keep/delete the parked blend prototypes
 - [ ] (P1) Founder: drop ink-bleed + dawn references into `ideas/studio-dawn/references/` (gitignored)
