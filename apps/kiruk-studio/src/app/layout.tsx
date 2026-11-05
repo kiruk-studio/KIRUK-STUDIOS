@@ -8,7 +8,7 @@ import {
   Xanh_Mono,
 } from 'next/font/google';
 import AppLoader from '@/components/ui/app-loader';
-import { TUBE_BOOT_CSS, TUBE_BOOT_SCRIPT } from '@/components/ui/loader/tube/boot';
+import { INK_BOOT_CSS, INK_BOOT_SCRIPT } from '@/components/ui/loader/ink/boot';
 import './globals.css';
 
 const fell = IM_Fell_English({
@@ -67,9 +67,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <link rel="preload" href="/favicon.svg" as="image" />
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: a constant authored in this repo, not user input */}
-        <style dangerouslySetInnerHTML={{ __html: TUBE_BOOT_CSS }} />
+        <style dangerouslySetInnerHTML={{ __html: INK_BOOT_CSS }} />
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: a constant authored in this repo, not user input */}
-        <script dangerouslySetInnerHTML={{ __html: TUBE_BOOT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: INK_BOOT_SCRIPT }} />
       </head>
       <body suppressHydrationWarning>
         <AppLoader enableLoader>{children}</AppLoader>
