@@ -12,6 +12,7 @@ Terse navigation for any AI coding agent (Claude Code, Cursor, etc.) working in 
 6. Read `openspec/specs/repo-privacy/spec.md` for **secrets, private data, and review** expectations (pair with [CONTRIBUTING.md](CONTRIBUTING.md) and [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)).
 7. Read [LEARNINGS.md](LEARNINGS.md) and `openspec/specs/operational-learning/spec.md` for **recorded mistakes and guards** so you do not repeat known failure modes.
 8. For **brand-strategy thinking** (17 Day Brand pass, not locked vision): [ideas/brand-thinking/README.md](ideas/brand-thinking/README.md). Dump via `/kiruk-brand-thinking`. Do not treat that folder as `VISION-MISSION.md`.
+9. For **the eye, eras, loader, and pen**: read them from the private sibling repo `kiruk-in` (skills and reference UI). Write public results here. Method: [ideas/private-craft-bridge/README.md](ideas/private-craft-bridge/README.md).
 
 ## Cursor & Composer
 

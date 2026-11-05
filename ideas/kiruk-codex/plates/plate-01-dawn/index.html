@@ -1,0 +1,1057 @@
+<!doctype html>
+<!--
+  kiruk codex · Plate I · The light before the sun
+  Skill: .claude/skills/kiruk-codex (SKILL.md steps 1–12). Draft in ideas/, not a shipped artifact.
+  Every number on the sheet is read from the truth block below, a verbatim copy of ./truth.json.
+  Colours are working CSS variables from references/pen.md; they become tokens through a spec before shipping
+  (CLAUDE.md non-negotiable 5).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plate I · The light before the sun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+Double+Pica&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@500&family=Xanh+Mono&display=block" rel="stylesheet">
+<style>
+  :root {
+    --paper: #efe4d4;
+    --ink: #2a2226;
+    --ink-soft: rgb(42 34 38 / 0.55);
+    --construction: rgb(93 79 85 / 0.4);
+    --rubric: #b5462b;
+    --rubric-text: #983a22;
+    --sky-pale: #d3d9de;
+    --glow-cream: #ebd6b5;
+    --glow-peach: #f7d5a6;
+    --glow-amber: #ecc38c;
+    --ray-orange: #ce643a;
+    --ray-rose: #cd798f;
+    --sky-lavender: #957e8d;
+    --dusk-plum: #532f4c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 17px/1.45 'IM Fell English', serif; font-synthesis: none; -webkit-font-smoothing: antialiased; }
+  figure[data-codex] { margin: 0 auto; max-width: 1440px; }
+  figure[data-codex] svg { display: block; width: 100%; height: auto; }
+  .sheet-phone { display: none !important; }
+
+  /* the pen */
+  .ink { fill: none; stroke: var(--ink); stroke-linecap: round; stroke-linejoin: round; }
+  .ink-fill { fill: var(--ink); stroke: none; }
+  .ink-faint { opacity: 0.55; }
+  .ink-soft { fill: none; stroke: var(--ink-soft); stroke-linecap: round; stroke-linejoin: round; }
+  .cons { fill: none; stroke: var(--construction); stroke-width: 0.5; }
+  /* the line: one hue, a ruled hairline */
+  .ln { fill: none; stroke: var(--rubric); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linecap: butt; }
+  .ln-soft { fill: none; stroke: var(--rubric); stroke-opacity: 0.55; stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linecap: butt; }
+  .ln-dot { fill: var(--rubric); stroke: none; }
+  .ln-tint { fill: var(--rubric); fill-opacity: 0.12; stroke: none; }
+  .knock { fill: var(--paper); stroke: none; }
+  .handle { fill: var(--paper); stroke: var(--rubric); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .lab { font: 500 12px 'JetBrains Mono', monospace; fill: var(--rubric-text); font-variant-numeric: tabular-nums; }
+  .tag { font: 500 12px 'JetBrains Mono', monospace; fill: var(--rubric-text); letter-spacing: 0.06em; }
+  .nts { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  /* words */
+  .note { font: 17px 'IM Fell English', serif; fill: var(--ink); }
+  .note-sm { font: 15px 'IM Fell English', serif; fill: var(--ink); }
+  .note-xs { font: 14px 'IM Fell English', serif; fill: var(--ink); }
+  .claim-svg { font: 15px 'Xanh Mono', monospace; fill: var(--ink); }
+  .note i, .note-sm i { font-style: italic; }
+  .letter { font: 18px 'IM Fell English', serif; fill: var(--rubric-text); }
+  .lead { fill: var(--rubric-text); }
+  .plate-no { font: 16px 'IM Fell English SC', serif; letter-spacing: 0.08em; fill: var(--ink); }
+  .title { font: 50px 'IM Fell Double Pica', serif; fill: var(--ink); }
+  .colophon { font: 500 11.5px 'JetBrains Mono', monospace; fill: var(--ink); font-variant-numeric: tabular-nums; }
+  .eye-needle { fill: none; stroke: var(--ink); stroke-width: 10; stroke-linejoin: bevel; }
+  .eye-petal { fill: var(--ink); stroke: none; }
+
+  /* under the sheet */
+  .under { max-width: 1440px; margin: 0 auto; padding: 18px 86px 64px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px 72px; }
+  .claim { grid-column: 1 / -1; margin: 0; font: 16px/1.4 'Xanh Mono', monospace; max-width: 72ch; }
+  .claim b { font-weight: normal; font-family: 'IM Fell English SC', serif; letter-spacing: 0.08em; }
+  .key, .phone-notes, .aside { margin: 0; }
+  .key h2, .aside h2, .phone-notes h2 { font: 16px 'IM Fell English SC', serif; letter-spacing: 0.08em; margin: 0 0 6px; font-weight: normal; }
+  .key ol { list-style: none; margin: 0; padding: 0; font-size: 16px; line-height: 1.4; columns: 2; column-gap: 40px; }
+  .key li { break-inside: avoid; padding-left: 1.6em; text-indent: -1.6em; margin-bottom: 4px; }
+  .key b, .phone-notes b { color: var(--rubric-text); font-weight: normal; }
+  .aside p { margin: 0 0 10px; font-size: 16px; max-width: 46ch; }
+  .phone-notes { display: none; }
+  .phone-notes p { margin: 0 0 12px; }
+  .phone-notes ol { margin: 0 0 12px; padding-left: 1.2em; }
+
+  @media (max-width: 760px) {
+    .sheet-desk { display: none !important; }
+    .sheet-phone { display: block !important; }
+    .desk-only { display: none; }
+    .claim { display: none; }
+    .under { display: block; padding: 14px 16px 48px; }
+    .claim { margin-bottom: 18px; }
+    .key ol { columns: 1; }
+    .phone-notes { display: block; margin: 18px 0; }
+    .phone-notes p, .phone-notes li, .aside p, .key li { font-size: 16px; }
+    .aside { margin-top: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!--TRUTH-->
+<script type="application/json" id="truth">
+{
+  "plate": {
+    "number": "I",
+    "title": "The light before the sun",
+    "claim": "The sky lights up before sunrise because sunlight the Earth still hides from you already reaches the air high above, and that air scatters it down to your eye.",
+    "made": "2026-10-20",
+    "skill": ".claude/skills/kiruk-codex"
+  },
+  "earth": {
+    "mean_radius_km": 6371.0,
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+    "note": "NASA Earth Fact Sheet: volumetric mean radius 6371.000 km; atmospheric scale height 8.5 km."
+  },
+  "twilight": {
+    "civil_deg": 6,
+    "nautical_deg": 12,
+    "astronomical_deg": 18,
+    "sunrise_centre_deg": 0.8333,
+    "refraction_at_horizon_arcmin": 34,
+    "sun_semidiameter_arcmin": 16,
+    "definition": "Twilight: sunlight scattered by the Earth's upper atmosphere lights the sky before sunrise and after sunset. Civil, nautical and astronomical twilight begin in the morning when the centre of the sun is geometrically 18, 12 and 6 degrees below the horizon (astronomical 18, nautical 12, civil 6). Sunrise is computed when the centre is 50 arcminutes below: 34' of refraction plus the sun's 16' radius.",
+    "source": "https://aa.usno.navy.mil/faq/RST_defs"
+  },
+  "observer": {
+    "place": "Bengaluru",
+    "date": "2026-10-20",
+    "astronomical_twilight_starts": "4:59",
+    "nautical_twilight_starts": "5:24",
+    "civil_twilight_starts": "5:49",
+    "sunrise": "6:10",
+    "sunrise_bearing_deg": 100,
+    "first_light_to_sunrise_min": 71,
+    "sun_distance_million_km": 149,
+    "sun_distance_note": "timeanddate gives 92.570 million miles for 20 Oct 2026 (148.98 million km).",
+    "source": "https://www.timeanddate.com/sun/india/bengaluru?month=10&year=2026",
+    "note": "Local time (IST). Sunrise includes refraction; twilight starts are the geometric depressions 18, 12, 6 degrees."
+  },
+  "geometry": {
+    "letters": "O is the observer (lettered F on the plate); T is where the grazing ray touches the ground (lettered C).",
+    "method": "Derived. A ray that just touches the Earth at T, where the sun's centre is on the horizon, passes over an observer O at angular distance d with height h = R (sec d - 1). The ground distance O to T is R d (d in radians). R from earth.mean_radius_km. Refraction ignored.",
+    "shadow_height_over_O_km": {
+      "18": 327.9,
+      "12": 142.3,
+      "6": 35.1,
+      "sunrise": 0.7
+    },
+    "ground_distance_O_to_T_km": {
+      "18": 2001,
+      "12": 1334,
+      "6": 667,
+      "sunrise": 93
+    },
+    "east_horizon_sightline_at_6_deg": {
+      "enters_sunlight_km_east": 334,
+      "height_above_ground_there_km": 8.7,
+      "method": "Horizontal line from O toward the sun, crossed with the grazing ray for d = 6 degrees."
+    },
+    "grazing_ray_leaves_100km_deg_past_T": 10.1
+  },
+  "atmosphere": {
+    "fraction_of_mass_below": {
+      "5.5": 0.5,
+      "30": 0.9888,
+      "35": 0.995,
+      "50": 1.0
+    },
+    "share_above_35km_percent": 0.5,
+    "top_drawn_km": 100,
+    "top_note": "The air has no edge; 100 km is a conventional top (the X-prize rounding of the height where orbits stop feeling the air). The plate draws it as a construction arc, not an ink edge.",
+    "source": "https://www.pdas.com/atmthick.html",
+    "scale_height_km": 8.5,
+    "scale_height_source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html"
+  },
+  "scattering": {
+    "law": "Scattering by air molecules goes as the inverse fourth power of wavelength (a good approximation for sunlight in air).",
+    "law_sources": [
+      "https://www.britannica.com/science/Rayleigh-scattering",
+      "https://glossary.ametsoc.org/wiki/Rayleigh%27s_scattering_law"
+    ],
+    "shortest_visible_nm": 380,
+    "longest_visible_nm": 700,
+    "visible_source": "https://science.nasa.gov/ems/09_visiblelight/",
+    "ratio_short_to_long": 11.5,
+    "ratio_method": "(700 / 380)^4 = 11.51"
+  },
+  "air_mass": {
+    "zenith": 1,
+    "horizon": 38,
+    "note": "Kasten and Young (1989), Applied Optics 28, 4735: air mass is about 38 at the horizon against 1 overhead.",
+    "source": "https://doi.org/10.1364/AO.28.004735"
+  },
+  "twilight_blue": {
+    "zenith_blue_from_ozone": "2/3",
+    "zenith_blue_from_scattering": "1/3",
+    "condition": "sun at the horizon",
+    "note": "Hulburt (1953) found ozone absorption (Chappuis bands, orange light) gives about two thirds of the zenith sky's blue at sunset; Lange, Rozanov and von Savigny (2023) confirm it for the sun at the horizon.",
+    "sources": [
+      "https://doi.org/10.1364/JOSA.43.000113",
+      "https://acp.copernicus.org/articles/23/14829/2023/"
+    ]
+  },
+  "eye": {
+    "axial_length_mm": 24,
+    "note": "Adult emmetropic eye, cornea to back: usually about 22 to 24 mm (Benzir et al. 2022, Cureus). The plate's enlarged eye is drawn with a 24 mm axial length and carries a 10 mm bar.",
+    "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9536359/"
+  },
+  "earth_shadow": {
+    "note": "Before sunrise the Earth's shadow is cast on the air above the horizon opposite the sun as a blue-grey band, with a rose band (the anti-twilight arch, or Belt of Venus) along its upper edge.",
+    "source": "https://cloudatlas.wmo.int/en/imgviewer-4792.txt"
+  },
+  "name": {
+    "arun": "Arun means dawn in Tamil (the founder).",
+    "arun_source": "ideas/studio-dawn/dawn.md",
+    "aruna": "Sanskrit aruna: red, ruddy. Aruna is the charioteer of Surya, the sun, and the personification of the reddish glow of the rising sun.",
+    "aruna_sources": [
+      "https://en.wikipedia.org/wiki/Aruna_(Hinduism)",
+      "https://www.vyasaonline.com/encyclopedia/aruna/"
+    ]
+  },
+  "drawing": {
+    "section": "Vertical plane through O and the sun (bearing 100 degrees, so east is on the left), seen from the north.",
+    "main_state_deg": 6,
+    "main_state_time": "5:49",
+    "desktop": {
+      "km_per_px_horizontal": 2.5,
+      "km_per_px_vertical": 0.333,
+      "heights_exaggerated": 7.5
+    },
+    "phone": {
+      "km_per_px_horizontal": 4.0,
+      "km_per_px_vertical": 0.556,
+      "heights_exaggerated": 7.2
+    },
+    "sequence": {
+      "km_per_px_horizontal": 33.0,
+      "km_per_px_vertical": 11.4,
+      "heights_exaggerated": 2.9
+    },
+    "sequence_phone": {
+      "km_per_px_horizontal": 31.3,
+      "km_per_px_vertical": 12.0,
+      "heights_exaggerated": 2.6
+    },
+    "note": "Heights are stretched against distances (a geologist's section). Straight rays stay straight and the ray still touches the Earth at T, but drawn angles are steeper than true; the 6 degree value is underlined on the sheet because its drawn angle does not match it."
+  }
+}
+</script>
+<!--/TRUTH-->
+
+<figure data-codex aria-describedby="phone-notes">
+  <svg class="sheet-desk" id="desk" viewBox="0 0 1440 900" role="img" aria-labelledby="plate-title plate-claim"></svg>
+  <svg class="sheet-phone" id="phone" viewBox="0 0 390 720" role="img" aria-labelledby="plate-title plate-claim"></svg>
+  <figcaption class="under">
+    <p class="claim" id="plate-claim"><b id="plate-title">Plate I · The light before the sun.</b> <span data-t="plate.claim"></span></p>
+
+    <div class="key" data-layer="notes">
+      <h2>Key</h2>
+      <ol>
+        <li><b>A</b>&nbsp; the sun, <span data-t="twilight.civil_deg"></span>° below the horizon at F, at <span data-t="observer.civil_twilight_starts"></span></li>
+        <li><b>B</b>&nbsp; the grazing ray: the last sunlight to clear the Earth’s curve</li>
+        <li><b>C</b>&nbsp; where the ray touches the ground: the sun is on the horizon there, <span data-t="geometry.ground_distance_O_to_T_km.6"></span>&nbsp;km east</li>
+        <li><b>D</b>&nbsp; the lit air, from <span data-t="geometry.shadow_height_over_O_km.6" data-r="0"></span>&nbsp;km over F and up</li>
+        <li><b>E</b>&nbsp; the Earth’s shadow on the air: still night</li>
+        <li><b>F</b>&nbsp; the eye of someone in <span data-t="observer.place"></span>, <span data-t="observer.civil_twilight_starts"></span> on 20 October 2026</li>
+        <li class="desk-only"><b>G</b>&nbsp; a molecule of air, scattering sunlight every way</li>
+        <li><b>H</b>&nbsp; the same dawn in four states</li>
+      </ol>
+    </div>
+
+    <div class="phone-notes" id="phone-notes" data-layer="notes">
+      <h2>Notes</h2>
+      <p><b>A</b> The sun is <span data-t="twilight.civil_deg"></span>° below the horizon at F. Nobody at F can see it, and it is drawn only to show where the light comes from: it is <span data-t="observer.sun_distance_million_km"></span>&nbsp;million&nbsp;km away.</p>
+      <p><b>B</b> The grazing ray is the last sunlight to clear the Earth’s curve. It touches the ground at <b>C</b>, <span data-t="geometry.ground_distance_O_to_T_km.6"></span>&nbsp;km east of F, where the sun stands on the horizon right now, and climbs away.</p>
+      <p><b>D</b> Over F, everything from <span data-t="geometry.shadow_height_over_O_km.6" data-r="0"></span>&nbsp;km up is already in sunlight. Only <span data-t="atmosphere.share_above_35km_percent"></span>% of the air is that high, but it is enough to light the sky.</p>
+      <p><b>E</b> Under the ray it is still night. From F this shadow shows as a blue-grey band low in the west.</p>
+      <p><b>F</b> The eye at F gets no direct sun. Every ray that reaches it has been thrown down by the air.</p>
+      <p>Each molecule of air throws light every way. The shortest waves we see (<span data-t="scattering.shortest_visible_nm"></span>&nbsp;nm) are thrown about <span data-t="scattering.ratio_short_to_long"></span> times as often as the longest (<span data-t="scattering.longest_visible_nm"></span>&nbsp;nm).</p>
+      <p><b>H</b> One dawn over <span data-t="observer.place"></span>, 20 October 2026: as the sun climbs, the edge of the shadow over F sinks.</p>
+      <ol>
+        <li><span data-t="observer.astronomical_twilight_starts"></span>, sun <span data-t="twilight.astronomical_deg"></span>° down: shadow <span data-t="geometry.shadow_height_over_O_km.18" data-r="0"></span>&nbsp;km over F, above nearly all the air. First light, low in the east.</li>
+        <li><span data-t="observer.nautical_twilight_starts"></span>, <span data-t="twilight.nautical_deg"></span>° down: <span data-t="geometry.shadow_height_over_O_km.12" data-r="0"></span>&nbsp;km. The horizon shows.</li>
+        <li><span data-t="observer.civil_twilight_starts"></span>, <span data-t="twilight.civil_deg"></span>° down: <span data-t="geometry.shadow_height_over_O_km.6" data-r="0"></span>&nbsp;km. The sky over F is lit.</li>
+        <li><span data-t="observer.sunrise"></span>, sunrise: the sun’s rim clears the horizon.</li>
+      </ol>
+    </div>
+
+    <div class="aside" data-layer="notes">
+      <h2>On the colour</h2>
+      <p>Sunlight that reaches <b>C</b> along the ground has crossed about <span data-t="air_mass.horizon"></span> times as much air as light from straight overhead. On that long road most of its blue is scattered aside, so what is left to light the low eastern sky is orange and red.</p>
+      <p>The blue overhead is mostly not scattering. With the sun on the horizon, ozone, which absorbs orange light, makes about two thirds of it; scattering makes the rest.</p>
+      <h2>On the name</h2>
+      <p>Arun means dawn. In Sanskrit <i>aruṇa</i> is red, ruddy, and Aruna is the charioteer of the sun: the red glow that comes before it. This plate opens kiruk’s writing on the studio’s name, and it draws what the name holds: the light that is already here before the sun is up.</p>
+    </div>
+  </figcaption>
+</figure>
+
+<script>
+/* The claim, written again above the line layer (references/line.md):
+   "The sky lights up before sunrise because sunlight the Earth still hides from you already reaches
+    the air high above, and that air scatters it down to your eye."
+   Every mark below supports a word of it. Drawn, not plotted (references/pen.md): every contour is a
+   quill outline whose width follows the light, every shadow is hatched from its core toward the light. */
+(async () => {
+  const T = JSON.parse(document.getElementById('truth').textContent);
+  const R = T.earth.mean_radius_km;
+  const rad = Math.PI / 180;
+  const NS = 'http://www.w3.org/2000/svg';
+  const f = (v) => (Math.round(v * 10) / 10).toString();
+  const hp = (v) => Math.round(v) + 0.5; // 1 u strokes snap to half pixels, as numbers (KC-9)
+  const get = (p) => p.split('.').reduce((o, k) => (o == null ? o : o[k]), T);
+
+  for (const n of document.querySelectorAll('[data-t]')) {
+    let v = get(n.dataset.t);
+    if (typeof v === 'number' && n.dataset.r !== undefined) v = v.toFixed(+n.dataset.r);
+    n.textContent = String(v);
+  }
+
+  await Promise.all([
+    ['17px "IM Fell English"', 'The lit air 0123456789'], ['italic 17px "IM Fell English"', 'aruna'], ['16px "IM Fell English SC"', 'Plate I'],
+    ['50px "IM Fell Double Pica"', 'The light before the sun'], ['500 12px "JetBrains Mono"', 'LIT AIR 0123456789 km nm ×–°·:'], ['15px "Xanh Mono"', 'The sky'],
+  ].map(([font, text]) => document.fonts.load(font, text).catch(() => null)));
+
+  function el(parent, tag, attrs = {}, text) {
+    const e = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) if (v !== undefined && v !== null && v !== false) e.setAttribute(k, v === true ? '' : v);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  const pathOf = (pts, close) => pts.map((p, i) => `${i ? 'L' : 'M'}${f(p[0])} ${f(p[1])}`).join('') + (close ? 'Z' : '');
+
+  /* ---- pen.md helpers, pasted as written ---- */
+  function mulberry32(a) {
+    return () => {
+      a |= 0; a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function quill(path, { min = 0.7, max = 2.6, step = 2, light = [-1, -1], side = 1, seed = 1 } = {}) {
+    const rand = mulberry32(seed);
+    const len = path.getTotalLength();
+    const n = Math.max(2, Math.ceil(len / step));
+    const lh = Math.hypot(...light);
+    const [lx, ly] = [light[0] / lh, light[1] / lh];
+    const pts = [];
+    for (let i = 0; i <= n; i++) {
+      const t = (i / n) * len;
+      const p = path.getPointAtLength(t);
+      const q = path.getPointAtLength(Math.min(len, t + 0.5));
+      const r = path.getPointAtLength(Math.max(0, t - 0.5));
+      const d = Math.hypot(q.x - r.x, q.y - r.y) || 1;
+      const [ox, oy] = [(side * (q.y - r.y)) / d, (side * -(q.x - r.x)) / d];
+      const shade = Math.max(0, -(ox * lx + oy * ly));
+      const lift = Math.max(0.15, Math.min(1, i / (n * 0.12), (n - i) / (n * 0.12)));
+      const half = ((min + (max - min) * shade) * (0.92 + 0.16 * rand()) * lift) / 2;
+      pts.push([p.x, p.y, ox * half, oy * half]);
+    }
+    const ff = (v) => v.toFixed(1);
+    const a = pts.map(([x, y, hx, hy]) => `${ff(x + hx)} ${ff(y + hy)}`);
+    const b = pts.reverse().map(([x, y, hx, hy]) => `${ff(x - hx)} ${ff(y - hy)}`);
+    return `M${a.join('L')}L${b.join('L')}Z`;
+  }
+  function hatch([x, y, w, h], { gap = 4, weight = 0.9, reach = 0.6, seed = 1, slope = 45, toward = [1, 1] } = {}) {
+    const rand = mulberry32(seed);
+    const a = (slope * Math.PI) / 180;
+    const [dx, dy] = [Math.cos(a), Math.sin(a)];
+    const [nx, ny] = [-dy, dx];
+    const th = Math.hypot(...toward);
+    const [tx, ty] = [toward[0] / th, toward[1] / th];
+    const along = dx * tx + dy * ty;
+    const [cx, cy, r] = [x + w / 2, y + h / 2, Math.hypot(w, h) / 2];
+    const ff = (v) => v.toFixed(1);
+    let d = '';
+    for (let t = -r; t <= r; t += gap * (0.9 + 0.2 * rand())) {
+      const half = Math.sqrt(Math.max(0, r * r - t * t));
+      if (half < 2) continue;
+      const u = 0.5 + (0.5 * (nx * tx + ny * ty) * t) / r;
+      if (rand() > 0.2 + 0.8 * Math.min(1, u * 1.6)) continue;
+      const end = along >= 0 ? 1 : -1;
+      const l = 2 * half * Math.min(1, reach * (0.75 + 0.5 * rand()) * (0.45 + 0.55 * u));
+      const [x0, y0] = [cx + nx * t + dx * half * end, cy + ny * t + dy * half * end];
+      const [x1, y1] = [x0 - end * dx * l, y0 - end * dy * l];
+      const [w0, w1] = [(weight * (0.6 + 0.4 * u)) / 2, weight * 0.07];
+      d += `M${ff(x0 + nx * w0)} ${ff(y0 + ny * w0)}L${ff(x1 + nx * w1)} ${ff(y1 + ny * w1)}L${ff(x1 - nx * w1)} ${ff(y1 - ny * w1)}L${ff(x0 - nx * w0)} ${ff(y0 - ny * w0)}Z`;
+    }
+    return d;
+  }
+  /* ---- end of pen.md helpers ---- */
+
+  // quill() needs a live path to measure; one scratch path serves every call.
+  const scratchSvg = el(document.body, 'svg', { width: 0, height: 0, style: 'position:absolute;width:0;height:0;overflow:hidden', 'aria-hidden': 'true' });
+  const scratch = el(scratchSvg, 'path');
+  const Q = (d, opts) => { scratch.setAttribute('d', d); return quill(scratch, opts); };
+  // A quill contour as an element: filled outline, widest point stated for the weight check.
+  const qpath = (g, d, opts, extra = {}) => el(g, 'path', { class: 'ink-fill', d: Q(d, opts), 'data-quill': (opts.max ?? 2.6).toFixed(1), ...extra });
+  // A short tapered mark (a burst ray, a lash): full where the pen lands, a hair where it lifts.
+  function taper(pts, w0, w1 = w0 * 0.12) {
+    const Lp = [], Rp = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+      const [dx, dy] = [b[0] - a[0], b[1] - a[1]];
+      const len = Math.hypot(dx, dy) || 1;
+      const w = (w0 + (w1 - w0) * (i / (pts.length - 1))) / 2;
+      Lp.push([pts[i][0] - (dy / len) * w, pts[i][1] + (dx / len) * w]);
+      Rp.push([pts[i][0] + (dy / len) * w, pts[i][1] - (dx / len) * w]);
+    }
+    return pathOf(Lp.concat(Rp.reverse()), true);
+  }
+  const smooth = (pts) => {
+    let d = `M${f(pts[0][0])} ${f(pts[0][1])}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mid = [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2];
+      d += `Q${f(pts[i][0])} ${f(pts[i][1])} ${f(mid[0])} ${f(mid[1])}`;
+    }
+    const l = pts.at(-1);
+    return d + `L${f(l[0])} ${f(l[1])}`;
+  };
+  // A closed ring drawn clockwise from `start` and carried 30° past it, as a pen closes a circle.
+  const circlePath = (cx, cy, rx, ry = rx, start = -120) => {
+    const pts = [];
+    for (let a = start; a <= start + 390; a += 4) pts.push([cx + Math.cos(a * rad) * rx, cy + Math.sin(a * rad) * ry]);
+    return pathOf(pts);
+  };
+  const bounds = (pts) => {
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const x = Math.min(...xs), y = Math.min(...ys);
+    return [x, y, Math.max(...xs) - x, Math.max(...ys) - y];
+  };
+  const clipTo = (dg, id, d) => { const c = el(dg, 'clipPath', { id }); el(c, 'path', { d }); return `url(#${id})`; };
+
+  // The section: true geometry with heights stretched by V/S (composition.md "Exaggerated scale").
+  function model({ ox, oy, S, V, d }) {
+    const P = (X, Y) => [ox + X * S, oy - (Y - R) * V];
+    const polar = (th, H = 0) => P((R + H) * Math.sin(th * rad), (R + H) * Math.cos(th * rad));
+    const dr = d * rad;
+    const u = [Math.cos(dr), Math.sin(dr)];
+    const n = [-Math.sin(dr), Math.cos(dr)];
+    const Tt = [-R * Math.sin(dr), R * Math.cos(dr)];
+    const ray = (q, s) => P(Tt[0] + q * n[0] + s * u[0], Tt[1] + q * n[1] + s * u[1]);
+    const shell = (q, H) => Math.sqrt((R + H) ** 2 - (R + q) ** 2);
+    const atX = (q, x) => { const a = ray(q, 0), b = ray(q, 1); return ray(q, (x - a[0]) / (b[0] - a[0])); };
+    const clip = (q, [x0, y0, x1, y1], lo = -1e9, hi = 1e9) => {
+      const A = ray(q, 0), B = ray(q, 1), D = [B[0] - A[0], B[1] - A[1]];
+      for (const [k, a, b] of [[0, x0, x1], [1, y0, y1]]) {
+        if (Math.abs(D[k]) < 1e-12) continue;
+        const sa = (a - A[k]) / D[k], sb = (b - A[k]) / D[k];
+        lo = Math.max(lo, Math.min(sa, sb)); hi = Math.min(hi, Math.max(sa, sb));
+      }
+      return [lo, hi];
+    };
+    const thOf = (x) => Math.asin((x - ox) / (R * S)) / rad;
+    const angle = (q, s) => Math.atan2(Tt[0] + q * n[0] + s * u[0], Tt[1] + q * n[1] + s * u[1]) / rad;
+    const toSun = (() => { const v = [-Math.cos(dr) * S, Math.sin(dr) * V]; const l = Math.hypot(...v); return [v[0] / l, v[1] / l]; })();
+    return { P, polar, ray, shell, atX, clip, thOf, angle, toSun, u, n, Tt, S, V, ox, oy, d };
+  }
+  const arc = (m, a, b, H = 0, step = 0.1) => {
+    const pts = [];
+    const k = Math.max(2, Math.ceil(Math.abs(b - a) / step));
+    for (let i = 0; i <= k; i++) pts.push(m.polar(a + ((b - a) * i) / k, H));
+    return pts;
+  };
+
+  function defs(svg, id) {
+    const g = el(svg, 'defs');
+    const pen = el(g, 'filter', { id: `pen-${id}`, x: '-2%', y: '-2%', width: '104%', height: '104%' });
+    el(pen, 'feTurbulence', { type: 'fractalNoise', baseFrequency: '0.035', numOctaves: '2', seed: '4', result: 'n' });
+    el(pen, 'feDisplacementMap', { in: 'SourceGraphic', in2: 'n', scale: '1.8', xChannelSelector: 'R', yChannelSelector: 'G', result: 'w' });
+    el(pen, 'feGaussianBlur', { in: 'w', stdDeviation: '0.35', result: 'soft' });
+    const mg = el(pen, 'feMerge');
+    el(mg, 'feMergeNode', { in: 'soft' });
+    el(mg, 'feMergeNode', { in: 'w' });
+    return g;
+  }
+  // The logogram, copied unchanged from apps/kiruk-web/public/favicon.svg (square cut, centre hole as a mask).
+  function logogram(defsG, id) {
+    const mask = el(defsG, 'mask', { id: `hole-${id}`, maskUnits: 'userSpaceOnUse', x: '500', y: '500', width: '1000', height: '1000' });
+    el(mask, 'rect', { x: '500', y: '500', width: '1000', height: '1000', fill: '#ffffff' });
+    el(mask, 'circle', { cx: '1000', cy: '1000', r: '60', fill: '#000000' });
+    const sym = el(defsG, 'symbol', { id: `logogram-${id}`, viewBox: '500 500 1000 1000' });
+    const needles = el(sym, 'g', { class: 'eye-needle' });
+    for (const d of ['M1071.91 1266.79L1051.2 1189.51', 'M1135 1241.28L1095 1172', 'M1311.56 1178L1173 1098', 'M1402.5 1100.94L1190 1044', 'M927.798 1266.79L948.504 1189.51', 'M857.707 1236.28L897.707 1167', 'M687.142 1171L825.706 1091', 'M597.203 1100.94L809.706 1044', 'M1071.91 738L1051.2 815.274', 'M1132 760.503L1092 829.785', 'M1306.56 822.785L1168 902.785', 'M1402.5 903.845L1190 960.785', 'M927.798 738L948.504 815.274', 'M860.707 762.503L900.707 831.785', 'M689.142 830.785L827.706 910.785', 'M597.203 903.845L809.706 960.785'])
+      el(needles, 'path', { d });
+    const petals = el(sym, 'g', { class: 'eye-petal', mask: `url(#hole-${id})` });
+    for (const d of [
+      'M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z',
+      'M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z',
+      'M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z',
+      'M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z',
+      'M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z',
+      'M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z',
+      'M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z',
+      'M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z',
+    ]) el(petals, 'path', { d });
+  }
+
+  // SVG notes: hand-set lines, first words name the part; **X** sets a rubric letter inside a note.
+  function note(g, x, y, lines, { cls = 'note', lh = 24.5, anchor } = {}) {
+    const t = el(g, 'text', { class: cls, x, y, 'text-anchor': anchor });
+    lines.forEach((line, i) => {
+      const s = el(t, 'tspan', { x, dy: i ? lh : 0 });
+      line.split(/(\*\*[A-H]\*\*)/).forEach((part) => {
+        if (/^\*\*[A-H]\*\*$/.test(part)) el(s, 'tspan', { class: 'lead' }, part.slice(2, 3));
+        else if (part) s.appendChild(document.createTextNode(part));
+      });
+    });
+    return t;
+  }
+
+  /* ---- the line's marks (line.md) ---- */
+  const ln = (g, d, extra = {}) => el(g, 'path', { class: 'ln', d, ...extra });
+  const arrow = (g, tip, from, len = 7) => {
+    const a = Math.atan2(tip[1] - from[1], tip[0] - from[0]);
+    const h = Math.tan(12.5 * rad) * len;
+    const base = [tip[0] - Math.cos(a) * len, tip[1] - Math.sin(a) * len];
+    const nx = -Math.sin(a), ny = Math.cos(a);
+    el(g, 'path', { class: 'ln-dot', 'data-end': true, d: pathOf([tip, [base[0] + nx * h, base[1] + ny * h], [base[0] - nx * h, base[1] - ny * h]], true) });
+  };
+  const dot = (g, p, r = 2.5) => el(g, 'circle', { class: 'ln-dot', 'data-end': true, cx: f(p[0]), cy: f(p[1]), r });
+  const tick = (g, d) => ln(g, d, { 'data-end': true });
+  const handle = (g, x, y) => el(g, 'rect', { class: 'handle', 'data-knockout': true, x: f(x - 3.5), y: f(y - 3.5), width: 7, height: 7 });
+  const cross = (g, x, y) => {
+    ln(g, `M${x - 7} ${hp(y)}H${x + 7}`, { 'data-free': true });
+    ln(g, `M${hp(x)} ${y - 7}V${y + 7}`, { 'data-free': true });
+    el(g, 'circle', { class: 'ln', cx: hp(x), cy: hp(y), r: 3.5 });
+  };
+  const label = (g, x, y, text, { cls = 'lab', anchor = 'start', nts = false } = {}) =>
+    el(g, 'text', { class: cls + (nts ? ' nts' : ''), x: f(x), y: f(y), 'text-anchor': anchor }, text);
+  // knockouts are sized from real glyphs, so they wait for the fonts (type.md)
+  const knock = (g) => {
+    for (const t of g.querySelectorAll('text')) {
+      const b = t.getBBox();
+      g.insertBefore(el(null, 'rect', { class: 'knock', 'data-knockout': true, x: f(b.x - 2), y: f(b.y - 1), width: f(b.width + 4), height: f(b.height + 2) }), g.firstChild);
+    }
+  };
+  // A letter with an octilinear leader: one 45° or 90° run from the part, then a horizontal shoulder.
+  function leadLetter(L, ch, tip, { dy, side = 1, sh = 16, end = 'dot', vertical = false, crop = false }) {
+    const ly = Math.round(tip[1] + dy);
+    const elbow = vertical ? [tip[0], ly] : [tip[0] + side * Math.abs(dy), ly];
+    const sEnd = [elbow[0] + side * sh, ly];
+    ln(L.line, `M${f(sEnd[0])} ${ly + 0.5}H${f(elbow[0])}L${f(tip[0])} ${f(tip[1])}`, { 'data-crop': crop || null });
+    if (end === 'dot') dot(L.line, tip, 2.5);
+    else arrow(L.line, tip, elbow);
+    el(L.letters, 'text', { class: 'letter', x: f(sEnd[0] + side * 2), y: f(ly + 6), 'text-anchor': side > 0 ? 'start' : 'end' }, ch);
+  }
+  const SHIFT = [1.2, -0.8]; // the line layer's off-register print (line.md)
+  const unshift = (p) => [p[0] - SHIFT[0], p[1] - SHIFT[1]]; // for an end that must sit on a hairline of ink
+  const inside = (p, poly) => {
+    let c = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const [xi, yi] = poly[i], [xj, yj] = poly[j];
+      if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  // The point on a drawn hatch stroke nearest a target, on its inked (wide) half and inside its region.
+  function onHatch(d, target, poly) {
+    let best = null;
+    for (const seg of d.split('M').slice(1)) {
+      const v = seg.replace(/[LZ]/g, ' ').trim().split(/\s+/).map(Number);
+      const p0 = [(v[0] + v[6]) / 2, (v[1] + v[7]) / 2], p1 = [(v[2] + v[4]) / 2, (v[3] + v[5]) / 2];
+      for (let t = 0; t <= 0.45; t += 0.05) {
+        const q = [p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t];
+        const dist = Math.hypot(q[0] - target[0], q[1] - target[1]);
+        if (inside(q, poly) && (!best || dist < best.dist)) best = { q, dist };
+      }
+    }
+    return best ? best.q : target;
+  }
+  const letter = (L, x, y, ch, anchor) => el(L.letters, 'text', { class: 'letter', x: f(x), y: f(y), 'text-anchor': anchor }, ch);
+
+  /* ------------------------------------------------------------------ */
+  /* The subject: a slice of the Earth and its air, cut on the plane through F and the sun. */
+  function build(svg, C) {
+    const id = C.id;
+    const dg = defs(svg, id);
+    logogram(dg, id);
+    const m = model(C.section);
+    const d = C.section.d;
+    const TOP = T.atmosphere.top_drawn_km;
+    const L = {};
+    for (const name of ['wash', 'construction', 'ink', 'letters', 'line', 'notes']) L[name] = el(svg, 'g', { 'data-layer': name });
+    L.ink.setAttribute('filter', `url(#pen-${id})`);
+    L.line.setAttribute('transform', 'translate(1.2 -0.8)');
+    const s = C.scale ?? 1; // pen sizes on the phone sheet
+
+    const O = m.P(0, R);
+    const Tp = m.polar(-d, 0);
+    const hO = R * (1 / Math.cos(d * rad) - 1); // truth: geometry.shadow_height_over_O_km["6"]
+    const over = m.P(0, R + hO);
+    const sB = m.shell(0, TOP);
+    const exitB = m.ray(0, sB);
+    const thExit = m.angle(0, sB);
+    const [thL, thR] = C.slice;
+    const groundPts = arc(m, thL, thR);
+    const topArc = (a, b) => arc(m, a, b, TOP);
+    const rayAngle = Math.atan2(m.V * Math.sin(d * rad), m.S * Math.cos(d * rad));
+
+    /* ---------- wash: the dawn ground, the lit air's glow, and the one wash inside the subject (night) ---------- */
+    const w = L.wash;
+    const gr = el(dg, 'linearGradient', { id: `sky-${id}`, x1: 0, y1: 0, x2: 0, y2: 1 });
+    el(gr, 'stop', { offset: 0, 'stop-color': 'var(--sky-pale)', 'stop-opacity': 0.55 });
+    el(gr, 'stop', { offset: 0.5, 'stop-color': 'var(--paper)', 'stop-opacity': 0 });
+    el(gr, 'stop', { offset: 1, 'stop-color': 'var(--glow-cream)', 'stop-opacity': 0.5 });
+    el(w, 'rect', { x: 0, y: 0, width: C.w, height: C.h, fill: 'var(--paper)' });
+    el(w, 'rect', { x: 0, y: 0, width: C.w, height: C.h, fill: `url(#sky-${id})` });
+    const litPoly = [m.polar(thL, 0)].concat(topArc(thL, thExit), [exitB, Tp], arc(m, -d, thL));
+    const nrm = [-Math.sin(rayAngle), -Math.cos(rayAngle)];
+    const lg = el(dg, 'linearGradient', { id: `lit-${id}`, gradientUnits: 'userSpaceOnUse', x1: f(over[0]), y1: f(over[1]), x2: f(over[0] + nrm[0] * C.glowDepth), y2: f(over[1] + nrm[1] * C.glowDepth) });
+    el(lg, 'stop', { offset: 0, 'stop-color': 'var(--ray-rose)', 'stop-opacity': 0.32 });
+    el(lg, 'stop', { offset: 0.09, 'stop-color': 'var(--glow-amber)', 'stop-opacity': 0.46 });
+    el(lg, 'stop', { offset: 0.4, 'stop-color': 'var(--glow-peach)', 'stop-opacity': 0.3 });
+    el(lg, 'stop', { offset: 1, 'stop-color': 'var(--glow-peach)', 'stop-opacity': 0.06 });
+    el(w, 'path', { d: pathOf(litPoly, true), fill: `url(#lit-${id})` });
+    const shadowPoly = [Tp, exitB].concat(topArc(thExit, thR), arc(m, thR, -d));
+    const ng = el(dg, 'linearGradient', { id: `night-wash-${id}`, gradientUnits: 'userSpaceOnUse', x1: f(Tp[0]), y1: 0, x2: f(m.polar(thR)[0]), y2: 0 });
+    el(ng, 'stop', { offset: 0, 'stop-color': 'var(--sky-lavender)', 'stop-opacity': 0.1 });
+    el(ng, 'stop', { offset: 1, 'stop-color': 'var(--sky-lavender)', 'stop-opacity': 0.22 });
+    el(w, 'path', { d: pathOf(shadowPoly, true), fill: `url(#night-wash-${id})` });
+    const sunG = el(dg, 'radialGradient', { id: `sun-${id}` });
+    el(sunG, 'stop', { offset: 0, 'stop-color': 'var(--ray-orange)', 'stop-opacity': 0.38 });
+    el(sunG, 'stop', { offset: 0.45, 'stop-color': 'var(--glow-amber)', 'stop-opacity': 0.26 });
+    el(sunG, 'stop', { offset: 1, 'stop-color': 'var(--glow-amber)', 'stop-opacity': 0 });
+    el(w, 'circle', { cx: C.sun[0], cy: C.sun[1], r: C.sun[2] * 3, fill: `url(#sun-${id})` });
+
+    /* ---------- construction: ruled and compassed in the stretched space; runs past what it meets ---------- */
+    const cg = L.construction;
+    const ov = 8;
+    el(cg, 'path', { class: 'cons', d: `M${f(C.horizon[0])} ${hp(O[1])}H${f(C.horizon[1])}` }); // F's horizon
+    el(cg, 'path', { class: 'cons', d: `M${hp(O[0])} ${f(O[1] + ov)}V${f(m.P(0, R + TOP)[1] - ov)}` }); // F's zenith
+    el(cg, 'path', { class: 'cons', d: pathOf(topArc(thL - 0.6, thR + 0.6)) }); // the drawn top of the air (an ellipse: declared)
+    for (const th of [thL, thR]) el(cg, 'path', { class: 'cons', d: pathOf([m.polar(th, -(C.band + ov) / m.V), m.polar(th, TOP + ov / m.V)]) }); // the slice's cuts
+    el(cg, 'path', { class: 'cons', d: `M${f(O[0] - m.toSun[0] * ov)} ${f(O[1] - m.toSun[1] * ov)}L${f(O[0] + m.toSun[0] * C.sunLine)} ${f(O[1] + m.toSun[1] * C.sunLine)}` }); // F to the sun
+    for (const g of C.guides || []) el(cg, 'path', { class: 'cons', d: g });
+
+    /* ---------- ink ---------- */
+    const subj = el(L.ink, 'g', { 'data-subject': true });
+    // The night (E): a wash carries the flat tone; hatching gathers in the core, low in the west,
+    // and lifts raggedly toward the edge of the sunlight. A second, darker pass at 55° sits in the core.
+    const nightClip = clipTo(dg, `night-${id}`, pathOf(shadowPoly, true));
+    const nb = bounds(shadowPoly);
+    const nightD = hatch(nb, { gap: 6.2 * s, weight: 0.85, reach: 0.5, seed: 23, toward: [0.5, 1] });
+    el(subj, 'path', { class: 'ink-fill', 'clip-path': nightClip, d: nightD });
+    el(subj, 'path', { class: 'ink-fill', 'clip-path': nightClip, d: hatch(nb, { gap: 5.4 * s, weight: 0.75, reach: 0.22, seed: 24, slope: 55, toward: [0.6, 1] }) });
+    // The crust's cut face: 45°, landing at the surface and thinning downward, fading as the Earth turns away.
+    const band = groundPts.concat(arc(m, thR, thL, -C.band / m.V));
+    const fade = el(dg, 'radialGradient', { id: `fade-${id}`, gradientUnits: 'userSpaceOnUse', cx: f(O[0]), cy: f(O[1]), r: f(C.fadeR) });
+    el(fade, 'stop', { offset: 0, 'stop-color': '#fff', 'stop-opacity': 1 });
+    el(fade, 'stop', { offset: 1, 'stop-color': '#fff', 'stop-opacity': 0.3 });
+    const fm = el(dg, 'mask', { id: `fadem-${id}`, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: C.w, height: C.h });
+    el(fm, 'rect', { x: 0, y: 0, width: C.w, height: C.h, fill: `url(#fade-${id})` });
+    el(subj, 'path', { class: 'ink-fill', 'clip-path': clipTo(dg, `crust-${id}`, pathOf(band, true)), mask: `url(#fadem-${id})`, d: hatch(bounds(band), { gap: 4.4 * s, weight: 0.8, reach: 0.42, seed: 11, toward: [0.2, -1] }) });
+    // The ground: one quill stroke, thin on the day side where the sun still reaches it, heavy into the night.
+    qpath(subj, pathOf(groundPts), { min: 0.8, max: 2.6 * s, light: m.toSun, side: 1, seed: 3 });
+    for (const [i, th] of [thL, thR].entries()) qpath(subj, pathOf([m.polar(th, 0.2 / m.V), m.polar(th, -C.band / m.V)]), { min: 0.9, max: 1.4, seed: 30 + i });
+    // Sunlight: B and the thin layer of rays above it, entering at the slice's east cut; past the top of the air
+    // each goes on unseen a little way and the pen lifts.
+    for (const [i, q] of C.rays.entries()) {
+      const s0 = (R + q) * Math.tan((d + thL) * rad);
+      const s1 = q < 0 ? -Math.sqrt(R * R - (R + q) ** 2) : m.shell(q, TOP);
+      const pa = m.ray(q, s0), pb = m.ray(q, s1);
+      const main = q === 0 ? { min: 1.0 * s, max: 2.1 * s } : { min: 0.55, max: 1.25 * s };
+      qpath(subj, pathOf([pa, pb]), { ...main, light: [0, -1], side: -1, seed: 50 + i, step: 3 });
+      if (q >= 0) {
+        const pc = m.ray(q, s1 + C.beyond / m.S);
+        qpath(subj, pathOf([pb, pc]), { min: 0.4, max: 0.9 * s, light: [0, -1], side: -1, seed: 60 + i, step: 3 }, { class: 'ink-fill ink-faint' });
+      }
+    }
+    // A: the sun, drawn for its direction only; a break mark says it is far off the sheet.
+    const [sx, sy, sr] = C.sun;
+    qpath(subj, circlePath(sx, sy, sr), { min: 0.7, max: 1.9 * s, seed: 7 });
+    const dir = [Math.cos(rayAngle), -Math.sin(rayAngle)], nn = [-dir[1], dir[0]];
+    [-0.55, 0, 0.55].forEach((k, i) => {
+      const a = [sx + dir[0] * (sr + 5) + nn[0] * k * sr, sy + dir[1] * (sr + 5) + nn[1] * k * sr];
+      qpath(subj, pathOf([a, [a[0] + dir[0] * C.sunRay, a[1] + dir[1] * C.sunRay]]), { min: 0.5, max: 1.2 * s, seed: 70 + i });
+    });
+    const bk = [sx + dir[0] * (sr + 5 + C.sunRay + 7), sy + dir[1] * (sr + 5 + C.sunRay + 7)];
+    [-3, 3].forEach((k, i) => {
+      const c = [bk[0] + dir[0] * k, bk[1] + dir[1] * k];
+      qpath(subj, pathOf([[c[0] + nn[0] * sr * 0.8 + dir[0] * 3, c[1] + nn[1] * sr * 0.8 + dir[1] * 3], [c[0] - nn[0] * sr * 0.8 - dir[0] * 3, c[1] - nn[1] * sr * 0.8 - dir[1] * 3]]), { min: 0.5, max: 1.2 * s, seed: 75 + i });
+    });
+    // D, finished: scattering in the lit air, and a fine line of the light each burst sends down to F.
+    C.scatter.forEach(([X, H], i) => {
+      const p = m.P(X, R + H);
+      const rand = mulberry32(40 + i);
+      const k = 8;
+      for (let j = 0; j < k; j++) {
+        const a = (j / k) * Math.PI * 2 + rand() * 0.45;
+        const r1 = C.burst * (0.6 + 0.6 * rand());
+        el(subj, 'path', { class: 'ink-fill', d: taper([[p[0] + Math.cos(a) * 2.6, p[1] + Math.sin(a) * 2.6], [p[0] + Math.cos(a) * (2.6 + r1 / 2), p[1] + Math.sin(a) * (2.6 + r1 / 2)], [p[0] + Math.cos(a) * (2.6 + r1), p[1] + Math.sin(a) * (2.6 + r1)]], 1.0, 0.1) });
+      }
+      el(subj, 'circle', { class: 'ink-fill', cx: f(p[0]), cy: f(p[1]), r: 1.4 });
+      const v = [O[0] - p[0], O[1] - p[1]], lv = Math.hypot(...v);
+      const a = [p[0] + (v[0] / lv) * (C.burst + 4), p[1] + (v[1] / lv) * (C.burst + 4)], b = [O[0] - (v[0] / lv) * 6, O[1] - 4 - (v[1] / lv) * 6];
+      el(subj, 'path', { class: 'ink-fill ink-faint', d: taper([a, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], b], 1.1, 0.25) });
+    });
+    // F at its place: a small eye on the ground, looking up toward the glow.
+    const eyeAt = [[O[0] - 7, O[1] - 3], [O[0] - 3, O[1] - 7.5], [O[0] + 3, O[1] - 7.5], [O[0] + 7, O[1] - 3]];
+    qpath(subj, smooth(eyeAt), { min: 0.8, max: 1.7, light: [-1, -1], seed: 80 });
+    qpath(subj, smooth([[O[0] - 7, O[1] - 3], [O[0], O[1] + 0.5], [O[0] + 7, O[1] - 3]]), { min: 0.6, max: 1.2, side: -1, seed: 81 });
+    el(subj, 'circle', { class: 'ink-fill', cx: f(O[0] - 1), cy: f(O[1] - 4.2), r: 1.8 });
+
+    return { svg, C, m, L, dg, O, Tp, over, exitB, hO, d, TOP, rayAngle, nightD, shadowPoly };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* H: one dawn in four states, unboxed, on one baseline (the horizon through every F). */
+  function sequence(ctx, { x, y, w, gap, S, V, oy, k = 1, caption }) {
+    const { L, dg, C } = ctx;
+    const g = T.geometry.shadow_height_over_O_km, ob = T.observer, tw = T.twilight;
+    const states = [
+      { d: tw.astronomical_deg, t: ob.astronomical_twilight_starts, h: g['18'], ord: '1st' },
+      { d: tw.nautical_deg, t: ob.nautical_twilight_starts, h: g['12'], ord: '2nd' },
+      { d: tw.civil_deg, t: ob.civil_twilight_starts, h: g['6'], ord: '3rd' },
+      { d: tw.sunrise_centre_deg, t: ob.sunrise, h: g.sunrise, ord: '4th', up: true },
+    ];
+    const sat = el(L.ink, 'g', { 'data-satellite': 'H' });
+    const base = y + oy;
+    el(L.construction, 'path', { class: 'cons', d: `M${f(x - 8)} ${hp(base)}H${f(x + 4 * w + 3 * gap + 8)}` });
+    const out = [];
+    states.forEach((st, i) => {
+      const px = x + i * (w + gap);
+      const ox = px + w - 9;
+      const m = model({ ox, oy: base, S, V, d: st.d });
+      const thA = m.thOf(px), thB = m.thOf(px + w);
+      const ground = arc(m, thA, thB);
+      const box = [px, y - 10, px + w, y + oy * 2];
+      const [lo, hi] = m.clip(0, box);
+      const Tq = m.polar(-st.d, 0);
+      const a = m.ray(0, lo), b = m.ray(0, hi);
+      if (!st.up) {
+        const night = [Tq, b, [px + w, b[1]]].concat(arc(m, thB, -st.d));
+        const cl = clipTo(dg, `seqn-${C.id}-${i}`, pathOf(night, true));
+        el(sat, 'path', { class: 'ink-fill', 'clip-path': cl, d: hatch(bounds(night), { gap: 3.4 * k, weight: 0.7, reach: 0.75, seed: 90 + i, toward: [0.4, 1] }) });
+      }
+      qpath(sat, pathOf(ground), { min: 0.6, max: 1.6 * k, light: m.toSun, seed: 100 + i });
+      qpath(sat, pathOf([a, b]), { min: 0.45, max: 1.05 * k, light: [0, -1], side: -1, seed: 110 + i, step: 2 });
+      el(sat, 'circle', { class: 'ink-fill', cx: f(ox), cy: f(base), r: 1.9 * k });
+      // the line: the shadow's edge over F, in the same place in every state
+      const top = m.P(0, R + st.h);
+      if (base - top[1] > 8) { // tall enough to measure; otherwise the edge is at F at this scale, and a ring marks it
+        ln(L.line, `M${hp(ox)} ${f(base - 2.5)}V${f(top[1] + 0.4)}`);
+        arrow(L.line, [hp(ox), top[1] + 0.4], [hp(ox), base], Math.min(6, base - top[1] - 3));
+      } else el(L.line, 'circle', { class: 'ln', cx: f(ox), cy: f(base), r: 4.5 });
+      out.push({ px, st, ox, base, m });
+      caption(L.notes, px, y + oy * 2, st);
+    });
+    return out;
+  }
+
+  /* G: one molecule of air. The two waves keep their true ratio; the molecule is far smaller than drawn. */
+  function molecule(ctx, { x, y, k = 0.075 }) {
+    const { L, dg, C } = ctx;
+    const sat = el(L.ink, 'g', { 'data-satellite': 'G' });
+    const short = T.scattering.shortest_visible_nm, long = T.scattering.longest_visible_nm;
+    const wave = (x0, y0, lam, n, amp, ang = 0) => {
+      const pts = [];
+      const len = lam * k * n;
+      for (let i = 0; i <= 24 * n; i++) {
+        const s = (i / (24 * n)) * len;
+        const yy = -Math.sin((s / (lam * k)) * Math.PI * 2) * amp;
+        pts.push([x0 + Math.cos(ang) * s - Math.sin(ang) * yy, y0 + Math.sin(ang) * s + Math.cos(ang) * yy]);
+      }
+      return pts;
+    };
+    const mx = x + 128, my = y + 46;
+    const sIn = [x, my - 8], lIn = [mx - 14 - long * k * 2, my + 9];
+    qpath(sat, pathOf(wave(sIn[0], sIn[1], short, 3, 3)), { min: 0.6, max: 1.5, seed: 120, step: 1.5 });
+    qpath(sat, pathOf(wave(lIn[0], lIn[1], long, 2, 3)), { min: 0.6, max: 1.5, seed: 121, step: 1.5 });
+    qpath(sat, pathOf(wave(mx + 16, my + 9, long, 2, 3)), { min: 0.5, max: 1.3, seed: 122, step: 1.5 });
+    const cl = clipTo(dg, `mol-${C.id}`, circlePath(mx + 4.5, my, 5.5));
+    el(sat, 'path', { class: 'ink-fill', 'clip-path': cl, d: hatch([mx - 2, my - 6, 13, 12], { gap: 2.4, weight: 0.65, reach: 0.8, seed: 7 }) });
+    qpath(sat, circlePath(mx - 4.5, my, 6), { min: 0.6, max: 1.6, seed: 123 });
+    qpath(sat, circlePath(mx + 4.5, my, 6), { min: 0.6, max: 1.6, seed: 124 });
+    [-168, -140, -112, -84, -56, -28, 32, 64, 96, 128, 156].forEach((a, i) =>
+      qpath(sat, pathOf(wave(mx + Math.cos(a * rad) * 15, my + Math.sin(a * rad) * 15, short, 1, 1.7, a * rad)), { min: 0.4, max: 1.05, seed: 130 + i, step: 1.5 }));
+    qpath(sat, pathOf(wave(mx + 15, my - 15, long, 1, 1.7, -12 * rad)), { min: 0.4, max: 1.05, seed: 145, step: 1.5 });
+    return { mx, my, k, short, long, sIn, lIn, x, y, amp: 3 };
+  }
+
+  /* F: the eye at F, in section, looking east toward the glow. The light it gets comes from the sky. */
+  function eyeSection(ctx, { cx, cy, r }) {
+    const { L, dg, C } = ctx;
+    const sat = el(L.ink, 'g', { 'data-satellite': 'F' });
+    const gapA = 34 * rad;
+    const look = Math.PI; // east, to the left
+    const p0 = [cx + Math.cos(look + gapA) * r, cy + Math.sin(look + gapA) * r];
+    const p1 = [cx + Math.cos(look - gapA) * r, cy + Math.sin(look - gapA) * r];
+    const cr = r * 0.62;
+    const apexOff = r * Math.cos(gapA) + (cr - Math.sqrt(cr * cr - (r * Math.sin(gapA)) ** 2));
+    // shade: the crescent away from the upper-left light, hatched from its core
+    const sm = el(dg, 'mask', { id: `ball-${C.id}`, maskUnits: 'userSpaceOnUse', x: f(cx - 2 * r), y: f(cy - 2 * r), width: f(4 * r), height: f(4 * r) });
+    el(sm, 'circle', { cx: f(cx), cy: f(cy), r: f(r - 2.5), fill: '#fff' });
+    el(sm, 'circle', { cx: f(cx - r * 0.3), cy: f(cy - r * 0.32), r: f(r * 0.92), fill: '#000' });
+    const hg = el(sat, 'g', { mask: `url(#ball-${C.id})` });
+    el(hg, 'path', { class: 'ink-fill', d: hatch([cx - r, cy - r, 2 * r, 2 * r], { gap: 3.2, weight: 0.8, reach: 0.7, seed: 31, toward: [1, 1] }) });
+    // sclera, open at the cornea; cornea, more curved
+    const sclera = [];
+    for (let a = look + gapA - 0.12; a <= look + 2 * Math.PI - gapA + 0.12; a += 0.05) sclera.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+    qpath(sat, pathOf(sclera), { min: 0.8, max: 1.9, seed: 150 });
+    qpath(sat, `M${f(p1[0] + 1.5)} ${f(p1[1] - 2)}L${f(p1[0])} ${f(p1[1])}A${f(cr)} ${f(cr)} 0 0 1 ${f(p0[0])} ${f(p0[1])}L${f(p0[0] + 1.5)} ${f(p0[1] + 2)}`, { min: 0.6, max: 1.5, seed: 151 });
+    // iris either side of the pupil, the lens behind it, the optic nerve leaving the back
+    for (const [i, sgn] of [-1, 1].entries()) {
+      const a = [cx - r * 0.74, cy + sgn * r * 0.52], b = [cx - r * 0.74, cy + sgn * r * 0.17];
+      qpath(sat, pathOf([a, b]), { min: 0.8, max: 1.4, seed: 152 + i });
+    }
+    const lc = [cx - r * 0.56, cy];
+    qpath(sat, circlePath(lc[0], lc[1], r * 0.13, r * 0.3, -60), { min: 0.6, max: 1.3, seed: 154, step: 1.5 });
+    for (const [i, sgn] of [-1, 1].entries()) {
+      const a = [cx + r * 0.97, cy + sgn * r * 0.17], b = [cx + r * 1.5, cy + sgn * r * 0.21];
+      qpath(sat, pathOf([a, b]), { min: 0.7, max: 1.4, seed: 156 + i });
+    }
+    // scattered light from the lit air above the eastern horizon: through the cornea and lens to the back
+    const focus = [cx + r * 0.92, cy + r * 0.3];
+    [[-0.3, 1.6], [-0.05, 1.8], [0.2, 1.65]].forEach(([off, len], i) => {
+      const enter = [cx - apexOff + 2, cy + off * r];
+      const dirIn = [Math.cos(-0.42), Math.sin(-0.42)]; // arriving from up and to the left
+      const start = [enter[0] - dirIn[0] * r * len, enter[1] + dirIn[1] * r * len];
+      el(sat, 'path', { class: 'ink-fill ink-faint', d: taper([start, enter], 1.0, 0.7) });
+      el(sat, 'path', { class: 'ink-fill ink-faint', d: taper([enter, lc, focus], 0.8, 0.35) });
+    });
+    return { cx, cy, r, apex: [cx - apexOff, cy], back: [cx + r, cy], lc, focus };
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Desktop composition */
+  const D6 = T.drawing.main_state_deg;
+  const dk = T.drawing.desktop;
+  const desk = build(document.getElementById('desk'), {
+    id: 'd', w: 1440, h: 900,
+    section: { ox: 760, oy: 434, S: 1 / dk.km_per_px_horizontal, V: 1 / dk.km_per_px_vertical, d: D6 },
+    slice: [-8.0, 5.2],
+    horizon: [560, 1010],
+    sunLine: 230,
+    band: 26, fadeR: 360,
+    rays: [0, 7, 14, 21, 28, -2.5],
+    beyond: 62,
+    sun: [262, 532, 19], sunRay: 21,
+    glowDepth: 250,
+    scatter: [[0, 66], [36, 86], [-120, 42], [-220, 24], [-334, 10], [-345, 60], [-250, 76]],
+    burst: 7.5,
+  });
+
+  await document.fonts.ready; // labels, knockouts and leaders to words are measured from real glyphs
+
+  (() => {
+    const { L, m, O, Tp, over, hO, d, TOP } = desk;
+    const N = L.notes;
+    const sq = T.drawing.sequence;
+    const seq = sequence(desk, {
+      x: 1050, y: 66, w: 70, gap: 8, oy: 32, S: 1 / sq.km_per_px_horizontal, V: 1 / sq.km_per_px_vertical,
+      caption: (g, px, yb, st) => note(g, px, yb + 14, [`${st.ord} · ${st.t}`, st.up ? 'sunrise' : `${st.h.toFixed(0)} km`], { cls: 'note-xs', lh: 16 }),
+    });
+    const mol = molecule(desk, { x: 1050, y: 248 });
+    const eye = eyeSection(desk, { cx: 760, cy: 652, r: 40 });
+
+    /* letters */
+    letter(L, desk.C.sun[0] - desk.C.sun[2] - 12, desk.C.sun[1] + 6, 'A', 'end');
+    leadLetter(L, 'B', m.atX(0, 446), { dy: -44, side: -1, end: 'arrow' });
+    leadLetter(L, 'E', unshift(onHatch(desk.nightD, m.P(430, R + 24), desk.shadowPoly)), { dy: -22, side: 1, crop: true });
+    letter(L, O[0] + 14, O[1] - 13, 'F');
+    letter(L, eye.cx + eye.r + 18, eye.cy - eye.r + 4, 'F');
+    letter(L, mol.mx + 32, mol.my - 30, 'G');
+    letter(L, seq[0].px - 14, seq[0].base - 8, 'H', 'end');
+
+    /* D: the one selection, the lit air straight over F, its bottom kept 7 u clear of B at the right corner */
+    const topY = m.P(0, R + TOP)[1];
+    const half = 34, bRight = m.atX(0, O[0] + half)[1];
+    const sel = { x: Math.round(O[0] - half), y: Math.round(topY + 7), w: 2 * half, h: Math.round(bRight - 7 - (topY + 7)) };
+    el(L.line, 'rect', { class: 'ln', x: sel.x + 0.5, y: sel.y + 0.5, width: sel.w, height: sel.h });
+    for (const [hx, hy] of [[sel.x, sel.y], [sel.x + sel.w, sel.y], [sel.x, sel.y + sel.h], [sel.x + sel.w, sel.y + sel.h]]) handle(L.line, hx + 0.5, hy + 0.5);
+    const labs = el(L.line, 'g');
+    label(labs, sel.x - 9, sel.y + 14, 'LIT AIR', { cls: 'tag', anchor: 'end' });
+    label(labs, sel.x - 9, sel.y + 30, `${hO.toFixed(0)}–${TOP} km`, { anchor: 'end' });
+    letter(L, sel.x - 9, sel.y + 60, 'D', 'end');
+
+    /* 35 km over F: extension lines 3 u clear of the ink, 8 u past the dimension line */
+    const dx = Math.round(O[0] + 92);
+    ln(L.line, `M${f(O[0] + 10)} ${hp(O[1])}H${f(hp(dx) + 8.7)}`, { 'data-ext': true });
+    ln(L.line, `M${f(over[0] + 4)} ${hp(over[1])}H${f(hp(dx) + 8.7)}`, { 'data-ext': true, 'data-crop': true });
+    ln(L.line, `M${hp(dx)} ${hp(O[1])}V${hp(over[1])}`);
+    label(labs, dx + 6, (O[1] + over[1]) / 2 + 4, `${hO.toFixed(0)} km`);
+
+    /* 6° between F's horizon and the line to the sun; drawn steeper, so underlined */
+    const r6 = 66;
+    const a6 = Math.atan2(m.toSun[1], -m.toSun[0]);
+    const pA = [O[0] - r6, hp(O[1]) - SHIFT[1]], pB = [O[0] + m.toSun[0] * r6, O[1] + m.toSun[1] * r6];
+    ln(L.line, `M${f(pA[0])} ${f(pA[1])}A${r6} ${r6} 0 0 0 ${f(pB[0])} ${f(pB[1])}`, { 'data-crop': true });
+    label(labs, O[0] - r6 - 8, O[1] - 7, `${d}°`, { nts: true, anchor: 'end' });
+
+    /* 667 km along the ground from F to C: an arc dimension under the crust, radial extension lines */
+    const off = -(desk.C.band + 18) / m.V;
+    ln(L.line, pathOf(arc(m, -d, 0, off)));
+    for (const th of [-d, 0]) ln(L.line, pathOf([unshift(m.polar(th, -6 / m.V)), m.polar(th, off - 10 / m.V)]), { 'data-ext': true, 'data-crop': th === -d || null });
+    const mid = m.polar(-d / 2, off);
+    label(labs, mid[0], mid[1] + 17, `${T.geometry.ground_distance_O_to_T_km['6']} km`, { anchor: 'middle' });
+    const cFoot = m.polar(-d, off - 10 / m.V);
+    letter(L, cFoot[0] - 3, cFoot[1] + 6, 'C', 'end');
+
+    /* G: the two wavelengths, each with extension lines down to its wave; the count as tally ticks */
+    const k = mol.k;
+    const sTop = mol.sIn[1] - mol.amp, sDim = sTop - 14;
+    const sA = mol.sIn[0] + mol.short * k * 0.25, sB = sA + mol.short * k; // crest to crest
+    for (const xx of [sA, sB]) ln(L.line, `M${f(xx - SHIFT[0])} ${f(sTop - 6 - SHIFT[1])}V${f(hp(sDim) - 8.7)}`, { 'data-ext': true, 'data-crop': xx === sA || null });
+    ln(L.line, `M${f(sA - SHIFT[0])} ${hp(sDim)}H${f(sB - SHIFT[0])}`);
+    label(labs, sA, sDim - 11, `${mol.short} nm`);
+    const lBot = mol.lIn[1] + mol.amp, lDim = lBot + 14;
+    const lA = mol.lIn[0] + mol.long * k * 0.75, lB = lA + mol.long * k;
+    for (const xx of [lA, lB]) ln(L.line, `M${f(xx - SHIFT[0])} ${f(lBot + 6 - SHIFT[1])}V${f(hp(lDim) + 8.7)}`, { 'data-ext': true });
+    ln(L.line, `M${f(lA - SHIFT[0])} ${hp(lDim)}H${f(lB - SHIFT[0])}`);
+    label(labs, lA, lDim + 20, `${mol.long} nm`);
+    const tx = mol.mx + 34, ty = lDim + 20;
+    for (let i = 0; i < 12; i++) el(L.line, 'rect', { class: 'ln-dot', x: Math.round(tx + i * 4), y: f(ty - (i === 11 ? 4.5 : 9)), width: 1, height: i === 11 ? 4.5 : 9 });
+    label(labs, tx + 52, ty, `${T.scattering.ratio_short_to_long} : 1`);
+
+    /* F: the eye's 24 mm, cornea to back, with extension lines down from the drawn ink */
+    const eDim = eye.cy + eye.r + 18;
+    ln(L.line, `M${f(eye.apex[0] - SHIFT[0])} ${f(eye.cy + 6 - SHIFT[1])}V${f(hp(eDim) + 8.7)}`, { 'data-ext': true, 'data-crop': true });
+    ln(L.line, `M${f(eye.back[0] - SHIFT[0])} ${f(eye.cy + 6 - SHIFT[1])}V${f(hp(eDim) + 8.7)}`, { 'data-ext': true });
+    ln(L.line, `M${f(eye.apex[0] - SHIFT[0])} ${hp(eDim)}H${f(eye.back[0] - SHIFT[0])}`);
+    label(labs, (eye.apex[0] + eye.back[0]) / 2 - SHIFT[0], eDim + 16, `${T.eye.axial_length_mm} mm`, { anchor: 'middle' });
+
+    /* frame: scale bars and register crosses */
+    const sbY = 858, sbX = 1100;
+    const kmH = 500, pxH = kmH * m.S, kmV = 20, pxV = kmV * m.V, vx = 1350;
+    ln(L.line, `M${sbX} ${hp(sbY)}H${f(sbX + pxH)}`, { 'data-free': true });
+    for (let i = 0; i <= 5; i++) ln(L.line, `M${hp(sbX + (pxH * i) / 5)} ${sbY - (i % 5 ? 3 : 6)}V${sbY}`, { 'data-free': true });
+    ln(L.line, `M${hp(vx)} ${sbY}V${f(sbY - pxV)}`, { 'data-free': true });
+    for (let i = 0; i <= 4; i++) ln(L.line, `M${vx - (i % 4 ? 3 : 6)} ${hp(sbY - (pxV * i) / 4)}H${vx}`, { 'data-free': true });
+    cross(L.line, 40, 40);
+    cross(L.line, 1400, 860);
+    knock(labs);
+
+    /* notes, on the column guides */
+    el(N, 'text', { class: 'plate-no', x: 104, y: 78 }, `Plate ${T.plate.number}`);
+    el(N, 'text', { class: 'title', x: 101, y: 128 }, 'The light');
+    el(N, 'text', { class: 'title', x: 101, y: 176 }, 'before the sun');
+    note(N, 104, 232, [
+      '**D** — The lit air. At ' + T.observer.civil_twilight_starts + ' the sun is',
+      'still below the horizon at **F**, yet over',
+      '**F** all the air from ' + hO.toFixed(0) + ' km up is in',
+      'sunlight. Only ' + T.atmosphere.share_above_35km_percent + '% of the air is that',
+      'high, but enough to light the sky. Past',
+      'the air the light goes on unseen: there',
+      'is nothing left up there to scatter it.',
+    ]);
+    note(N, 104, 412, [
+      '**B** — The grazing ray, the last sunlight',
+      'to clear the Earth’s curve. It touches',
+      'the ground at **C**, ' + T.geometry.ground_distance_O_to_T_km['6'] + ' km east, where',
+      'the sun stands on the horizon now.',
+    ]);
+    note(N, 104, 606, [
+      '**A** — The sun, ' + d + '° below the horizon at **F**',
+      'and ' + T.observer.sun_distance_million_km + ' million km off, drawn here only',
+      'to show where the light comes from.',
+    ]);
+    note(N, 1050, 196, ['**H** — One dawn, ' + T.observer.place + ', 20 October 2026:', 'as the sun climbs, the shadow over **F** sinks. Heights ×' + sq.heights_exaggerated + '.'], { cls: 'note-xs', lh: 17 });
+    note(N, 1050, 388, [
+      '**G** — Air throws light every way,',
+      'short waves far more than long:',
+      'the shortest we see, about ' + T.scattering.ratio_short_to_long + '×',
+      'as often as the longest. (The',
+      'molecule is not drawn to scale.)',
+    ]);
+    note(N, 852, 638, [
+      '**F** — The eye, enlarged. It gets no',
+      'direct sun: all the light it takes in',
+      'was thrown down to it by the air.',
+    ]);
+    note(N, 1050, 542, [
+      '**E** — The Earth’s shadow: under',
+      'the ray it is still night. From **F** it',
+      'is a blue-grey band in the west.',
+    ]);
+    el(N, 'text', { class: 'colophon', x: sbX, y: 878 }, '0');
+    el(N, 'text', { class: 'colophon', x: f(sbX + pxH), y: 878, 'text-anchor': 'end' }, `${kmH} km`);
+    el(N, 'text', { class: 'colophon', x: vx - 10, y: f(sbY - pxV + 4), 'text-anchor': 'end' }, `${kmV} km`);
+    el(N, 'text', { class: 'colophon', x: 1352, y: 894, 'text-anchor': 'end' }, 'kiruk · 20 October 2026');
+    el(N, 'text', { class: 'colophon', x: 104, y: 866 }, 'Section through F along the sun’s bearing, seen from the north: east is on the left.');
+    el(N, 'text', { class: 'colophon', x: 104, y: 883 }, `Heights are drawn ×${(m.V / m.S).toFixed(1)} against distances, so angles look steeper: an underlined value is not to scale.`);
+    for (const [x0, y0, y1] of [[100, 212, 392], [100, 392, 490], [100, 586, 674], [1046, 368, 488], [848, 618, 694], [1046, 522, 600], [1046, 180, 216]])
+      el(L.construction, 'path', { class: 'cons', d: `M${x0 + 0.5} ${y0}V${y1}` });
+
+    el(desk.svg, 'use', { 'data-eye': true, href: '#logogram-d', x: 1318, y: 30, width: 24, height: 24 });
+  })();
+
+  /* Phone: the subject and H, recomposed for 390 px; the claim sits under the drawing as words. */
+  const pk = T.drawing.phone;
+  const phone = build(document.getElementById('phone'), {
+    id: 'p', w: 390, h: 720, scale: 0.92,
+    section: { ox: 240, oy: 380, S: 1 / pk.km_per_px_horizontal, V: 1 / pk.km_per_px_vertical, d: D6 },
+    slice: [-7.0, 4.4],
+    horizon: [150, 350],
+    sunLine: 110,
+    band: 18, fadeR: 180,
+    rays: [0, 8, 16, 24],
+    beyond: 40,
+    sun: [86, 516, 12], sunRay: 13,
+    glowDepth: 130,
+    scatter: [[0, 64], [-190, 28], [-300, 10]],
+    burst: 6,
+  });
+  (() => {
+    const { L, m, O, Tp, over, hO, d, TOP } = phone;
+    const N = L.notes;
+    const sq = T.drawing.sequence_phone;
+    const seq = sequence(phone, {
+      x: 26, y: 112, w: 76, gap: 10, oy: 30, k: 0.95, S: 1 / sq.km_per_px_horizontal, V: 1 / sq.km_per_px_vertical,
+      caption: (g, px, yb, st) => el(g, 'text', { class: 'note-xs', x: px, y: f(yb + 14) }, st.t),
+    });
+    letter(L, phone.C.sun[0] + phone.C.sun[2] + 10, phone.C.sun[1] + 6, 'A');
+    leadLetter(L, 'B', m.atX(0, 94), { dy: -30, side: -1, end: 'arrow', sh: 12 });
+    leadLetter(L, 'C', [Tp[0], Tp[1] + 1.2], { dy: 44, side: -1, vertical: true, end: 'arrow', sh: 12 });
+    leadLetter(L, 'E', unshift(onHatch(phone.nightD, m.P(470, R + 10), phone.shadowPoly)), { dy: 76, side: -1, vertical: true, sh: 12, crop: true });
+    leadLetter(L, 'F', [O[0] + 5, O[1] + 1], { dy: 54, side: -1, vertical: true, end: 'arrow', sh: 12 });
+    letter(L, seq[0].px, seq[0].base - 22, 'H');
+    const topY = m.P(0, R + TOP)[1];
+    const half = 32, bRight = m.atX(0, O[0] + half)[1];
+    const sel = { x: Math.round(O[0] - half), y: Math.round(topY + 6), w: 2 * half, h: Math.round(bRight - 7 - (topY + 6)) };
+    el(L.line, 'rect', { class: 'ln', x: sel.x + 0.5, y: sel.y + 0.5, width: sel.w, height: sel.h });
+    for (const [hx, hy] of [[sel.x, sel.y], [sel.x + sel.w, sel.y], [sel.x, sel.y + sel.h], [sel.x + sel.w, sel.y + sel.h]]) handle(L.line, hx + 0.5, hy + 0.5);
+    const labs = el(L.line, 'g');
+    label(labs, sel.x - 7, sel.y + 14, 'LIT AIR', { cls: 'tag', anchor: 'end' });
+    letter(L, sel.x - 7, sel.y + 40, 'D', 'end');
+    const dx = Math.round(O[0] + 56);
+    ln(L.line, `M${f(O[0] + 10)} ${hp(O[1])}H${f(hp(dx) + 8.7)}`, { 'data-ext': true });
+    ln(L.line, `M${f(over[0] + 4)} ${hp(over[1])}H${f(hp(dx) + 8.7)}`, { 'data-ext': true });
+    ln(L.line, `M${hp(dx)} ${hp(O[1])}V${hp(over[1])}`);
+    label(labs, dx + 5, (O[1] + over[1]) / 2 + 4, `${hO.toFixed(0)} km`);
+    const r6 = 44;
+    const pA = [O[0] - r6, hp(O[1]) - SHIFT[1]], pB = [O[0] + m.toSun[0] * r6, O[1] + m.toSun[1] * r6];
+    ln(L.line, `M${f(pA[0])} ${f(pA[1])}A${r6} ${r6} 0 0 0 ${f(pB[0])} ${f(pB[1])}`);
+    label(labs, O[0] - r6 - 6, O[1] - 6, `${d}°`, { nts: true, anchor: 'end' });
+    const off = -(phone.C.band + 14) / m.V;
+    ln(L.line, pathOf(arc(m, -d, 0, off)));
+    for (const th of [-d, 0]) ln(L.line, pathOf([unshift(m.polar(th, -6 / m.V)), m.polar(th, off - 10 / m.V)]), { 'data-ext': true });
+    const mid = m.polar(-d / 2, off);
+    label(labs, mid[0], mid[1] + 16, `${T.geometry.ground_distance_O_to_T_km['6']} km`, { anchor: 'middle' });
+    cross(L.line, 12, 12);
+    cross(L.line, 378, 708);
+    knock(labs);
+    el(N, 'text', { class: 'plate-no', x: 26, y: 48 }, `Plate ${T.plate.number}`);
+    el(N, 'text', { class: 'title', x: 25, y: 88, style: 'font-size:32px' }, T.plate.title);
+    note(N, 26, 596, ['The sky lights up before sunrise:', 'sunlight the Earth still hides from', 'you already reaches the air high', 'above, and the air scatters it down.'], { cls: 'claim-svg', lh: 21 });
+    el(N, 'text', { class: 'colophon', x: 26, y: 692 }, `heights ×${(m.V / m.S).toFixed(1)} · east is left`);
+    el(N, 'text', { class: 'colophon', x: 364, y: 692, 'text-anchor': 'end' }, 'kiruk · 2026');
+    el(phone.svg, 'use', { 'data-eye': true, href: '#logogram-p', x: 340, y: 28, width: 24, height: 24 });
+  })();
+  document.documentElement.dataset.plateReady = '';
+})();
+</script>
+</body>
+</html>

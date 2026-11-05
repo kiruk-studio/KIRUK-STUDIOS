@@ -1,0 +1,16 @@
+---
+description: Use kiruk.in's private eye, era UI, and skills as the design source while writing only public work in this repo
+alwaysApply: true
+---
+
+# Private craft bridge
+
+kiruk.in is a private sibling repo. This repo is public. The eye, era shells, loader, pen, and their skills stay in kiruk.in and are the design source. Full method: [ideas/private-craft-bridge/README.md](ideas/private-craft-bridge/README.md).
+
+When the task touches the studio's look, the eye, an era, the loader, ink, strokes, or a codex figure:
+
+1. Read the matching skill in the sibling `kiruk-in` repo before designing or coding. Hub for the eye is `kiruk-in/.claude/skills/eye-loader-system`. Handwriting is `kiruk-in/.cursor/skills/sketch-ink`. Studio plates use `.claude/skills/kiruk-codex` in this repo.
+2. Study the reference UI in kiruk.in (`src/components/three/eye`, `src/components/era-shell`, `src/components/ui/loader`, `src/components/sketch-ink`). Rebuild only the public slice in this repo.
+3. If `kiruk-in` is not in the workspace, ask for it. Do not invent a second eye or era shell from memory.
+
+Leave personal routes, notebook posts, life pages, contact, Supabase, and env files in the private repo. A skill or component is copied here only when the founder says that piece is ready to be public.

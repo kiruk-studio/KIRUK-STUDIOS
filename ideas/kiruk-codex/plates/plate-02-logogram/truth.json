@@ -1,0 +1,230 @@
+{
+  "plate": "II",
+  "title": "The anatomy of the logogram",
+  "claim": "The kiruk logogram reads as an eye that points every way because its needles, spears and points all stand on one 15° dial around an open centre.",
+  "sources": {
+    "favicon": "apps/kiruk-web/public/favicon.svg (viewBox 500 500 1000 1000; 16 stroked needles, 8 filled paths, centre hole as a mask)",
+    "lightExport": "apps/kiruk-web/public/brand/kiruk-logogram-light.svg (Figma, 2000 × 2000, black on white)",
+    "darkExport": "apps/kiruk-web/public/brand/kiruk-logogram-dark.svg (Figma, 2000 × 2000, white on black)",
+    "meaning": "ideas/studio-dawn/plan.md, § 1 Settled decisions → Logo",
+    "scribble": "ideas/studio-dawn/scribble/manifest.md — no rows; no founder sketch of the mark is on file"
+  },
+  "unit": {
+    "u": "1/1000 of the favicon square (its viewBox is 1000 × 1000), the way type is counted in units per em",
+    "plateScale": "each plane draws the 1000 u favicon square 256 px wide at a 1440 px window: 1 u = 0.256 px, so a plane is the mark at 256 px",
+    "note": "u here is the mark's unit, not line.md's u (one line width)"
+  },
+  "method": "Path data parsed with a node script (scratch measure.mjs): needle end points read from each M…L segment; distances and angles taken from the centre (1000, 1000); filled paths sampled at 60 points per cubic and scanned with a point-in-polygon test every 0.05 u for arm thickness; spear shafts measured as the perpendicular distance between their two straight edges. Raster coverage at 16, 32 and 64 px is computed in the page by filling the same path strings with Path2D on an N × N canvas.",
+  "mark": {
+    "envelope": {
+      "width": 960,
+      "height": 560,
+      "ratio": "12 : 7",
+      "from": "body tips at x 520 and 1480, y 720 and 1280",
+      "padding": "20 u left and right, 220 u top and bottom inside the favicon square"
+    },
+    "dial": {
+      "step": 15,
+      "positions": 24,
+      "made_of": "16 needles at 15°, 30°, 60° and 75° from the upright in each quarter; 4 spears at 45°; 4 points at 0° and 90°",
+      "spearAngle": "tips at 44.5°–44.7° from the upright, measured from the centre"
+    },
+    "hole": {
+      "r": 60,
+      "diameter": 120,
+      "as": "a mask: a black circle in a white rect cuts it out of the body and spears",
+      "fraction": "diameter = 1/8 of the envelope width"
+    },
+    "needles": {
+      "count": 16,
+      "strokeWidth": 10,
+      "cap": "butt (the SVG default; the file sets none)",
+      "join": "bevel (each needle is one straight segment, so the join never shows)",
+      "lengths": {
+        "15°": 80,
+        "30°": 80,
+        "60°": 160,
+        "75°": 220
+      },
+      "innerR": {
+        "min": 191.7,
+        "max": 198.8,
+        "mean": 195,
+        "shown": "r 195"
+      },
+      "outerR": {
+        "15°": "271.7–276.4",
+        "30°": "273.5–276.5",
+        "60°": "353.9–358.8",
+        "75°": "413.8–415.3"
+      },
+      "angles": "exactly 15.00°, 30.00°, 60.00°, 75.00° in direction",
+      "offRadial": "the needle lines pass 0.2–11.4 u from the centre (the 75° needles 6.7–11.4 u): set by eye, not on true radii",
+      "mirror": "left and right mirror within 0.3 u at 15° and 75°, but differ 7.1–9.1 u at 30° and 60°; the upper needles start 1–4 u nearer the centre than the lower ones"
+    },
+    "spears": {
+      "count": 4,
+      "shaftWidth": {
+        "values": [9.9, 9.9, 9.2, 9.9],
+        "shown": "the same weight as a needle"
+      },
+      "base": "a wedge with a concave foot at r 99–117",
+      "shaftFromR": 189,
+      "tipR": "308.0–310.6"
+    },
+    "points": {
+      "count": 4,
+      "reach": {
+        "upright": 280,
+        "horizontal": 480
+      },
+      "tipWidth": "8 u, 8 u in from each tip",
+      "armTaper": {
+        "horizontal": "40 u thick at r 120 → 8 u at r 472",
+        "upright": "40 u at r 120 → 8.5 u at r 270"
+      }
+    },
+    "lens": {
+      "what": "the eye outline: two arcs through the four points",
+      "R": 551.4,
+      "centres": "(1000, 728.6) and (1000, 1271.4)",
+      "fit": "every needle tip and spear tip sits inside it, 2.9–24.2 u in; the 75° needles come nearest"
+    },
+    "hiddenInLightExport": "the light export carries 6 shapes the eye never sees (a r 42 circle under the hole, two black arcs inside the lower body, three tiny marks) and 46 empty groups (Vector 225–254, Ellipse 28–29, 16 'Line' groups); the favicon cut leaves them all out"
+  },
+  "meaning": {
+    "source": "ideas/studio-dawn/plan.md § Logo — founder's words, quoted or paraphrased only",
+    "quote": "Use the current logogram as-is. Needles = time angles (timeless design); 8 directions = giving the right direction; the shape reads as an eye (the vision behind everything); the line = support. Not final — a better mark may come later.",
+    "readings": [
+      {
+        "part": "the needles",
+        "means": "time angles (timeless design)"
+      },
+      {
+        "part": "the 8 directions: 4 points + 4 spears",
+        "means": "giving the right direction"
+      },
+      {
+        "part": "the shape",
+        "means": "an eye (the vision behind everything)"
+      },
+      {
+        "part": "the line",
+        "means": "support",
+        "open": "the plan does not say which part 'the line' is; this plate reads it as the long horizontal arms (E). To be confirmed by the founder."
+      }
+    ]
+  },
+  "colour": {
+    "inks": "one ink",
+    "lightExport": {
+      "ink": "#000000",
+      "ground": "#ffffff",
+      "contrast": 21
+    },
+    "darkExport": {
+      "ink": "#ffffff",
+      "ground": "#000000",
+      "contrast": 21
+    },
+    "favicon": {
+      "light": "#0a0a0a (19.8 : 1 on white)",
+      "dark": "#ffffff",
+      "switch": "prefers-color-scheme: dark",
+      "ground": "transparent: the browser's own tab"
+    },
+    "hole": "cut, not painted: it always shows the ground"
+  },
+  "scale": {
+    "sizes": [
+      {
+        "px": 16,
+        "where": "a browser tab",
+        "source": "Chromium ui/gfx/favicon_size.h: kFaviconSize = 16 (https://chromium.googlesource.com/chromium/src/+/main/ui/gfx/favicon_size.h)"
+      },
+      {
+        "px": 32,
+        "where": "favicon.ico, and the tab on a 2× screen",
+        "source": "Evil Martians, 'How to Favicon in 2026' (https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs): favicon.ico sizes=32x32"
+      },
+      {
+        "px": 64,
+        "where": "studio.kiruk.in's placeholder front page",
+        "source": "apps/kiruk-web/src/pages/index.astro: <img src=favicon.svg width=64 height=64>"
+      },
+      {
+        "px": 180,
+        "where": "apple-touch-icon (not shipped yet)",
+        "source": "Evil Martians, ibid.; audreyfeldroy/favicon-cheat-sheet README"
+      },
+      {
+        "px": 256,
+        "where": "each plane of this plate at a 1440 px window",
+        "source": "this plate"
+      },
+      {
+        "px": 512,
+        "where": "web app manifest icon (not shipped yet)",
+        "source": "Evil Martians, ibid."
+      }
+    ],
+    "perSize": {
+      "formula": "px = u × size / 1000",
+      "needleWidthPx": {
+        "16": 0.16,
+        "32": 0.32,
+        "64": 0.64,
+        "180": 1.8,
+        "256": 2.56,
+        "512": 5.12
+      },
+      "holeDiameterPx": {
+        "16": 1.92,
+        "32": 3.84,
+        "64": 7.68,
+        "180": 21.6,
+        "256": 30.72,
+        "512": 61.44
+      },
+      "onePixelAt16": "62.5 u",
+      "needleFillsAPixelFrom": 100
+    },
+    "favicon": "one SVG for every size; no optical adjustment for small sizes (no heavier needles, nothing dropped)",
+    "raster": {
+      "16": {
+        "darkestPixel": 0.71,
+        "needleOnlyPixelMax": 0.14,
+        "centre2x2": [0.25, 0.31, 0.27, 0.31],
+        "inkedPixels": 97,
+        "reads": "no solid pixel; the hole shuts to four grey pixels"
+      },
+      "32": {
+        "darkestPixel": 1,
+        "needleOnlyPixelMax": 0.3,
+        "centre2x2": [0, 0, 0, 0],
+        "inkedPixels": 291,
+        "reads": "the hole opens"
+      },
+      "64": {
+        "needleOnlyPixelMax": 0.64,
+        "centre2x2": [0, 0, 0, 0],
+        "inkedPixels": 678
+      },
+      "100": {
+        "needleOnlyPixelMax": 1,
+        "reads": "a needle first fills a whole pixel"
+      },
+      "method": "the favicon paths filled with Path2D on an N × N canvas in Chromium (Playwright), the same rule as the page; alpha per pixel",
+      "rowsAt16": "the mark covers pixel rows 3.5–12.5 and columns 0.3–15.7 of 16 (the square starts at u 500)"
+    }
+  },
+  "plateLayout": {
+    "stack": "five planes, bottom to top: concept, form, line, colour, scale (marks.md)",
+    "planeSize": 256,
+    "step": {
+      "right": 178,
+      "up": 134
+    },
+    "rise": "the chain line through the planes' upper points climbs at 37°"
+  }
+}

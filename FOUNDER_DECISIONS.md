@@ -184,6 +184,8 @@ When does the site need to be live? (No pressure — just helps prioritize.)
 
 → **Your answer (2026-05-26):** Ship under **`kiruk.in/studio`** (a path on the existing kiruk.in domain) for now; buy a dedicated domain later. Build note: Astro needs `site: 'https://kiruk.in'` + `base: '/studio'` config, and all internal links must respect the base path.
 
+**Superseded 2026-09-14:** Public studio origin is **`studio.kiruk.in`** (subdomain, `base: '/'`). `kiruk.in` stays the personal portfolio. The `/studio` path is no longer the public studio (it may remain the personal site’s private authoring UI). Spec: `tech-stack` “kiruk-web public origin” via [`studio-kiruk-in-origin`](openspec/archive/studio-kiruk-in-origin/proposal.md).
+
 ---
 
 ## ISM LAB — blocks Phase 5
@@ -223,6 +225,8 @@ When ISM #1 ships, what does "shipped" look like?
 - Something else?
 
 → **Your answer (2026-05-26):** **Page on the studio site** — `kiruk.in/studio/ism/<name>`. Each shipped ISM lives inside the studio site as its own experience.
+
+**Updated 2026-09-14:** same idea, new host — `studio.kiruk.in/ism/<name>`.
 
 ---
 
@@ -383,26 +387,36 @@ Spec is locked (`openspec/specs/brand-consistency-ci/spec.md`). Pick the runner:
 
 ## Locked decisions (archive)
 
-| Date       | Section  | Decision                                                                                                    |
-| ---------- | -------- | ----------------------------------------------------------------------------------------------------------- |
-| 2026-05-18 | ST1      | Lab-led, services follow                                                                                    |
-| 2026-05-18 | ST2      | Process + decisions transparent; numbers + client internals private                                         |
-| 2026-05-18 | ST3      | Product surface: tools, micro-apps, extensions, SaaS, toys (5 tiers)                                        |
-| 2026-05-18 | ST4      | All four automation streams active                                                                          |
-| 2026-05-26 | core     | Identity unchanged — creative studio (scribbles → worlds), lab-led                                          |
-| 2026-05-26 | B3       | White paper + black stroke; absurd color reserved for assets (blend digital ↔ paper)                        |
-| 2026-05-26 | B4       | Hand fonts for display/accents + clean sans for body (Playfair dropped)                                     |
-| 2026-05-26 | B5       | Light only (no dark mode)                                                                                   |
-| 2026-05-26 | W1/W3    | Homepage = POV product-designer's desk, 2.5D interactive hands (L/R react to side+activity); cluttered desk |
-| 2026-05-26 | W2       | Desk objects are the nav (spatial)                                                                          |
-| 2026-05-26 | W5       | "Leave a note on the desk" → contact                                                                        |
-| 2026-05-26 | W6       | About = just Arun for now                                                                                   |
-| 2026-05-26 | W7       | Ship under kiruk.in/studio; dedicated domain later                                                          |
-| 2026-05-26 | I3       | ISMs ship as pages on the studio site (/studio/ism/<name>)                                                  |
-| 2026-05-26 | S1/S2    | Active on all platforms; full-production content                                                            |
-| 2026-05-26 | P1/P2/P3 | Portal: Arun + client read-view · Better-Auth · full done-record                                            |
-| 2026-05-26 | M1/M2    | Core = Tamil scribble+crazy; kirukargal = rebellious weird polymath minds                                   |
-| 2026-05-26 | AU2      | Brand-CI: Husky (local) + GitHub Actions (PR gate)                                                          |
+| Date       | Section  | Decision                                                                                                                 |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 2026-05-18 | ST1      | Lab-led, services follow                                                                                                 |
+| 2026-05-18 | ST2      | Process + decisions transparent; numbers + client internals private                                                      |
+| 2026-05-18 | ST3      | Product surface: tools, micro-apps, extensions, SaaS, toys (5 tiers)                                                     |
+| 2026-05-18 | ST4      | All four automation streams active                                                                                       |
+| 2026-05-26 | core     | Identity unchanged — creative studio (scribbles → worlds), lab-led                                                       |
+| 2026-05-26 | B3       | White paper + black stroke; absurd color reserved for assets (blend digital ↔ paper)                                     |
+| 2026-05-26 | B4       | Hand fonts for display/accents + clean sans for body (Playfair dropped)                                                  |
+| 2026-05-26 | B5       | Light only (no dark mode)                                                                                                |
+| 2026-05-26 | W1/W3    | Homepage = POV product-designer's desk, 2.5D interactive hands (L/R react to side+activity); cluttered desk              |
+| 2026-05-26 | W2       | Desk objects are the nav (spatial)                                                                                       |
+| 2026-05-26 | W5       | "Leave a note on the desk" → contact                                                                                     |
+| 2026-05-26 | W6       | About = just Arun for now                                                                                                |
+| 2026-05-26 | W7       | Ship under kiruk.in/studio; dedicated domain later                                                                       |
+| 2026-09-14 | W7       | Superseded: public studio is studio.kiruk.in; kiruk.in stays the person                                                  |
+| 2026-05-26 | I3       | ISMs ship as pages on the studio site (studio.kiruk.in/ism/<name>)                                                       |
+| 2026-05-26 | S1/S2    | Active on all platforms; full-production content                                                                         |
+| 2026-05-26 | P1/P2/P3 | Portal: Arun + client read-view · Better-Auth · full done-record                                                         |
+| 2026-05-26 | M1/M2    | Core = Tamil scribble+crazy; kirukargal = rebellious weird polymath minds                                                |
+| 2026-05-26 | AU2      | Brand-CI: Husky (local) + GitHub Actions (PR gate)                                                                       |
+| 2026-10-17 | core     | Studio site rebuilt from scratch around **dawn** (Arun = dawn); art + code; plan `ideas/studio-dawn/plan.md`             |
+| 2026-10-17 | core     | Two layers: generated/illustrated base (readable for everyone) + founder's hand-sketch layer on top                      |
+| 2026-10-17 | B3       | Superseded: dawn palette — calm pre-sunrise, light sky over dark earth, thin rays; values set in ideation                |
+| 2026-10-17 | B4       | Superseded: all hand fonts cut from the studio site; base layer uses a normal readable face (TBD)                        |
+| 2026-10-17 | B5       | Superseded: light and dark both on the page (sky light, earth dark); mechanism parked for ideation                       |
+| 2026-10-17 | W1/W3    | Superseded: POV desk + grease-pencil 3D landing cut; landing = who kiruk is → work → ISM → framework → writing → contact |
+| 2026-10-17 | W2       | Superseded: nav = logo · Work · ISM · Writing · Contact; Framework via landing teaser + footer                           |
+| 2026-10-17 | W5       | Superseded: `/contact` page — email, GitHub org repo, Instagram @kirukism; no form in v1                                 |
+| 2026-10-17 | logo     | Current logogram stays for now (needles = time, 8 directions, eye shape, support line); not final                        |
 
 ---
 
@@ -412,10 +426,11 @@ These answers conflict with or change locked specs — route via OpenSpec propos
 
 1. **Palette/brand (B3, B4, B5):** `design-tokens` + `brand-system` specs still describe the dark "void" palette + Inter/Playfair. Propose: white-paper/black-stroke mono base, absurd-color assets, hand+sans type, light-only.
 2. **Devlog cadence (W4):** `build-in-public` spec mandates ≥1 devlog/14 days and `scripts/doctor.mjs` enforces it. Propose: relax to "publish when real."
-3. **Deploy path (W7):** Astro config needs `site: 'https://kiruk.in'` + `base: '/studio'`; the `tech-stack`/deploy notes assume kiruk.studio root.
+3. **Deploy path (W7):** ~~Astro `kiruk.in/studio`.~~ Locked 2026-09-14 as `studio.kiruk.in` (`base: '/'`) via `studio-kiruk-in-origin`. Apex `kiruk.studio` remains a later config change.
 4. **Eye-motif (B1 undesigned):** brand-consistency-ci's eye-motif gate must tolerate a placeholder mark until the real logo + custom wordmark (B2) are drawn.
+5. **Dawn direction (2026-10-17):** item 1's mono/light-only/hand-font proposal is superseded before it shipped. After ideation, propose: dawn palette tokens (`design-tokens`), two-layer brand application (`brand-system`), studio-site stack revision (`tech-stack`), and mark the grease-pencil / sketch requirements superseded (`pen-and-paper`, `openspec/changes/grease-pencil-scene`).
 
 ## Reminder prompts
 
 **Still open `[ ]`:** I1+I2 (which ISM, concept), PR1–PR3 (first product), AU1 (content-pipeline runner).
-**Conceptual `[~]` needing design:** B1 (eye mark), B2 (custom wordmark asset), W1/W2/W3 (desk/hands build), W4 (devlog format), M1 (final punchy line wording).
+**Conceptual `[~]` needing design:** B1 (eye mark), B2 (custom wordmark asset), W4 (devlog format), M1 (final punchy line wording). Dawn loop, ink bleed, sketch layer and eye link live in `ideas/studio-dawn/` (W1/W2/W3 desk build retired 2026-10-17).

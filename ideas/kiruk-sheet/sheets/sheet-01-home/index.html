@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sheet I · The studio home, measured · kiruk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@500&family=Xanh+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4ecdf;
+    --ink: #1a120e;
+    --construction: #5d4f55;
+    --rubric: #b5462b;
+    --rubric-text: #983a22;
+    --page: #ebe4d8;
+  }
+  * { box-sizing: border-box; }
+  html { font-synthesis: none; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.45 "IM Fell English", Georgia, serif; }
+  figure[data-codex] { margin: 0; }
+  svg { display: block; width: 100%; height: auto; }
+  .phone { display: none; }
+  @media (max-width: 760px) {
+    .desk { display: none; }
+    .phone { display: block; }
+  }
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  svg text { font-family: "IM Fell English", serif; fill: var(--ink); }
+  .t-note { font-size: 16px; }
+  .t-word { font-size: 64px; }
+  .t-claim { font-size: 22px; }
+  .t-sc { font-family: "IM Fell English SC", serif; font-size: 16px; letter-spacing: 0.08em; }
+  .t-letter { font-size: 16px; fill: var(--rubric-text); }
+  .t-label { font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 12px; fill: var(--rubric-text); }
+  .t-colo { font-family: "JetBrains Mono", monospace; font-weight: 500; font-size: 12px; }
+  .phone .t-word { font-size: 40px; }
+  .phone .t-claim { font-size: 16px; }
+  .phone .t-note { font-size: 15px; }
+  .phone .t-label { font-size: 13px; }
+  .phone .t-letter { font-size: 14px; }
+  .ln { fill: none; stroke: var(--rubric); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-linecap: butt; }
+  .end { fill: var(--rubric); }
+  .cons { fill: none; stroke: var(--construction); stroke-opacity: 0.4; stroke-width: 0.55; }
+  .under { padding: 8px 86px 36px; max-width: 1440px; }
+  .claim { font-family: "Xanh Mono", monospace; font-size: 16px; line-height: 1.45; max-width: 62ch; margin: 0; }
+  @media (max-width: 760px) {
+    .under { padding: 8px 20px 28px; }
+  }
+</style>
+</head>
+<body>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <filter id="pen" x="-8%" y="-8%" width="116%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <mask id="logogram-hole">
+      <rect x="500" y="500" width="1000" height="1000" fill="#ffffff"/>
+      <circle cx="1000" cy="1000" r="60" fill="#000000"/>
+    </mask>
+    <symbol id="logogram" viewBox="500 500 1000 1000">
+      <g fill="none" stroke="#1a120e" stroke-width="10" stroke-linejoin="bevel">
+        <path d="M1071.91 1266.79L1051.2 1189.51"/>
+        <path d="M1135 1241.28L1095 1172"/>
+        <path d="M1311.56 1178L1173 1098"/>
+        <path d="M1402.5 1100.94L1190 1044"/>
+        <path d="M927.798 1266.79L948.504 1189.51"/>
+        <path d="M857.707 1236.28L897.707 1167"/>
+        <path d="M687.142 1171L825.706 1091"/>
+        <path d="M597.203 1100.94L809.706 1044"/>
+        <path d="M1071.91 738L1051.2 815.274"/>
+        <path d="M1132 760.503L1092 829.785"/>
+        <path d="M1306.56 822.785L1168 902.785"/>
+        <path d="M1402.5 903.845L1190 960.785"/>
+        <path d="M927.798 738L948.504 815.274"/>
+        <path d="M860.707 762.503L900.707 831.785"/>
+        <path d="M689.142 830.785L827.706 910.785"/>
+        <path d="M597.203 903.845L809.706 960.785"/>
+      </g>
+      <g fill="#1a120e" stroke="none" mask="url(#logogram-hole)">
+        <path d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z"/>
+        <path d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z"/>
+        <path d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z"/>
+        <path d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z"/>
+        <path d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z"/>
+        <path d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z"/>
+        <path d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z"/>
+        <path d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<figure data-codex>
+  <div class="sheet desk">
+    <svg viewBox="0 0 1440 900" role="img" aria-labelledby="plate-title plate-claim">
+      <g data-layer="wash">
+        <rect class="sheet-fill" width="1440" height="900" fill="#f4ecdf"/>
+        <rect width="1440" height="72" y="828" fill="#e7dcc8"/>
+      </g>
+      <g data-layer="construction">
+        <line class="cons" x1="270" y1="112" x2="548" y2="112"/>
+        <line class="cons" x1="270" y1="174" x2="548" y2="174"/>
+        <line class="cons" x1="270" y1="236" x2="560" y2="236"/>
+        <line class="cons" x1="270" y1="348" x2="680" y2="348"/>
+        <line class="cons" x1="270" y1="420" x2="720" y2="420"/>
+        <line class="cons" x1="890" y1="48" x2="890" y2="560"/>
+        <line class="cons" x1="748" y1="112" x2="780" y2="112"/>
+        <line class="cons" x1="748" y1="128" x2="780" y2="128"/>
+        <line class="cons" x1="748" y1="144" x2="780" y2="144"/>
+        <line class="cons" x1="748" y1="160" x2="780" y2="160"/>
+      </g>
+      <g data-layer="ink">
+        <g data-subject>
+          <g data-eye transform="translate(300 64) scale(0.22) translate(-500 -500)">
+            <g fill="none" stroke="#1a120e" stroke-width="10" stroke-linejoin="bevel">
+              <path d="M1071.91 1266.79L1051.2 1189.51"/>
+              <path d="M1135 1241.28L1095 1172"/>
+              <path d="M1311.56 1178L1173 1098"/>
+              <path d="M1402.5 1100.94L1190 1044"/>
+              <path d="M927.798 1266.79L948.504 1189.51"/>
+              <path d="M857.707 1236.28L897.707 1167"/>
+              <path d="M687.142 1171L825.706 1091"/>
+              <path d="M597.203 1100.94L809.706 1044"/>
+              <path d="M1071.91 738L1051.2 815.274"/>
+              <path d="M1132 760.503L1092 829.785"/>
+              <path d="M1306.56 822.785L1168 902.785"/>
+              <path d="M1402.5 903.845L1190 960.785"/>
+              <path d="M927.798 738L948.504 815.274"/>
+              <path d="M860.707 762.503L900.707 831.785"/>
+              <path d="M689.142 830.785L827.706 910.785"/>
+              <path d="M597.203 903.845L809.706 960.785"/>
+            </g>
+            <g fill="#1a120e" stroke="none" mask="url(#logogram-hole)">
+              <path d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z"/>
+              <path d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z"/>
+              <path d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z"/>
+              <path d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z"/>
+              <path d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z"/>
+              <path d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z"/>
+              <path d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z"/>
+              <path d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z"/>
+            </g>
+          </g>
+          <text class="t-word" x="300" y="348">kiruk</text>
+          <text class="t-claim" x="300" y="420">An art + code studio.</text>
+        </g>
+      </g>
+      <g data-layer="letters">
+        <text class="t-letter" x="528" y="168">A</text>
+        <text class="t-letter" x="520" y="340">B</text>
+        <text class="t-letter" x="640" y="412">C</text>
+      </g>
+      <g data-layer="line" transform="translate(1.2 -0.8)">
+        <line class="ln" x1="246" y1="174" x2="306" y2="174"/>
+        <circle class="end" data-end cx="306" cy="174" r="2.5"/>
+        <text class="t-label" x="248" y="178" text-anchor="end">Z1 72 off</text>
+
+        <polyline class="ln" points="410,236 410,276 246,276"/>
+        <circle class="end" data-end cx="410" cy="236" r="2.5"/>
+        <text class="t-label" x="248" y="280" text-anchor="end">S1 20 off</text>
+
+        <line class="ln" x1="246" y1="336" x2="304" y2="336"/>
+        <circle class="end" data-end cx="304" cy="336" r="2.5"/>
+        <text class="t-label" x="248" y="340" text-anchor="end">H1 54–88 off</text>
+
+        <line class="ln" x1="246" y1="408" x2="304" y2="408"/>
+        <circle class="end" data-end cx="304" cy="408" r="2.5"/>
+        <text class="t-label" x="248" y="412" text-anchor="end">S2 17.6 off</text>
+
+        <polyline class="ln" points="440,412 440,388 548,388"/>
+        <circle class="end" data-end cx="440" cy="412" r="2.5"/>
+        <text class="t-label" x="540" y="392">T1 18.4 · L1 1.45 off</text>
+
+        <line class="ln" x1="760" y1="144" x2="822" y2="144"/>
+        <circle class="end" data-end cx="760" cy="144" r="2.5"/>
+        <text class="t-label" x="818" y="148">lg 16</text>
+
+        <path class="ln" data-free d="M64 48 H76 M70 42 V54"/>
+        <path class="ln" data-free d="M1364 848 H1376 M1370 842 V854"/>
+      </g>
+      <g data-layer="notes">
+        <text class="t-sc" x="86" y="78">Sheet I</text>
+        <text class="t-note" x="920" y="140">A The mark is 72px on the</text>
+        <text class="t-note" x="920" y="164">live page. Drawn larger</text>
+        <text class="t-note" x="920" y="188">so the stroke can be read.</text>
+        <text class="t-note" x="920" y="228">B The word sits between</text>
+        <text class="t-note" x="920" y="252">54px and 88px. The gap</text>
+        <text class="t-note" x="920" y="276">under the mark is 20px.</text>
+        <text class="t-note" x="920" y="316">C The claim is 18.4px.</text>
+        <text class="t-note" x="920" y="340">Its leading is 1.45.</text>
+        <text class="t-note" x="920" y="364">Body on the module is 1.618.</text>
+        <text class="t-note" x="920" y="404">The four ticks are lg, 16px,</text>
+        <text class="t-note" x="920" y="428">at true size. NTS elsewhere.</text>
+        <text class="t-colo" x="86" y="860">kiruk · 2026 · NTS · globals.css</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="sheet phone">
+    <svg viewBox="0 0 390 720" role="img" aria-labelledby="plate-title plate-claim">
+      <g data-layer="wash">
+        <rect width="390" height="720" fill="#f4ecdf"/>
+        <rect width="390" height="56" y="664" fill="#e7dcc8"/>
+      </g>
+      <g data-layer="construction">
+        <line class="cons" x1="24" y1="72" x2="250" y2="72"/>
+        <line class="cons" x1="24" y1="134" x2="250" y2="134"/>
+        <line class="cons" x1="24" y1="196" x2="250" y2="196"/>
+        <line class="cons" x1="24" y1="300" x2="300" y2="300"/>
+        <line class="cons" x1="24" y1="360" x2="300" y2="360"/>
+        <line class="cons" x1="300" y1="48" x2="316" y2="48"/>
+        <line class="cons" x1="300" y1="64" x2="316" y2="64"/>
+        <line class="cons" x1="300" y1="80" x2="316" y2="80"/>
+        <line class="cons" x1="300" y1="96" x2="316" y2="96"/>
+      </g>
+      <g data-layer="ink">
+        <g data-subject>
+          <g data-eye transform="translate(24 28) scale(0.22) translate(-500 -500)">
+            <g fill="none" stroke="#1a120e" stroke-width="10" stroke-linejoin="bevel">
+              <path d="M1071.91 1266.79L1051.2 1189.51"/>
+              <path d="M1135 1241.28L1095 1172"/>
+              <path d="M1311.56 1178L1173 1098"/>
+              <path d="M1402.5 1100.94L1190 1044"/>
+              <path d="M927.798 1266.79L948.504 1189.51"/>
+              <path d="M857.707 1236.28L897.707 1167"/>
+              <path d="M687.142 1171L825.706 1091"/>
+              <path d="M597.203 1100.94L809.706 1044"/>
+              <path d="M1071.91 738L1051.2 815.274"/>
+              <path d="M1132 760.503L1092 829.785"/>
+              <path d="M1306.56 822.785L1168 902.785"/>
+              <path d="M1402.5 903.845L1190 960.785"/>
+              <path d="M927.798 738L948.504 815.274"/>
+              <path d="M860.707 762.503L900.707 831.785"/>
+              <path d="M689.142 830.785L827.706 910.785"/>
+              <path d="M597.203 903.845L809.706 960.785"/>
+            </g>
+            <g fill="#1a120e" stroke="none" mask="url(#logogram-hole)">
+              <path d="M1000 720C1000 720 1003.51 724.58 1004 728C1013.28 792.878 1009.32 840.136 1020 880C1028.71 912.5 1052.18 931.949 1060 940C1067.82 948.051 1088.28 971.5 1120 980C1159.28 990.526 1471.57 995.87 1471.99 995.877L1480 1000H1000V720Z"/>
+              <path d="M1000 720C1000 720 996.489 724.58 996 728C986.717 792.878 990.682 840.136 980 880C971.292 912.5 947.819 931.949 940 940C932.181 948.051 911.722 971.5 880 980C840.718 990.526 528.427 995.87 528.009 995.877L520 1000H1000V720Z"/>
+              <path d="M1000 1280C1000 1280 1003.51 1275.42 1004 1272C1013.28 1207.12 1009.32 1159.86 1020 1120C1028.71 1087.5 1052.18 1068.05 1060 1060C1067.82 1051.95 1088.28 1028.5 1120 1020C1159.31 1009.47 1472 1004 1472 1004L1480 1000H1000V1280Z"/>
+              <path d="M1000 1280C1000 1280 996.489 1275.42 996 1272C986.717 1207.12 990.682 1159.86 980 1120C971.292 1087.5 947.819 1068.05 940 1060C932.181 1051.95 911.722 1028.5 880 1020C840.718 1009.47 528.427 1004.13 528.009 1004.12L520 1000H1000V1280Z"/>
+              <path d="M940 900L870.5 862.5L792.5 784.5C792.5 784.5 786.551 778.168 783.364 781.055C780.07 784.038 785.5 791.5 785.5 791.5L863.5 869.5L900 940C900 940 920.97 939.024 930 930C939.03 920.975 940 900 940 900Z"/>
+              <path d="M1060 900L1129.5 862.199L1207.5 784.199C1207.5 784.199 1213.45 777.868 1216.64 780.754C1219.93 783.737 1214.5 791.199 1214.5 791.199L1136.5 869.199L1100 940C1100 940 1079.03 938.723 1070 929.699C1060.97 920.674 1060 900 1060 900Z"/>
+              <path d="M940 1100L869.5 1139.5L792.5 1216.5C792.5 1216.5 786.551 1222.83 783.364 1219.95C780.07 1216.96 785.5 1209.5 785.5 1209.5L863 1133L900 1061C900 1061 920.97 1061.98 930 1071C939.03 1080.02 940 1100 940 1100Z"/>
+              <path d="M1060.77 1101.5L1130 1140L1208.27 1218.3C1208.27 1218.3 1214.22 1224.63 1217.41 1221.75C1220.7 1218.76 1215.27 1211.3 1215.27 1211.3L1137.27 1133.3L1100.77 1062.5C1100.77 1062.5 1079.8 1063.78 1070.77 1072.8C1061.74 1081.83 1060.77 1101.5 1060.77 1101.5Z"/>
+            </g>
+          </g>
+          <text class="t-word" x="24" y="300">kiruk</text>
+          <text class="t-claim" x="24" y="360">An art + code studio.</text>
+        </g>
+      </g>
+      <g data-layer="letters">
+        <text class="t-letter" x="250" y="120">A</text>
+        <text class="t-letter" x="148" y="268">B</text>
+        <text class="t-letter" x="20" y="392">C</text>
+      </g>
+      <g data-layer="line" transform="translate(1.2 -0.8)">
+        <line class="ln" x1="156" y1="128" x2="304" y2="128"/>
+        <circle class="end" data-end cx="156" cy="128" r="2.5"/>
+        <text class="t-label" x="300" y="132">Z1 72 off</text>
+
+        <polyline class="ln" points="134,198 134,224 200,224"/>
+        <circle class="end" data-end cx="134" cy="198" r="2.5"/>
+        <text class="t-label" x="204" y="228" text-anchor="end">S1 20 off</text>
+
+        <line class="ln" x1="40" y1="292" x2="184" y2="292"/>
+        <circle class="end" data-end cx="40" cy="292" r="2.5"/>
+        <text class="t-label" x="180" y="296">H1 54–88 off</text>
+
+        <line class="ln" x1="50" y1="296" x2="50" y2="326"/>
+        <circle class="end" data-end cx="50" cy="296" r="2.5"/>
+        <text class="t-label" x="46" y="332">S2 17.6 off</text>
+
+        <line class="ln" x1="120" y1="354" x2="214" y2="354"/>
+        <circle class="end" data-end cx="120" cy="354" r="2.5"/>
+        <text class="t-label" x="210" y="358">T1 18.4 · L1 1.45 off</text>
+
+        <line class="ln" x1="308" y1="80" x2="332" y2="80"/>
+        <circle class="end" data-end cx="308" cy="80" r="2.5"/>
+        <text class="t-label" x="328" y="84">lg 16</text>
+
+        <path class="ln" data-free d="M20 20 H32 M26 14 V26"/>
+        <path class="ln" data-free d="M352 690 H364 M358 684 V696"/>
+      </g>
+      <g data-layer="notes">
+        <text class="t-sc" x="24" y="440">Sheet I</text>
+        <text class="t-note" x="24" y="468">The mark is 72px live.</text>
+        <text class="t-note" x="24" y="490">The gap under it is 20px.</text>
+        <text class="t-note" x="24" y="512">The claim is 18.4px,</text>
+        <text class="t-note" x="24" y="534">leading 1.45. NTS.</text>
+        <text class="t-colo" x="24" y="700">kiruk · 2026</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="under">
+    <h1 id="plate-title" class="t-sc" style="font-weight:400;font-size:16px;letter-spacing:0.08em;margin:0 0 8px">Sheet I · The studio home, measured</h1>
+    <p id="plate-claim" class="claim">The page is a mark, a word, and a sentence, held on a baseline, and the red line says which distances sit on the module.</p>
+  </div>
+</figure>
+<script type="application/json" id="truth">
+{
+  "sheet": "I",
+  "title": "The studio home, measured",
+  "claim": "The page is a mark, a word, and a sentence, held on a baseline, and the red line says which distances sit on the module.",
+  "nts": true,
+  "instrument": "pen",
+  "rootPx": 16,
+  "sources": {
+    "page": "apps/kiruk-studio/src/app/(site)/page.tsx",
+    "css": "apps/kiruk-studio/src/app/globals.css",
+    "mark": "apps/kiruk-studio/public/favicon.svg",
+    "plan": "ideas/kiruk-sheet/plan.md"
+  },
+  "module": {
+    "phi": 1.618033988749895,
+    "base": 16,
+    "steps": [2, 4, 6, 10, 16, 26, 42, 68, 110]
+  },
+  "colours": {
+    "paper": "#f4ecdf",
+    "ink": "#1a120e",
+    "rubricLine": "#b5462b",
+    "rubricText": "#983a22"
+  },
+  "codes": [
+    { "code": "Z1", "name": "mark", "value": "72", "from": "4.5rem", "module": "off-module", "nearest": 68 },
+    { "code": "S1", "name": "gap under the mark", "value": "20", "from": "1.25rem", "module": "off-module", "nearest": "16 or 26" },
+    { "code": "H1", "name": "word size", "value": "54.4–88", "from": "clamp(3.4rem, 8vw, 5.5rem)", "module": "off-module" },
+    { "code": "S2", "name": "gap above the claim", "value": "17.6", "from": "1.1rem", "module": "off-module", "nearest": 16 },
+    { "code": "T1", "name": "claim size", "value": "18.4", "from": "1.15rem", "module": "off-module", "nearest": 16 },
+    { "code": "L1", "name": "claim leading", "value": "1.45", "from": "line-height", "module": "off-module", "nearest": 1.618 },
+    { "code": "lg", "name": "module step", "value": "16", "from": "φ^0", "module": "module" }
+  ],
+  "evidence": [
+    { "feature": "mark, word, claim, colours", "class": "supplied", "source": "globals.css and page.tsx" },
+    { "feature": "drawn gaps and the enlarged mark", "class": "concept", "note": "NTS so the pen stays readable; the red numbers are the live ones" }
+  ],
+  "drawing": {
+    "deskMark": 220,
+    "phoneMark": 220,
+    "whyLarger": "A 72px mark scales the logogram's 10-unit stroke under 2px. The sheet draws it at 220px and labels Z1 72."
+  }
+}
+</script>
+</body>
+</html>

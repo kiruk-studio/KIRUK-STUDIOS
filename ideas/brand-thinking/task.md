@@ -27,12 +27,12 @@ Status: **Unique Edge (07) complete-enough. Next spoken block: Brand (08) when r
 - [ ] (P1) Do **not** spawn a universe for persona **Sanxia** — thinking face only
 - [ ] (P1) Studio email when the rest of setup is standing — Setup 05
 - [ ] (P2) Pick accounting software (money + project work under the studio) — tool unset
-- [ ] (P1) Lock studio URL: `studio.kiruk.in` vs `kiruk.in/studio` — do not retarget deploy until then
+- [x] (P1) Lock studio URL: `studio.kiruk.in` (person stays `kiruk.in`) — 2026-09-14, `studio-kiruk-in-origin`
 - [ ] (P1) Receive logo fine-tune when founder shares — Visuals (12), do not retoken yet
 - [ ] (P0) After each chapter: update ideas / tensions / capture log — method.md
 - [ ] (P0) When a project spark appears: define it with **one theme + one-to-one client + experiment** before making — workflow.md
 - [ ] (P1) **lychee** on markdown (advisory then gate) — dead links destroy trust; zero-config first win
-- [ ] (P1) Align Velite schema with content-pipeline (`scribble`, `eye-motif`) — spec already requires it
+- [x] (P1) Align Velite schema with content-pipeline (`scribble`, `eye-motif`) — spec already requires it
 - [ ] (P1) **Vale** + kiruk vocabulary (advisory) — Biome stays for code; do not add ESLint
 - [ ] (P2) Public how-to/reference on `kiruk-web` via Velite or Starlight — skip Mintlify/Docusaurus
 - [ ] (P2) `scripts/generate-derivatives.mjs` — content-pipeline; human publish only

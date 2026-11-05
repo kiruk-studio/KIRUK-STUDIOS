@@ -1,0 +1,146 @@
+{
+  "plate": {
+    "number": "I",
+    "title": "The light before the sun",
+    "claim": "The sky lights up before sunrise because sunlight the Earth still hides from you already reaches the air high above, and that air scatters it down to your eye.",
+    "made": "2026-10-20",
+    "skill": ".claude/skills/kiruk-codex"
+  },
+  "earth": {
+    "mean_radius_km": 6371.0,
+    "source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html",
+    "note": "NASA Earth Fact Sheet: volumetric mean radius 6371.000 km; atmospheric scale height 8.5 km."
+  },
+  "twilight": {
+    "civil_deg": 6,
+    "nautical_deg": 12,
+    "astronomical_deg": 18,
+    "sunrise_centre_deg": 0.8333,
+    "refraction_at_horizon_arcmin": 34,
+    "sun_semidiameter_arcmin": 16,
+    "definition": "Twilight: sunlight scattered by the Earth's upper atmosphere lights the sky before sunrise and after sunset. Civil, nautical and astronomical twilight begin in the morning when the centre of the sun is geometrically 18, 12 and 6 degrees below the horizon (astronomical 18, nautical 12, civil 6). Sunrise is computed when the centre is 50 arcminutes below: 34' of refraction plus the sun's 16' radius.",
+    "source": "https://aa.usno.navy.mil/faq/RST_defs"
+  },
+  "observer": {
+    "place": "Bengaluru",
+    "date": "2026-10-20",
+    "astronomical_twilight_starts": "4:59",
+    "nautical_twilight_starts": "5:24",
+    "civil_twilight_starts": "5:49",
+    "sunrise": "6:10",
+    "sunrise_bearing_deg": 100,
+    "first_light_to_sunrise_min": 71,
+    "sun_distance_million_km": 149,
+    "sun_distance_note": "timeanddate gives 92.570 million miles for 20 Oct 2026 (148.98 million km).",
+    "source": "https://www.timeanddate.com/sun/india/bengaluru?month=10&year=2026",
+    "note": "Local time (IST). Sunrise includes refraction; twilight starts are the geometric depressions 18, 12, 6 degrees."
+  },
+  "geometry": {
+    "letters": "O is the observer (lettered F on the plate); T is where the grazing ray touches the ground (lettered C).",
+    "method": "Derived. A ray that just touches the Earth at T, where the sun's centre is on the horizon, passes over an observer O at angular distance d with height h = R (sec d - 1). The ground distance O to T is R d (d in radians). R from earth.mean_radius_km. Refraction ignored.",
+    "shadow_height_over_O_km": {
+      "18": 327.9,
+      "12": 142.3,
+      "6": 35.1,
+      "sunrise": 0.7
+    },
+    "ground_distance_O_to_T_km": {
+      "18": 2001,
+      "12": 1334,
+      "6": 667,
+      "sunrise": 93
+    },
+    "east_horizon_sightline_at_6_deg": {
+      "enters_sunlight_km_east": 334,
+      "height_above_ground_there_km": 8.7,
+      "method": "Horizontal line from O toward the sun, crossed with the grazing ray for d = 6 degrees."
+    },
+    "grazing_ray_leaves_100km_deg_past_T": 10.1
+  },
+  "atmosphere": {
+    "fraction_of_mass_below": {
+      "5.5": 0.5,
+      "30": 0.9888,
+      "35": 0.995,
+      "50": 1.0
+    },
+    "share_above_35km_percent": 0.5,
+    "top_drawn_km": 100,
+    "top_note": "The air has no edge; 100 km is a conventional top (the X-prize rounding of the height where orbits stop feeling the air). The plate draws it as a construction arc, not an ink edge.",
+    "source": "https://www.pdas.com/atmthick.html",
+    "scale_height_km": 8.5,
+    "scale_height_source": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html"
+  },
+  "scattering": {
+    "law": "Scattering by air molecules goes as the inverse fourth power of wavelength (a good approximation for sunlight in air).",
+    "law_sources": [
+      "https://www.britannica.com/science/Rayleigh-scattering",
+      "https://glossary.ametsoc.org/wiki/Rayleigh%27s_scattering_law"
+    ],
+    "shortest_visible_nm": 380,
+    "longest_visible_nm": 700,
+    "visible_source": "https://science.nasa.gov/ems/09_visiblelight/",
+    "ratio_short_to_long": 11.5,
+    "ratio_method": "(700 / 380)^4 = 11.51"
+  },
+  "air_mass": {
+    "zenith": 1,
+    "horizon": 38,
+    "note": "Kasten and Young (1989), Applied Optics 28, 4735: air mass is about 38 at the horizon against 1 overhead.",
+    "source": "https://doi.org/10.1364/AO.28.004735"
+  },
+  "twilight_blue": {
+    "zenith_blue_from_ozone": "2/3",
+    "zenith_blue_from_scattering": "1/3",
+    "condition": "sun at the horizon",
+    "note": "Hulburt (1953) found ozone absorption (Chappuis bands, orange light) gives about two thirds of the zenith sky's blue at sunset; Lange, Rozanov and von Savigny (2023) confirm it for the sun at the horizon.",
+    "sources": [
+      "https://doi.org/10.1364/JOSA.43.000113",
+      "https://acp.copernicus.org/articles/23/14829/2023/"
+    ]
+  },
+  "eye": {
+    "axial_length_mm": 24,
+    "note": "Adult emmetropic eye, cornea to back: usually about 22 to 24 mm (Benzir et al. 2022, Cureus). The plate's enlarged eye is drawn with a 24 mm axial length and carries a 10 mm bar.",
+    "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9536359/"
+  },
+  "earth_shadow": {
+    "note": "Before sunrise the Earth's shadow is cast on the air above the horizon opposite the sun as a blue-grey band, with a rose band (the anti-twilight arch, or Belt of Venus) along its upper edge.",
+    "source": "https://cloudatlas.wmo.int/en/imgviewer-4792.txt"
+  },
+  "name": {
+    "arun": "Arun means dawn in Tamil (the founder).",
+    "arun_source": "ideas/studio-dawn/dawn.md",
+    "aruna": "Sanskrit aruna: red, ruddy. Aruna is the charioteer of Surya, the sun, and the personification of the reddish glow of the rising sun.",
+    "aruna_sources": [
+      "https://en.wikipedia.org/wiki/Aruna_(Hinduism)",
+      "https://www.vyasaonline.com/encyclopedia/aruna/"
+    ]
+  },
+  "drawing": {
+    "section": "Vertical plane through O and the sun (bearing 100 degrees, so east is on the left), seen from the north.",
+    "main_state_deg": 6,
+    "main_state_time": "5:49",
+    "desktop": {
+      "km_per_px_horizontal": 2.5,
+      "km_per_px_vertical": 0.333,
+      "heights_exaggerated": 7.5
+    },
+    "phone": {
+      "km_per_px_horizontal": 4.0,
+      "km_per_px_vertical": 0.556,
+      "heights_exaggerated": 7.2
+    },
+    "sequence": {
+      "km_per_px_horizontal": 33.0,
+      "km_per_px_vertical": 11.4,
+      "heights_exaggerated": 2.9
+    },
+    "sequence_phone": {
+      "km_per_px_horizontal": 31.3,
+      "km_per_px_vertical": 12.0,
+      "heights_exaggerated": 2.6
+    },
+    "note": "Heights are stretched against distances (a geologist's section). Straight rays stay straight and the ray still touches the Earth at T, but drawn angles are steeper than true; the 6 degree value is underlined on the sheet because its drawn angle does not match it."
+  }
+}

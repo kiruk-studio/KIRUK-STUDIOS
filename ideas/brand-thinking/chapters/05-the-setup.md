@@ -30,7 +30,7 @@ Tax and identification numbers: **not needed yet** (same reason).
 
 ## 2. Digital + money pipes (what exists, what waits)
 
-**Domain.** `kiruk.in` already exists. Plan: add **studio** so the studio surface is clearer — spoken as `studio.kiruk.in`. (Live repo currently ships thinking as `kiruk.in/studio` _path_. Tension logged. Do not retarget deploy from this dump.)
+**Domain.** `kiruk.in` already exists. Plan: add **studio** so the studio surface is clearer — spoken as `studio.kiruk.in`. Locked 2026-09-14 as the public origin; the `/studio` path is retired.
 
 **Email.** None for the studio yet. Add once the rest of the setup is standing.
 

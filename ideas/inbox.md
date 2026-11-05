@@ -8,6 +8,10 @@
 
 <!-- Drop ideas below this line. Oldest at bottom. -->
 
+## Private craft bridge (2026-10-25)
+
+kiruk.in stays a private repo. This repo reads its eye, era UI, and skills, and writes only public studio work here. Method: [private-craft-bridge/README.md](./private-craft-bridge/README.md).
+
 ## ISM · Inktober series — parked (2026-10-12)
 
 Daily "\_\_\_\_ism" concepts sketched for Inktober: Rentism, Habitism, Vibeism (D7), Inviteism (D8), Onceism (D9). Captions, journal pages, Onceism extension architecture: [ism-inktober/README.md](./ism-inktober/README.md). Build when time opens up; Onceism v1 (Chrome, X only, local) is the clearest first cut.

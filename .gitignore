@@ -58,7 +58,36 @@ coverage/
 # Velite generated content data
 .velite/
 
+# Local Vercel deploy packaging (MCP/CLI helpers — never commit)
+.deploy*/
+.vercel-*-deploy.json
+.vercel-deploy-*.json
+deploy-args*.json
+deploy-chunk-*.txt
+
 # Claude Code local state — only commands/ and settings.json are committed (CLAUDE.md §7)
 .claude/*
 !.claude/commands/
 !.claude/settings.json
+
+# aiforui.dev licensed course skills + other local agent skill installs
+.cursor/skills/emil-*/
+.codex/
+.gemini/
+.opencode/
+.windsurf/
+
+# studio-dawn reference images by other artists — public repo, never commit them
+ideas/studio-dawn/references/*
+!ideas/studio-dawn/references/README.md
+
+# Deploy scratch: payload dumps from MCP/Vercel deploy attempts (large, regenerable).
+/.deploy-*
+/deploy-*.json
+/deploy-step-*.txt
+# Proof screenshots from the burin skill's scripts.
+.burin-shots/
+# Personal record of work outside kiruk; marked not public. This repo is public.
+docs/spera/
+# Next build-check output (NEXT_DIST_DIR=.next-check).
+.next-check/

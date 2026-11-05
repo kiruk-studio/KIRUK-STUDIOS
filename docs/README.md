@@ -41,6 +41,10 @@
 19. [`/openspec/specs/build-in-public/spec.md`](../openspec/specs/build-in-public/spec.md) — Open/Closed boundary, redaction, story-drops.
 20. [`/openspec/specs/content-pipeline/spec.md`](../openspec/specs/content-pipeline/spec.md) — canonical → derivatives.
 
+## Spera cofounder record
+
+Not a universe. Personal record of design leadership at Spera, Feb–Sep 2026: [`spera/`](./spera/).
+
 ## Read when you onboard a client universe
 
 21. [`/openspec/specs/client-lifecycle/spec.md`](../openspec/specs/client-lifecycle/spec.md) — state machine.

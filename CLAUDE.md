@@ -87,8 +87,10 @@ From the founder's manifesto (`content/manifesto.md`) + vision doc §1.3:
 
 **Monorepo root — single repo, multiple deployable units:**
 
-- `apps/kiruk-web/` — public studio website → deploys to kiruk.studio (Astro 5)
+- `apps/kiruk-web/` — public studio website → deploys to studio.kiruk.in (Astro 5)
 - `apps/kiruk-portal/` — internal client management portal → deploys separately (Next.js 15)
+- `apps/kiruk-forge/` — kirukal mark instrument (Toolcraft 0.0.20, internal, not PR1)
+- `apps/kiruk-blogism/` — BLOGISM notebook desk (Toolcraft 0.0.20, internal; publishes into kiruk.in). Not PR1.
 - `packages/` — shared packages (`@kiruk/design-system` lives here)
 - `openspec/` — source of truth. Capabilities in `specs/`, proposed changes in `changes/`, applied history in `archive/`.
 - `kiruk-ism/` — ISM lab placeholder. **Currently no subprojects.** Add via `/kiruk-ism-new <name>` only. Each ISM has its own `scribble/` folder.

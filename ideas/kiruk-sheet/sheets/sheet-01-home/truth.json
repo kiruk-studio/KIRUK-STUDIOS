@@ -1,0 +1,92 @@
+{
+  "sheet": "I",
+  "title": "The studio home, measured",
+  "claim": "The page is a mark, a word, and a sentence, held on a baseline, and the red line says which distances sit on the module.",
+  "nts": true,
+  "instrument": "pen",
+  "rootPx": 16,
+  "sources": {
+    "page": "apps/kiruk-studio/src/app/(site)/page.tsx",
+    "css": "apps/kiruk-studio/src/app/globals.css",
+    "mark": "apps/kiruk-studio/public/favicon.svg",
+    "plan": "ideas/kiruk-sheet/plan.md"
+  },
+  "module": {
+    "phi": 1.618033988749895,
+    "base": 16,
+    "steps": [2, 4, 6, 10, 16, 26, 42, 68, 110]
+  },
+  "colours": {
+    "paper": "#f4ecdf",
+    "ink": "#1a120e",
+    "rubricLine": "#b5462b",
+    "rubricText": "#983a22"
+  },
+  "codes": [
+    {
+      "code": "Z1",
+      "name": "mark",
+      "value": "72",
+      "from": "4.5rem",
+      "module": "off-module",
+      "nearest": 68
+    },
+    {
+      "code": "S1",
+      "name": "gap under the mark",
+      "value": "20",
+      "from": "1.25rem",
+      "module": "off-module",
+      "nearest": "16 or 26"
+    },
+    {
+      "code": "H1",
+      "name": "word size",
+      "value": "54.4–88",
+      "from": "clamp(3.4rem, 8vw, 5.5rem)",
+      "module": "off-module"
+    },
+    {
+      "code": "S2",
+      "name": "gap above the claim",
+      "value": "17.6",
+      "from": "1.1rem",
+      "module": "off-module",
+      "nearest": 16
+    },
+    {
+      "code": "T1",
+      "name": "claim size",
+      "value": "18.4",
+      "from": "1.15rem",
+      "module": "off-module",
+      "nearest": 16
+    },
+    {
+      "code": "L1",
+      "name": "claim leading",
+      "value": "1.45",
+      "from": "line-height",
+      "module": "off-module",
+      "nearest": 1.618
+    },
+    { "code": "lg", "name": "module step", "value": "16", "from": "φ^0", "module": "module" }
+  ],
+  "evidence": [
+    {
+      "feature": "mark, word, claim, colours",
+      "class": "supplied",
+      "source": "globals.css and page.tsx"
+    },
+    {
+      "feature": "drawn gaps and the enlarged mark",
+      "class": "concept",
+      "note": "NTS so the pen stays readable; the red numbers are the live ones"
+    }
+  ],
+  "drawing": {
+    "deskMark": 220,
+    "phoneMark": 220,
+    "whyLarger": "A 72px mark scales the logogram's 10-unit stroke under 2px. The sheet draws it at 220px and labels Z1 72."
+  }
+}

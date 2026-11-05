@@ -73,24 +73,38 @@ One monorepo. Everything that is kiruk lives here:
 
 **Goal**: Studio public face — lab-led front door. Deployed from `apps/kiruk-web/`. Independent deploy → Vercel.
 
-> **Stack lock:** Astro 5 + React 19 islands + Tailwind v4 + Motion v11 + GSAP 3 + Three.js r170+ + R3F 9 + Velite for MDX content. See [`openspec/specs/tech-stack/spec.md`](openspec/specs/tech-stack/spec.md).
+> 🌅 **Reset 2026-10-17** — founder cut the whole sketch / grease-pencil site and restarted from scratch around **dawn** (Arun = dawn): light sky over dark earth, a ray at reveal moments, a generated base layer with the founder's hand-sketch layer on top, TSL ink bleed as its own workstream. Order: IA → base layer → ideation → stack + spec → sketch layer. The notes below are history. Plan: [`ideas/studio-dawn/plan.md`](ideas/studio-dawn/plan.md).
 
-> ✅ **Unblocked 2026-05-26** — brand + website decisions answered in [`FOUNDER_DECISIONS.md`](FOUNDER_DECISIONS.md) (B1–B5, W1–W7) and applied via the `adopt-sketch-direction` OpenSpec change. Direction: hand-drawn **black-&-white sketch**, POV designer's-desk hero, ship under **kiruk.in/studio**.
+> **Stack lock (paused for kiruk-web):** Astro 5 + React 19 islands + Tailwind v4 + Motion v11 + GSAP 3 + Three.js r170+ + R3F 9 + Velite for MDX content. See [`openspec/specs/tech-stack/spec.md`](openspec/specs/tech-stack/spec.md). The studio site is a bare Astro shell until Phase 4 of the plan re-chooses its stack.
+
+> ✅ **Unblocked 2026-05-26** — brand + website decisions answered in [`FOUNDER_DECISIONS.md`](FOUNDER_DECISIONS.md) (B1–B5, W1–W7) and applied via the `adopt-sketch-direction` OpenSpec change. Direction: hand-drawn **black-&-white sketch**, POV designer's-desk hero.
+> ✅ **Origin 2026-09-14** — public studio is **`studio.kiruk.in`** (`base: '/'`); `kiruk.in` stays the person. [`studio-kiruk-in-origin`](openspec/archive/studio-kiruk-in-origin/proposal.md).
+> 🎞️ **Mechanism 2026-09-16** — W1's "2.5D" now has a model: **grease pencil**. Scribble sheets are scenes of flat drawings standing in 3D — pinned to a plane, facing the camera, or held out as interface — and the reader turns the camera. Ink stays vector; the depth is CSS. [`grease-pencil-scene`](openspec/changes/grease-pencil-scene/proposal.md).
 
 - [x] Brand pass — mono token palette (paper/ink/pencil + absurd-asset color) + hand & body-sans fonts confirmed in tokens
 - [x] Astro 5 scaffold + sketch design system (fonts, sketch CSS, primitives) + home hero (cursor pencil field + KIRUK wordmark)
-- [x] Eye cursor + bottom sketch nav; `/studio` base path wired (`src/lib/base.ts`)
+- [x] Eye cursor + bottom sketch nav; base-path helper (`src/lib/base.ts`)
+- [x] Public origin `studio.kiruk.in` (`base: '/'`) — W7 path retired
 - [~] `@kiruk/design-system` consumed — currently app-local CSS vars; promote primitives into the package next
 - [ ] **Fix pencil-stroke feel** — current field reads like smoke; rework to stamped graphite strokes
 - [ ] **POV desk + 2.5D hands** hero (W1/W3) — the full concept; phase after launch
-- [ ] Route structure built out — `/kirukism`, `/ism`, `/products`, `/services`, `/about`, `/devlog` (only `/` exists)
-- [ ] Devlog index pulling from `content/devlogs/` (Velite)
+- [~] Route structure — `/about` and `/devlog` shipped; `/kirukism` `/ism` `/products` `/services` later
+- [x] Devlog index + slug pulling from `content/devlogs/` (Velite)
 - [ ] Case studies pulling from `content/case-studies/`
 - [ ] "Leave a note on the desk" contact flow (W5) wired
-- [ ] Deploy: Vercel under `kiruk.in/studio` base
-- [ ] Domain: dedicated kiruk domain later (W7)
+- [x] Deploy: Vercel on `studio.kiruk.in`
+- [ ] Domain: optional later apex `kiruk.studio` (config change + link audit)
 
-**Exit**: site live at kiruk.in/studio; routes render; devlog loop working.
+**Rebuild track (2026-10-17):**
+
+- [x] Snapshot + cut to bare shell (`a201273`, `3cce46a`)
+- [ ] IA — content model + six routes + piece pages + writing RSS, plain HTML
+- [ ] Base layer — clean, readable, stands alone
+- [ ] Ideation — dawn loop, ink-bleed TSL prototype, sketch layer, eye link
+- [ ] Stack + spec — tech-stack revision, dawn tokens, old requirements superseded
+- [ ] Sketch layer + curated skills
+
+**Exit**: site live at studio.kiruk.in; six routes render real content; base layer reads on its own.
 
 ---
 
@@ -229,7 +243,7 @@ One monorepo. Everything that is kiruk lives here:
 
 | App / Artifact                    | Deploy target                                                  | Trigger              |
 | --------------------------------- | -------------------------------------------------------------- | -------------------- |
-| `apps/kiruk-web`                  | Vercel (kiruk.in/studio; dedicated domain later)               | push to `main`       |
+| `apps/kiruk-web`                  | Vercel (`studio.kiruk.in`; optional later apex kiruk.studio)   | push to `main`       |
 | `apps/kiruk-portal`               | Railway or Vercel (portal.kiruk.studio)                        | push to `main`       |
 | `kiruk-ism/<name>`                | Vercel or Netlify (per experiment)                             | manual or ISM branch |
 | `kiruk-projects/_products/<slug>` | Per product (web → Vercel, extension → Chrome Web Store, etc.) | per product config   |

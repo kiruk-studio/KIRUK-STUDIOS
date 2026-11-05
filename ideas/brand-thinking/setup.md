@@ -8,15 +8,15 @@ Kiruk Studio is the name. Registration and tax IDs wait. Start small. Incorporat
 
 ## Pipes
 
-| Surface             | State                                                                                           |
-| ------------------- | ----------------------------------------------------------------------------------------------- |
-| `kiruk.in`          | exists                                                                                          |
-| Studio URL          | spoken: `studio.kiruk.in` (subdomain). Repo today: `kiruk.in/studio` (path). Unset which ships. |
-| Studio email        | later, once setup is standing                                                                   |
-| Instagram / YouTube | kirukism (already)                                                                              |
-| X / Twitter         | s_arunkumaar (already)                                                                          |
-| Money account       | a separate account already; dedicated business account when stable                              |
-| Accounting software | planned, for accounts + project work under the studio. Tool unset                               |
+| Surface             | State                                                                            |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `kiruk.in`          | exists                                                                           |
+| Studio URL          | **`studio.kiruk.in`** (locked 2026-09-14). `kiruk.in` is the personal portfolio. |
+| Studio email        | later, once setup is standing                                                    |
+| Instagram / YouTube | kirukism (already)                                                               |
+| X / Twitter         | s_arunkumaar (already)                                                           |
+| Money account       | a separate account already; dedicated business account when stable               |
+| Accounting software | planned, for accounts + project work under the studio. Tool unset                |
 
 No credentials, tax numbers, or bank IDs here.
 

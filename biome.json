@@ -31,7 +31,19 @@
       "!apps/kiruk-forge/docs",
       "!apps/kiruk-forge/tsconfig.json",
       "!apps/kiruk-forge/vite.config.ts",
-      "!apps/kiruk-forge/playwright.config.ts"
+      "!apps/kiruk-forge/playwright.config.ts",
+      "!apps/kiruk-blogism/src/toolcraft",
+      "!apps/kiruk-blogism/src/app",
+      "!apps/kiruk-blogism/src/routes",
+      "!apps/kiruk-blogism/src/main.tsx",
+      "!apps/kiruk-blogism/src/router.tsx",
+      "!apps/kiruk-blogism/e2e",
+      "!apps/kiruk-blogism/scripts",
+      "!apps/kiruk-blogism/toolcraft",
+      "!apps/kiruk-blogism/docs",
+      "!apps/kiruk-blogism/tsconfig.json",
+      "!apps/kiruk-blogism/vite.config.ts",
+      "!apps/kiruk-blogism/playwright.config.ts"
     ]
   },
   "formatter": {

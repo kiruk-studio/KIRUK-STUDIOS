@@ -13,7 +13,8 @@
 
 - [x] (P0) 2026-05-18 — Strategy locks ST1–ST4 (lab-led, transparency boundary, product surface, automation streams)
 - [x] (P0) 2026-05-26 — **B1–B5** brand (eye-mark placeholder, custom wordmark, B&W+absurd-assets, hand+sans, light-only)
-- [x] (P0) 2026-05-26 — **W1–W7** website (POV desk + 2.5D hands, desk-object nav, note-on-desk contact, just-Arun, kiruk.in/studio)
+- [x] (P0) 2026-05-26 — **W1–W7** website (POV desk + 2.5D hands, desk-object nav, note-on-desk contact, just-Arun)
+- [x] (P0) 2026-09-14 — Public studio origin `studio.kiruk.in` (W7 path superseded)
 - [x] (P0) 2026-05-26 — **AU2** brand-CI runner = Husky + Actions
 - [x] (P1) 2026-05-26 — **S1–S2** all platforms, full production · **P1–P3** client read-view, Better-Auth, full record · **M1–M2** tagline meaning + kirukargal def
 - [ ] (P0) **I1–I2** — first ISM (which one + concept) — STILL OPEN, unblocks Phase 5
@@ -35,18 +36,23 @@
 - [ ] (P0) Update root `package.json` to use pnpm workspaces + turbo
 - [ ] (P1) Smoke test: `pnpm install` from root resolves all workspaces
 
-## Active — Phase 3 (kiruk-web) [~ in progress]
+## Active — Phase 3 (kiruk-web) — rebuilding from scratch [~ in progress]
 
-- [x] (P0) Astro 5 scaffold (not Next.js) — config, layout, Tailwind v4, /studio base
-- [x] (P0) Sketch design system in-app — fonts, sketch CSS, primitives (SketchNav/Button), eye CustomCursor
-- [x] (P0) Home route — cursor pencil field + KIRUK wordmark + handwritten copy + sketch nav
-- [ ] (P0) **Fix pencil-stroke feel** (smoke → real graphite strokes)
-- [ ] (P0) **POV desk + 2.5D hands** hero (W1) — phase after launch
-- [ ] (P0) Promote sketch primitives → `@kiruk/design-system` (currently app-local)
-- [ ] (P1) Build routes: `/kirukism` `/ism` `/products` `/services` `/about` `/devlog`
-- [ ] (P1) `/devlog` via Velite from `content/devlogs/`
-- [ ] (P2) "Leave a note on the desk" contact (W5)
-- [ ] (P0) Vercel deploy under kiruk.in/studio
+> 2026-10-17 founder reset. Old site snapshotted (`a201273`) and cut (`3cce46a`). Plan: [`ideas/studio-dawn/plan.md`](ideas/studio-dawn/plan.md).
+
+- [x] ~~2026-05-26 → 2026-09-16 sketch site: hand fonts, sketch CSS, eye cursor, sketch nav, grease-pencil scene, `/about`, `/devlog`~~ — cut 2026-10-17 (the stroke-feel, landing-scene, Blender-photo, W1-reconcile, POV-desk, primitive-promotion and note-on-desk tasks went with it)
+- [x] (P0) 2026-10-17 Snapshot + cut to a bare Astro shell; `build` + `check-types` pass
+- [x] (P0) Vercel deploy on studio.kiruk.in
+- [ ] (P0) Commit `pnpm-lock.yaml` together with the in-flight forge work (the lockfile carries both)
+- [ ] (P0) **Phase 1 — IA:** Velite pieces + articles collections, listing rules as tested functions, six routes + piece pages + `/writing/rss.xml` as plain HTML
+- [ ] (P0) **Phase 2 — Base layer:** clean, readable design (type, layout, diagrams); must stand alone without the sketch layer
+- [ ] (P1) **Phase 3 — Ideation** in `ideas/studio-dawn/`: dawn loop, ink-bleed TSL prototype, sketch layer, eye link
+- [~] (P1) **kiruk-codex skill** (`.claude/skills/kiruk-codex/`, plan `ideas/kiruk-codex/plan.md`): drafted 2026-10-20; Plate I tested twice and fixed; marks / depth / live added (untested on a mark plate); then founder review (name, rubric vs ultramarine, "TypeScript", type trio) and keep/delete the parked blend prototypes
+- [ ] (P1) Founder: drop ink-bleed + dawn references into `ideas/studio-dawn/references/` (gitignored)
+- [ ] (P1) **Phase 4 — Stack + spec:** revise tech-stack, spec dawn palette tokens, mark old sketch/grease-pencil requirements superseded, close `openspec/changes/grease-pencil-scene`
+- [ ] (P2) **Phase 5 —** founder sketch layer + a curated skill per curated thing
+- [ ] (P1) Review the ways-of-working proposal (`ideas/ways-of-working/proposal.md`, from the research session)
+- [ ] (P2) Prags on `/work` only after Prakathiswar's written consent
 
 ## Active — Phase 4 (kiruk-portal: scribble → handoff) [~ in progress]
 
@@ -96,7 +102,8 @@ See `ROADMAP.md` Phases 4.5–7.
 
 ## Done (most recent first)
 
-- [x] 2026-05-26 `adopt-sketch-direction` OpenSpec change applied + archived — mono tokens (paper/ink/pencil + absurd assets), hand+sans fonts, light-only, drawn-eye/placeholder CI tolerance, dropped 14-day devlog floor, kiruk.in/studio base path. Validates 23/23
+- [x] 2026-05-26 `adopt-sketch-direction` OpenSpec change applied + archived — mono tokens (paper/ink/pencil + absurd assets), hand+sans fonts, light-only, drawn-eye/placeholder CI tolerance, dropped 14-day devlog floor. Validates 23/23
+- [x] 2026-09-14 `studio-kiruk-in-origin` — public studio is `studio.kiruk.in` (`base: '/'`); kiruk.in stays the person
 - [x] 2026-05-26 Founder-decisions session — all B/W/S/P/M + AU2 answered, recorded in FOUNDER_DECISIONS.md
 - [x] 2026-05-26 kiruk-web sketch foundation — Astro 5, ported kiruk.in hand fonts, sketch CSS system + primitives, pencil cursor field hero, eye cursor, bottom nav, /studio base
 - [x] 2026-05-26 Repo tidy — removed npm package-lock (pnpm-only), gitignore .astro/.vercel/\*.tsbuildinfo, fixed CLAUDE.md Astro/Next, moved vision plan into docs/
