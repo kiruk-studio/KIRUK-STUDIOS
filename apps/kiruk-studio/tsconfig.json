@@ -8,7 +8,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "three": ["./node_modules/@types/three"],
+      "three/*": ["./node_modules/@types/three/*"]
     },
     "allowJs": true,
     "noUncheckedIndexedAccess": false,
