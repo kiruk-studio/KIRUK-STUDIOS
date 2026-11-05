@@ -1,0 +1,380 @@
+<title>Calculus of mai</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Every mark on a mai plate is computed. Change a control and the engine redraws its specimen and charts its own numbers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+  /* Layout: one bench per part of the engine, in the order a stroke passes through them.
+     The drawn sheet and its instruments (the charts) on the left, the calculation on the
+     right; a single column on a phone. Chrome is the studio's paper and ink; anything drawn
+     as paper uses the sheet tokens (Dawn Departs by day, the night sheet by night). */
+  :root {
+    --bg: #ffffff; /* color.bg = color.paper */
+    --fg: #0a0a0a; /* color.fg = color.ink */
+    --muted: #6b6b6b; /* color.fg-muted = pencil-400 */
+    --rule: #c9c9c9; /* color.halo = pencil-200 */
+    --sheet: #ccffff; /* color.sheet.new.paper = dawn.departs */
+    --sheet-ink: #1d1c2d; /* color.sheet.new.ink = dawn.navy */
+    --measure: #983a22; /* color.sheet.rubric: measure and numbering type */
+    --measure-line: #b5462b; /* color.sheet.rubric-line: rules on either sheet */
+    --faint: color-mix(in srgb, var(--sheet-ink) 16%, var(--sheet));
+    --soft: color-mix(in srgb, var(--sheet-ink) 42%, var(--sheet));
+    --font-body: "Inter", ui-sans-serif, system-ui, sans-serif; /* font-body */
+    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; /* font-mono */
+    --step: clamp(15px, 0.35vw + 14px, 17px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0a0a0a; /* color.ink as ground */
+      --fg: #ffffff; /* color.paper as type */
+      --muted: #9a9a9a; /* pencil-300 */
+      --rule: #3a3a3a; /* pencil-500 */
+      --sheet: #1d1c2d; /* the night sheet: dawn.navy as paper (founder decision pending) */
+      --sheet-ink: #ccffff; /* dawn.departs as ink */
+      --measure: #ccffff;
+      --measure-line: #b5462b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0a0a0a;
+    --fg: #ffffff;
+    --muted: #9a9a9a;
+    --rule: #3a3a3a;
+    --sheet: #1d1c2d;
+    --sheet-ink: #ccffff;
+    --measure: #ccffff;
+    --measure-line: #b5462b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: var(--step);
+    line-height: 1.55;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 64px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 72px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h2 { font-size: 1.6em; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  h3 { font-size: 0.78em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  p { margin: 0; max-width: 66ch; }
+  a { color: inherit; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--measure-line); outline-offset: 2px; }
+  .mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .eyebrow { font-family: var(--font-mono); font-size: 0.8em; letter-spacing: 0.06em; color: var(--muted); }
+
+  /* the hero: the title is lettered by mai's own hand, with its timing */
+  .hero { display: grid; gap: 18px; }
+  .title-sheet { background: var(--sheet); border-radius: 2px; padding: 10px 12px; max-width: 760px; }
+  .title-sheet svg { display: block; width: 100%; height: auto; }
+  .hero .lede { font-size: 1.12em; }
+  .hero-row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+  .counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .counts div { background: var(--bg); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+  .counts b { font-family: var(--font-mono); font-weight: 500; font-size: 1.35em; font-variant-numeric: tabular-nums; }
+  .counts span { font-size: 0.8em; color: var(--muted); }
+  .note { font-size: 0.86em; color: var(--muted); }
+
+  /* a bench */
+  .bench { display: grid; gap: 22px; border-top: 1px solid var(--rule); padding-top: 26px; }
+  .bench > header { display: grid; gap: 8px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 28px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .col { display: grid; gap: 12px; min-width: 0; }
+  .sheet { background: var(--sheet); color: var(--sheet-ink); margin: 0; border-radius: 2px; min-width: 0; }
+  .sheet svg { display: block; width: 100%; height: auto; }
+  .specimen { padding: 6px; }
+  .chart { padding: 8px 8px 4px; }
+  .chart figcaption { font-size: 0.8em; color: var(--sheet-ink); padding: 2px 4px 6px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .chart figcaption .num { color: var(--measure); }
+
+  /* controls */
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px 16px; }
+  .ctl { display: grid; gap: 4px; min-width: 0; }
+  .ctl label { font-size: 0.82em; display: flex; justify-content: space-between; gap: 8px; }
+  .ctl output { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+  input[type="range"] { width: 100%; accent-color: var(--measure-line); }
+  select { font: inherit; font-size: 0.9em; background: var(--bg); color: var(--fg); border: 1px solid var(--rule); border-radius: 4px; padding: 5px 8px; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 0.85em; background: transparent; color: var(--fg); border: 0; padding: 5px 12px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+  .scrub { display: flex; gap: 10px; align-items: center; }
+  .scrub input { flex: 1; }
+  .btn { font: inherit; font-size: 0.85em; border: 1px solid var(--fg); background: var(--fg); color: var(--bg); border-radius: 4px; padding: 6px 14px; cursor: pointer; white-space: nowrap; }
+  .btn.quiet { background: transparent; color: var(--fg); }
+  .scrub .num { font-size: 0.82em; color: var(--muted); min-width: 9ch; text-align: right; }
+
+  /* the calculation */
+  .calc { display: grid; gap: 14px; min-width: 0; }
+  .eqs { display: grid; gap: 12px; margin: 0; }
+  .eq { display: grid; gap: 3px; }
+  .eq dt { font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; padding-bottom: 2px; }
+  .eq dt i { font-style: italic; }
+  .eq dd { margin: 0; font-size: 0.86em; color: var(--muted); }
+  .readout { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; font-size: 0.9em; }
+  .readout dt { color: var(--muted); }
+  .readout dd { margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+  .src { font-size: 0.78em; color: var(--muted); font-family: var(--font-mono); overflow-wrap: anywhere; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-family: var(--font-mono); font-size: 0.74em; border: 1px solid var(--rule); border-radius: 999px; padding: 2px 8px; }
+  .chip[data-s="pass"] { border-color: var(--fg); }
+  .chip[data-s="fail"] { background: var(--fg); color: var(--bg); }
+  .chip[data-s="warn"] { border-style: dashed; border-color: var(--fg); }
+
+  /* the whole plate */
+  .plate-view { padding: 8px; overflow: hidden; }
+  .plate-view svg { display: block; width: 100%; height: auto; }
+  .checks { display: grid; gap: 8px; }
+  .checks .row { display: grid; grid-template-columns: 9.5em 1fr; gap: 10px; align-items: center; font-size: 0.82em; }
+  .checks .cells { display: flex; flex-wrap: wrap; gap: 3px; }
+  .checks .cells i { width: 12px; height: 12px; display: block; border: 1px solid var(--fg); }
+  .checks .cells i[data-s="pass"] { background: var(--fg); }
+  .checks .cells i[data-s="warn"] { background: transparent; border-style: dashed; }
+  .checks .cells i[data-s="human"] { background: transparent; border-radius: 50%; }
+  .checks .cells i[data-s="fail"] { background: var(--measure-line); border-color: var(--measure-line); }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.78em; color: var(--muted); }
+  .legend span { display: inline-flex; gap: 6px; align-items: center; }
+  .legend i { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--fg); }
+  footer { border-top: 1px solid var(--rule); padding-top: 20px; display: grid; gap: 8px; font-size: 0.86em; color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+  /* chart internals (SVG) */
+  .ax { stroke: var(--soft); stroke-width: 1; fill: none; }
+  .grid-l { stroke: var(--faint); stroke-width: 1; fill: none; }
+  .tick { fill: var(--measure); font: 10.5px var(--font-mono); }
+  .axl { fill: var(--sheet-ink); font: 11px var(--font-body); }
+  .s-ink { stroke: var(--sheet-ink); stroke-width: 1.6; fill: none; }
+  .s-measure { stroke: var(--measure-line); stroke-width: 1.4; fill: none; }
+  .s-soft { stroke: var(--soft); stroke-width: 1.2; fill: none; stroke-dasharray: 3 3; }
+  .d-ink { fill: var(--sheet-ink); }
+  .d-soft { fill: var(--soft); }
+  .d-measure { fill: var(--measure-line); }
+  .b-ink { fill: var(--sheet-ink); }
+  .b-measure { fill: var(--measure-line); }
+  .vm { stroke: var(--measure-line); stroke-width: 1; stroke-dasharray: 2 3; }
+  .vm-l { fill: var(--measure); font: 10px var(--font-mono); }
+  .ref { stroke: var(--measure-line); stroke-width: 1; fill: none; }
+  .ref-l { fill: var(--measure); font: 10.5px var(--font-mono); }
+  .mk { stroke: var(--measure-line); stroke-width: 1.2; }
+  .mk-dot { fill: var(--sheet); stroke: var(--measure-line); stroke-width: 1.6; }
+  .pen { fill: none; stroke: var(--measure-line); stroke-width: 0.35; }
+  .pen-dot { fill: var(--measure-line); }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">mai · kiruk’s ink engine · மை, ink and the kohl that lines an eye</p>
+    <h1 class="title-sheet" id="title"><span class="sr">Calculus of mai</span></h1>
+    <p class="lede">Every mark on a mai plate is computed. A hand slows into each bend, a pen drains and dips, one light sets every tone, and each value is measured from the ink it labels. Change a control on any bench below: the engine redraws its specimen in your browser and charts its own numbers as it goes.</p>
+    <div class="hero-row">
+      <button class="btn quiet" id="title-replay" type="button">Letter the title again</button>
+      <p class="note">Read beside the founder’s reference, <a href="https://calculus-of-interfaces.vercel.app/" rel="noopener" target="_blank">the Calculus of Interfaces</a>.</p>
+    </div>
+    <div class="counts" id="counts" aria-label="Plate III, counted"></div>
+    <p class="note" id="counts-note"></p>
+  </header>
+
+  <section class="bench" id="hand" aria-labelledby="hand-h">
+    <header>
+      <p class="eyebrow">1 · the hand</p>
+      <h2 id="hand-h">Speed falls in every bend</h2>
+      <p>The hand performs the path a plate asks for. It lands, runs and leaves; it slows wherever the path bends, by the two-thirds power law of human movement; it trembles at 8 to 12 Hz; and it lifts when the line outruns its reach.</p>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <div class="controls">
+          <div class="ctl"><label for="hand-bend">Bend <output id="hand-bend-o"></output></label><input id="hand-bend" type="range" min="0" max="16" step="0.5" value="9"></div>
+          <div class="ctl"><label for="hand-pace">Pace <output id="hand-pace-o"></output></label><input id="hand-pace" type="range" min="0.4" max="2" step="0.05" value="1"></div>
+          <div class="ctl"><label for="hand-tremor">Tremor <output id="hand-tremor-o"></output></label><input id="hand-tremor" type="range" min="0" max="4" step="0.1" value="1"></div>
+          <div class="ctl"><span class="ctl-l" style="font-size:0.82em">Guide</span><div class="seg" role="group" aria-label="Guide"><button type="button" id="hand-free" aria-pressed="true">Hand</button><button type="button" id="hand-exact" aria-pressed="false">Exact</button></div></div>
+        </div>
+        <figure class="sheet specimen" id="hand-sheet" aria-label="The stroke, drawn by the engine, over its aim"></figure>
+        <div class="scrub"><button class="btn" id="hand-play" type="button">Draw it</button><input id="hand-t" type="range" min="0" max="1000" value="1000" aria-label="Pen position in time"><span class="num" id="hand-t-o"></span></div>
+        <figure class="sheet chart" id="hand-speed"></figure>
+        <figure class="sheet chart" id="hand-law"></figure>
+        <figure class="sheet chart" id="hand-dev"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The calculation</h3>
+        <dl class="eqs">
+          <div class="eq"><dt><i>v</i>(<i>s</i>) = min( <i>E</i>(<i>s</i>), <i>K</i>·<i>κ</i>(<i>s</i>)<sup>−1/3</sup> )</dt><dd>Speed along the path: the envelope or the power law, whichever is slower. κ is the path’s curvature, read as the turning between the chords before and after each point (up to 1.5 mm long), so a curve handed over as a polyline is read as a curve (ledger MA-27).</dd></div>
+          <div class="eq"><dt><i>E</i>(<i>s</i>) = <i>v̂</i>·[<i>v</i><sub>in</sub> + (1−<i>v</i><sub>in</sub>)·up(<i>s</i>)]·[<i>v</i><sub>out</sub> + (1−<i>v</i><sub>out</sub>)·down(<i>s</i>)]</dt><dd>Land, run, leave. A dip lands at 12% of the peak, a touch at 30%; a taper leaves at 70%, a lift at 30%.</dd></div>
+          <div class="eq"><dt><i>K</i> = 0.27·<i>v̂</i>,  <i>v̂</i> = pace·role·(1 − 0.35·precision)</dt><dd>The law’s gain comes from the hand’s pace: a contour runs at 0.55 of it, a hatch at 1.35, a letter at 0.42.</dd></div>
+          <div class="eq"><dt><i>t</i>(<i>s</i>) = ∫ d<i>σ</i> / <i>v</i>(<i>σ</i>)</dt><dd>Time is spent where the speed is low, so the tremor, which runs in time, shows most in the bends.</dd></div>
+          <div class="eq"><dt><i>δ</i>(<i>t</i>) = <i>a</i>·[0.62 sin 2π<i>f</i><sub>1</sub><i>t</i> + 0.28 sin 2π<i>f</i><sub>2</sub><i>t</i> + 0.25·<i>n</i>(38<i>t</i>)]</dt><dd>Tremor across the line, <i>f</i><sub>1</sub> in 8–12 Hz and <i>f</i><sub>2</sub> 1.31–1.47 × higher, plus a slow drift that grows with length and speed.</dd></div>
+          <div class="eq"><dt><i>L</i> &gt; 1.15·<i>reach</i> ⇒ lift</dt><dd>A free line longer than the hand’s reach (42 mm) is drawn in pieces, each landing where the last lifted.</dd></div>
+        </dl>
+        <h3>This stroke</h3>
+        <dl class="readout" id="hand-readout"></dl>
+        <p class="src">src/hand/hand.ts · perform() · research 01 §1</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bench" id="pen" aria-labelledby="pen-h">
+    <header>
+      <p class="eyebrow">2 · the pen</p>
+      <h2 id="pen-h">The pen drains, then dips</h2>
+      <p>A dipped pen holds a little ink. Each millimetre of line spends some of it, so the line pales and thins as the pen drains; when it runs low the hand dips again and the next stroke comes out dark. That rhythm is the clock of a pen drawing.</p>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <div class="controls">
+          <div class="ctl"><label for="pen-ins">Pen</label><select id="pen-ins"><option value="quill" selected>Quill</option><option value="steel">Steel nib</option><option value="reed">Reed</option><option value="brush">Brush</option></select></div>
+          <div class="ctl"><label for="pen-len">Line length <output id="pen-len-o"></output></label><input id="pen-len" type="range" min="20" max="140" step="2" value="70"></div>
+          <div class="ctl"><label for="pen-press">Pressure <output id="pen-press-o"></output></label><input id="pen-press" type="range" min="0.25" max="0.95" step="0.01" value="0.6"></div>
+        </div>
+        <figure class="sheet specimen" id="pen-sheet" aria-label="A passage of lines, drawn by the engine in order"></figure>
+        <div class="scrub"><button class="btn" id="pen-play" type="button">Draw it</button><input id="pen-t" type="range" min="0" max="1000" value="1000" aria-label="Pen position along the ink laid"><span class="num" id="pen-t-o"></span></div>
+        <figure class="sheet chart" id="pen-load"></figure>
+        <figure class="sheet chart" id="pen-width"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The calculation</h3>
+        <dl class="eqs">
+          <div class="eq"><dt><i>R</i> ← <i>R</i> − (<i>f</i>/<i>C</i>)·(<i>w</i>/0.4)·Δ<i>s</i></dt><dd>The reservoir drains with the ink laid. <i>C</i> is the pen’s capacity in mm of a 0.4 mm line per dip (a quill about 240), <i>f</i> the ink’s flow.</dd></div>
+          <div class="eq"><dt><i>λ</i> = <i>R</i><sup>0.55</sup>·(1 + 0.22·slow) − 0.1·fast</dt><dd>Load at the nib: a slow pen floods a little, a fast one starves.</dd></div>
+          <div class="eq"><dt><i>w</i> ← <i>w</i>·(0.84 + 0.24·<i>λ</i>)</dt><dd>A loaded pen lays a fuller line; a draining one thins.</dd></div>
+          <div class="eq"><dt><i>D</i> = <i>D</i><sub>ink</sub>·(0.6 + 0.4·<i>λ̄</i><sup>0.8</sup>)</dt><dd>And pales: the density of each stroke follows its mean load.</dd></div>
+          <div class="eq"><dt><i>R</i> &lt; <i>r</i> ∈ [0.10, 0.26] ⇒ dip, <i>R</i> ∈ [0.9, 1]</dt><dd>The hand dips before the pen runs dry, or before a stroke it could not finish.</dd></div>
+          <div class="eq"><dt><i>r</i><sub>pool</sub> = (<i>w</i>/2)·(1.05 + 1.15·<i>P</i>·√(rest/0.12))·(0.75 + 0.35·<i>λ</i>)</dt><dd>Where a fresh pen rests, ink gathers; capped at 0.95 mm, and at 0.7 × the line on a letter (ledger MA-16).</dd></div>
+        </dl>
+        <h3>This passage</h3>
+        <dl class="readout" id="pen-readout"></dl>
+        <p class="src">src/ink/render.ts · inkStroke() · ledger MA-4, MA-8, MA-16, MA-26</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bench" id="light" aria-labelledby="light-h">
+    <header>
+      <p class="eyebrow">3 · the light</p>
+      <h2 id="light-h">One light sets every tone</h2>
+      <p>A plate declares one light. Each point of a form gets a tone from its surface normal; hatching lays the general shadow first and deepens it in two passes, and the critic checks that the ink follows the tone it was laid for.</p>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <div class="controls">
+          <div class="ctl"><label for="light-az">Light from <output id="light-az-o"></output></label><input id="light-az" type="range" min="0" max="355" step="5" value="225"></div>
+          <div class="ctl"><label for="light-el">Elevation <output id="light-el-o"></output></label><input id="light-el" type="range" min="15" max="75" step="1" value="45"></div>
+        </div>
+        <figure class="sheet specimen" id="light-sheet" aria-label="A sphere hatched by the engine under the light"></figure>
+        <figure class="sheet chart" id="light-tone"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The calculation</h3>
+        <dl class="eqs">
+          <div class="eq"><dt>tone = 1 − [<i>a</i> + (1−<i>a</i>)·max(0, <i>n</i>·<i>l</i>) + <i>b</i>·max(0, <i>n</i>·<i>l</i><sub>b</sub>)]</dt><dd>Lambert’s diffuse light over an ambient floor <i>a</i> = 0.18, with a bounce <i>b</i> = 0.14 that lifts the far side of the shadow, so its core sits at the terminator.</dd></div>
+          <div class="eq"><dt>tone &gt; 0.20 ⇒ hatch; &gt; 0.50, &gt; 0.74 ⇒ deepen</dt><dd>The general shadow first, then two deeper passes between its lines.</dd></div>
+          <div class="eq"><dt><i>ρ</i> = Spearman(tone, ink per cell) ≥ 0.6</dt><dd>The critic’s check that the ink follows the light; it also asks that the lit side stays nearly paper.</dd></div>
+        </dl>
+        <h3>The critic, on this sphere</h3>
+        <dl class="readout" id="light-readout"></dl>
+        <p class="src">src/light/light.ts · toneOf() · src/light/hatch.ts · research 02 §11</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bench" id="measure" aria-labelledby="measure-h">
+    <header>
+      <p class="eyebrow">4 · the measure</p>
+      <h2 id="measure-h">A value is measured from the ink, never typed</h2>
+      <p>Every number on a plate comes from the drawing. Change the part: the engine redraws it, measures the new ink, sets the chain inside and the overall a tier further out, graduates a frame from the first hole, and the critic checks each value against what it labels.</p>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <div class="controls">
+          <div class="ctl"><label for="m-w">Width <output id="m-w-o"></output></label><input id="m-w" type="range" min="40" max="84" step="1" value="60"></div>
+          <div class="ctl"><label for="m-h">Height <output id="m-h-o"></output></label><input id="m-h" type="range" min="20" max="40" step="1" value="32"></div>
+          <div class="ctl"><label for="m-s">Hole pitch <output id="m-s-o"></output></label><input id="m-s" type="range" min="8" max="20" step="1" value="13"></div>
+        </div>
+        <figure class="sheet specimen" id="m-sheet" aria-label="A bracket, its chain and overall dimensions, and a graduated frame"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The calculation</h3>
+        <dl class="eqs">
+          <div class="eq"><dt>value = round(|<i>b</i> − <i>a</i>|·<i>k</i>, digits)</dt><dd>Measured between two points of the ink at the plate’s scale <i>k</i>; the label is never typed.</dd></div>
+          <div class="eq"><dt>|label − value| ≤ ½·10<sup>−digits</sup></dt><dd>The critic’s <span class="mono">measure.true</span>, for every dimension.</dd></div>
+          <div class="eq"><dt>tier₁ = 8–12 mm,  Δtier ≥ 6 mm</dt><dd>Smaller dimensions inside, the overall outside, a tier apart (ISO 129; research 03 §2.2). <span class="mono">measure.tier-gap</span> fails under 4 mm (ledger MA-23).</dd></div>
+          <div class="eq"><dt>gap 1.5 mm, overshoot 2.5–3 mm</dt><dd>Extension lines start clear of the ink and run just past the dimension line.</dd></div>
+          <div class="eq"><dt>tick every <i>e</i>/<i>k</i> mm from the origin</dt><dd>A graduated neatline is a ruler laid round the figure, counted from a point of the part.</dd></div>
+        </dl>
+        <h3>The critic, value by value</h3>
+        <dl class="readout" id="m-readout"></dl>
+        <div class="chips" id="m-chips"></div>
+        <p class="src">src/measure/measure.ts · src/measure/outer.ts · skill /kiruk-mai-measure</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bench" id="line" aria-labelledby="line-h">
+    <header>
+      <p class="eyebrow">5 · the line type</p>
+      <h2 id="line-h">A dashed line is fitted, not tiled</h2>
+      <p>A line’s pattern says what it is: dashed for what is hidden, chain for an axis. The pattern is stretched to start and end on a dash, and a centre line is fitted so a dash, never a gap, lies on its middle. A hand’s dashes vary; the exact overlay’s do not.</p>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <div class="controls">
+          <div class="ctl"><label for="l-len">Length <output id="l-len-o"></output></label><input id="l-len" type="range" min="8" max="150" step="1" value="96"></div>
+          <div class="ctl"><label for="l-type">Line type</label><select id="l-type"><option value="dashed">Dashed (hidden)</option><option value="chain" selected>Chain (axis)</option><option value="phantom">Phantom</option><option value="dotted">Dotted</option></select></div>
+          <div class="ctl"><span style="font-size:0.82em">Fit</span><div class="seg" role="group" aria-label="Fit"><button type="button" id="l-end" aria-pressed="false">From one end</button><button type="button" id="l-mid" aria-pressed="true">Centred</button></div></div>
+        </div>
+        <figure class="sheet specimen" id="l-sheet" aria-label="The same line drawn by hand and exact"></figure>
+        <figure class="sheet chart" id="l-dash"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The calculation</h3>
+        <dl class="eqs">
+          <div class="eq"><dt><i>P</i> = Σ pattern·<i>d</i></dt><dd>One period, in multiples of the line width <i>d</i> (ISO 128): dash 12<i>d</i>, long dash 24<i>d</i>, gap 3<i>d</i>, dot 0.5<i>d</i>.</dd></div>
+          <div class="eq"><dt><i>n</i> = round((<i>L</i> − first)/<i>P</i>), even when centred</dt><dd>Whole periods; an even count makes the pattern symmetric, so the middle is a dash. Too short for two periods, a centre line comes out continuous, as ISO 128 allows for small circles.</dd></div>
+          <div class="eq"><dt><i>k</i> = (<i>L</i> − first)/(<i>n</i>·<i>P</i>)</dt><dd>Every element is stretched alike, so the line ends on a dash.</dd></div>
+          <div class="eq"><dt>hand: dash × (1 + N(0, 0.16)), gap × (1 + N(0, 0.28))</dt><dd>A hand lifts between dashes and its gaps wander more than its dashes. The critic wants a hand’s dash CV ≥ 0.05 and an exact line’s ≤ 0.08.</dd></div>
+        </dl>
+        <h3>These two lines</h3>
+        <dl class="readout" id="l-readout"></dl>
+        <p class="src">src/plate/linetype.ts · dashes() · ledger MA-14, MA-20</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bench" id="plate" aria-labelledby="plate-h">
+    <header>
+      <p class="eyebrow">6 · a whole plate</p>
+      <h2 id="plate-h">One plate, counted</h2>
+      <p>The benches above run one stroke at a time. A plate runs them all, hundreds of strokes deep, and then the critic reads the result. These numbers come from the engine drawing the plate again for this page.</p>
+      <div class="seg" role="group" aria-label="Plate"><button type="button" id="pl-3" aria-pressed="true">Plate III, the volute</button><button type="button" id="pl-4" aria-pressed="false">Plate IV, the axes</button></div>
+    </header>
+    <div class="grid">
+      <div class="col">
+        <figure class="sheet plate-view" id="pl-view" aria-label="The plate"></figure>
+        <figure class="sheet chart" id="pl-dip"></figure>
+        <figure class="sheet chart" id="pl-law"></figure>
+      </div>
+      <aside class="calc">
+        <h3>The plate</h3>
+        <dl class="readout" id="pl-readout"></dl>
+        <h3>Where the bend sets the speed</h3>
+        <dl class="readout" id="pl-roles"></dl>
+        <h3>The critic’s checks</h3>
+        <div class="checks" id="pl-checks"></div>
+        <div class="legend"><span><i style="background:var(--fg)"></i>pass</span><span><i style="border-style:dashed"></i>warn</span><span><i style="border-radius:50%"></i>for the founder’s eye</span><span><i style="background:var(--measure-line);border-color:var(--measure-line)"></i>fail</span></div>
+        <p class="src" id="pl-src"></p>
+      </aside>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built from packages/mai: every specimen on this page is drawn by the engine in your browser, with the same code and seeds as the plates. Charts plot the engine’s own per-sample numbers (<span class="mono">PlateSpec.trace</span>), not a re-derivation.</p>
+    <p>Rebuild with <span class="mono">pnpm --filter @kiruk/mai calculus</span>. Founder’s reference: <a href="https://calculus-of-interfaces.vercel.app/" rel="noopener" target="_blank">calculus-of-interfaces.vercel.app</a>.</p>
+  </footer>
+</div>
+<script>window.MAI_DATA = /*__DATA__*/null;</script>
+<script>/*__SCRIPT__*/</script>

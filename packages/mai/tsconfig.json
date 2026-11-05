@@ -4,7 +4,13 @@
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
     "types": ["node"],
-    "lib": ["ES2023", "DOM"]
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts", "plates/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts",
+    "test/**/*.ts",
+    "plates/**/*.ts",
+    "calculus/**/*.ts"
+  ]
 }
