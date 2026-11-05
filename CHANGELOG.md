@@ -10,6 +10,24 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ### Added
 
+- **mai round two (2026-11-05).** `@kiruk/mai` grows from drawing a plate to stating its size and place, and its skills reach anatomy depth.
+  - **Engine v0.2:** outer measurement (`extents`, `chainDims`, `neatline`, `angleDim`, `sweep`, `frame`, `redline`, `padding`, `centreLines`), ISO 128 line types, projection, point labels placed in Imhof's order, lettering markup and synthetic glyphs, the night sheet and style, parts (`Plate.part`) and stroke traces (`PlateSpec.trace`). Values letter in the type red (`rubric-type`), lines stay in `rubric-line`.
+  - **Critic v0.2:** 64 check ids (was about 40 documented), including `measure.outer`, `measure.tiers-order`, `line.hidden`, `type.value-ink`, `type.glyphs`, `style.starved` and `create.anatomy` with a parts table in every report.
+  - **Plates:** Plate IV, the three axes of the eye (night sheet), and Plate III measured from outside. Re-proofed after critic v0.2: III 74 checks, IV 55, each 0 fail and 1 warn (`type.phone`).
+  - **The calculus page:** the real engine bundled into one page; every bench redraws its specimen and charts its own per-sample numbers. It now follows the method of the founder's reference, the Calculus of Interfaces: the plate as `f(spec, seed)`, its decisions as visible steps, and a Limits section. Private artifact, republished.
+  - **Docs and skills:** all 12 parts references (`docs/parts/`), `checks.md` complete, `styles.md` (night), `evals.md`, `examples.md` (gold set, pending founder), new skill `/kiruk-mai-measure`; `/kiruk-mai`, `/kiruk-mai-proof` and `/kiruk-mai-style` rewritten to the anatomy (drafts shown to the founder before commit).
+  - **Tests:** 22 → 59, with 13 skill evals and a docs guard that keeps `checks.md` and the critic in step. Playwright is a dev dependency of `@kiruk/mai`.
+  - **Why:** the founder's sphere and FIG. 3 references asked for drawings that state their own size; diagrams and UI need outer measurement; the skills had to carry the rules with their whys.
+  - **Verified:** check-types clean; 59 tests pass; both proofs 0 fail; calculus page has no console errors and no sideways scroll at 390 px in both themes, every control moved.
+  - **Not done:** founder decisions (night sheet, phone layout, gold set, Plate III/IV questions); agent RED/GREEN runs of the skills; the WP-11 polish items.
+- **The hand: p5.brush colours each impression (2026-11-05).** `@kiruk/burin` gains a second hand beside the ink pen: p5.brush 3.0 (standalone, WebGL 2, no p5) paints red chalk, bistre wash, iron-gall quill, lead white and the iris in a worker, and burin lays the sheets into its TSL paper. Note: [ideas/studio-dawn/hand.md](ideas/studio-dawn/hand.md); proposal `adopt-p5-brush-hand` (validated `--strict`).
+  - **Fixed:** chalk, quill and iris all sampled the wash, because three.js shares one sampler between nodes whose textures share a uuid and every slot began on one placeholder. One placeholder per slot. Then the strengths raised while the bug hid them came back down (iris ×2.2 → ×0.85, chalk ×1.45 → ×1.1, k-hatch 205 → 185, k-sanguine 190 → 160).
+  - **Why:** an engraving was coloured by hand after the press, and no two impressions matched. The burin eye had the press and not the hand.
+  - **Verified:** each medium shown alone, live on WebGPU and headless on WebGL 2 at 1440×900 (dpr 1, 2) and 390×844; burin and studio typecheck; `next build` passes with p5.brush only in the worker and a lazy fallback chunk.
+  - **Not done:** grading the flat socket wash; WebGPU look after the re-tune on hardware; founder calls (hand on by default, on the new paper, kirukal strokes through `fromSamples`).
+- **Merged three parallel branches (2026-11-05)** into `feat/hand-drawn-design-system`: mai round two (`claude/determined-lamport-r0vfo2`), the ink opening (`claude/serene-faraday-lfagzl`) and the hand (`claude/intelligent-einstein-0hn5e2`). Both hands landed in `packages/burin/src/hand/`; their files are distinct, so `./hand` now exports the pen and the media side by side.
+  - **Why:** three sessions worked at once; the founder asked for one line of work.
+
 - **mai, the ink engine, and three skills to drive it (2026-11-05).** New package [`@kiruk/mai`](packages/mai/README.md). மை (mai) is Tamil for ink, and for the kohl that lines an eye. It turns intended geometry into a plate that looks generated and reads as a hand.
   - **The hand.** Speed slows into bends (the two-thirds power law). Tremor of 8–12 Hz shows only on slow strokes. Long fast runs drift. Strokes land with a hook, leave with a taper or a hook return, and lift at the hand's reach.
   - **The pen and the ink.** 11 instruments and 11 inks. Iron-gall, navy, rubric, Dawn Light and Dawn Departs mirror their `color.dawn.*` tokens; the rest are labelled working values.

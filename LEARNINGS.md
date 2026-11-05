@@ -113,3 +113,24 @@ Use this shape (markdown `##` heading + bullets):
 - **Guard (stronger than before):**
   - Stop a server by the port, not by its command line: find the pid with `ss -ltnp` and kill it.
   - After starting a server, read its log for `Ready`, not `EADDRINUSE`, before any check.
+
+## 2026-11-05 — Measure values lettered in the red the tokens keep for strokes
+
+- **Mistake:** mai lettered dimension values in `color.dawn.rubric-line`. `core.json` reserves that red for strokes, never text, and the values read 2.9–4.1:1 on Dawn Departs.
+- **Root cause:** the engine had one rubric ink. Its own source line noted a type red and never implemented it.
+- **Fix:** a `rubric-type` ink (#983A22), `InkSpec.typeInk` naming an ink's type twin, and `valueInk()` choosing the value's ink.
+- **Guard:** the critic's `type.value-ink` check and skill eval E-8.
+
+## 2026-11-05 — Docs promised what the code did not do
+
+- **Mistake:** `docs/anomalies.md` named a `style.starved` check and continuous short centre lines before either existed (MA-29, MA-30). The same pass found two more: `letter.ts` said an apostrophe after a letter reads as a prime (it does not), and `outer.ts` named an option `pxPerMm` that is `perMm`.
+- **Root cause:** docs and comments were written ahead of the code and never checked against it.
+- **Fix:** both features built; the comments corrected to what the code does.
+- **Guard:** `packages/mai/test/docs.test.ts` fails when a check id in `checks.md` or `anomalies.md` is missing from the critic, or a critic id is missing from `checks.md`. Parts references are written from the code, and disagreements recorded.
+
+## 2026-11-05 — Three media read one texture, and the strengths were tuned to the bug
+
+- **Mistake:** the hand's chalk, quill and iris showed the wash sheet. Their strengths were raised to compensate (iris ×2.2), and a "brown stain" was blamed on the bleed.
+- **Root cause:** in three.js r186 `TextureNode.getUniformHash()` is the texture's `uuid`, and `UniformNode.getSharedNode()` gives same-hash nodes one uniform owned by the first node built. All five slots started on one shared placeholder.
+- **Fix:** one placeholder texture per slot; strengths brought back down once each medium could be seen alone.
+- **Guard:** never share a placeholder texture between TSL texture nodes that will be swapped independently. Before tuning a layer's strength, show it alone (`__burin.handMedia`) and confirm it is the layer you think.
