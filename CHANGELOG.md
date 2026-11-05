@@ -35,6 +35,29 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
     - Red construction under a rubric overlay is still an open question (research 02 C1).
     - The folio's `ink/pen.ts` and burin's vector strokes are not migrated onto mai.
     - mai is not wired into an app.
+- **The ink opening (2026-11-05).** On a first visit to `apps/kiruk-studio`, a hand now draws the engraved eye in ink, and then the eye opens. This replaces 1970's tube and the live 3D eye in a 1-bit look on black. The loader's own screen-reader line already promised _"a pen draws an eye on paper, then the eye opens"_.
+  - **The eye as strokes.** `@kiruk/burin` gains `./hand`. It is the third writing of the same eye: rig.ts in numbers, shader.ts as GPU fields, and now strokes in a hand's order.
+    - It uses the same curves, line families and tones as the plate. A line swells in shade and breaks into dots and flicks in light.
+    - The order is the plate's own: I construction in sanguine (① – ⑧), II contour, III hatching, IV cross-hatching and hair, V the pupil inked round the kiruk star.
+    - The pen lays each stroke at a hand's pace. Fresh iron-gall goes down blue-black and browns as it dries.
+  - **The loading animation.** The drawing wakes: its lids fall, then lift, catch and open like a waking eye. It then follows the pointer, makes saccades and blinks, while the page underneath finishes loading. On the landing, that means until the engine has printed the plate.
+  - **The way in.** _Click the eye · enter_ appears once the page is ready. On the landing, the drawing settles onto the plate's own eye as the sheet lifts.
+  - **How it runs.**
+    - It draws on the visitor's paper (Dawn Light or Dawn Departs).
+    - It runs in a worker on OffscreenCanvas, falling back to the main thread, and needs no WebGL.
+    - A press, wheel or key hurries the hand. Reduced motion shows the finished drawing, still. Phones get the tap fingertip.
+    - The loader's pointer events no longer reach the hidden page under it.
+
+  Concept, sequence and open questions: [`ideas/studio-dawn/ink-opening.md`](ideas/studio-dawn/ink-opening.md).
+  - **Why:** The founder asked for a loading page with a complex, medieval-style eye built from the existing eye work, drawn as if in ink before the loading animation starts.
+  - **Verified:**
+    - Burin and the studio typecheck, and `next build` passes. The shared layout chunk dropped from 30.3 kB to 21.2 kB, and route sizes are unchanged.
+    - Production build in headless Chromium, with no console errors: the phases with WebGL on (first stroke 1.4 s, the wake and hint 6.8 s, awake 8.7 s), a phone tap, reduced motion, hurrying, Enter, the new paper, a resize mid-drawing, `/work`, and a same-session refresh skipping the loader.
+    - The pen costs about 3 ms a frame in software raster, in its worker.
+  - **Not done:**
+    - The hand-off onto the live GPU plate is unverified. This container renders WebGL in software, and once revealed the landing stalls there in native code. The original loader never reached its eye in this container at all. It needs a hardware check.
+    - The tube and live 3D era eye files are no longer imported by the studio but are still in the tree, waiting on the founder.
+    - The founder has not reviewed the pace, the corner words, or open versus shut.
 
 - **The plate shows its making (2026-11-04).** Eight old pages, read for what each teaches, gave the eye plate on `apps/kiruk-studio` `/` five new parts:
   - **Make it again (C).** The plate replays: the construction first, then each pass cut as a front across the eye, while the strip underlines the study being cut. The engine's plate passes are now a uniform (`make`).
@@ -159,6 +182,34 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
   - **Why:** Founder wants the ideas kept somewhere durable to build later. Parked in `ideas/`, not `kiruk-ism/`, because ISM folders spawn only via `/kiruk-ism-new` and products need a registry proposal.
 
 ### Changed
+
+- **The ink opening's eye, redrawn (2026-11-05).** The founder set the first drawn eye beside three engravings (an anatomical plate of the eye's region, Fornasetti's eye, a vintage cross-hatched eye) and asked for more art in every part, the outer part, and a better skill for strokes in general. The loader's sequence and code are unchanged; the drawing and its pen are new.
+  - **The pen's vocabulary** (`packages/burin/src/hand/pen.ts`, any subject can use it):
+    - A line's width is its tone: a continuous hairline in the light, swelling in the shade. It breaks into flicks only at the faintest. The light tones no longer read as a halftone of dashes.
+    - Black is crossed, not flooded. One family never merges into solid black; a second family crossing it makes the dark.
+    - Every run tapers in and out, and each line has its own weight and a slow swell.
+    - Stipple is one stroke laid in a scattered order. Where lines crowd, only every second or fourth is cut.
+  - **The outer part.** The socket is one family of rings round the eye, nested between the lids' fold and the orbit's rim. The rings relax the corners with distance, so there is no seam, no kink and no oval vignette. They fray out inside the loader's frame.
+  - **Light.** The socket is a height field lit from the upper left, with the shade held to a mid tone. Designed darks sit on top: under the brow, the hollow by the nose, the outer corner, the tear trough. Spiral cross-hatching goes only where the form turns from the light.
+  - **Each part.**
+    - The brow is long tapered hairs in two layers, over a lighter ground.
+    - The lashes lean, curl and clump.
+    - The iris has straight fibres, a ragged collarette, a dark limbal band and crypts.
+    - The inner corner has a caruncle, the plica and stipple.
+    - Veins keep their heading.
+    - The star's needles never go finer than 2.2 hairlines.
+  - **The live eye.** The lids' shadow on the white is now lines fixed to the face, crossing the globe's arcs, so it stays put while the gaze turns the globe. The white is cut at the plica, so the caruncle stays in front.
+
+  Method and numbers: [`ideas/studio-dawn/ink-strokes.md`](ideas/studio-dawn/ink-strokes.md). Sequence: [`ideas/studio-dawn/ink-opening.md`](ideas/studio-dawn/ink-opening.md).
+  - **Why:** The founder asked for the drawing to carry the art of real engravings, including the shadow strokes, the light strokes and the outer part, while the logo mark stays in the pupil.
+  - **Verified:**
+    - Burin and the studio typecheck, Biome is clean, and `next build` passes.
+    - Production build in headless Chromium, with no console errors: first stroke 1.5 s, wake 7.0 s, awake 8.8 s with WebGL on. A click and a tap go in, a same-session refresh skips the loader, reduced motion works, and the new paper with a hurried hand and Enter works.
+    - Gaze to the four ends, a half-blink and a closed lid in the live eye.
+    - Against the first drawing: generation is the same (0.18 s at the desktop size), and the pen costs the same per frame (3.1 against 3.3 ms). The whole drawing rasters faster (0.8 against 1.2 s). The drawing's chunk grew from 28 kB to 36 kB.
+  - **Not done:**
+    - The landing's GPU plate (`shader.ts`) still cuts the older eye, and the hand-off settles the redrawn eye onto it. Porting the look is a founder decision.
+    - The hand-off is still unverified on real hardware.
 
 - **Studio site reset to a bare shell (2026-10-17).** `apps/kiruk-web` lost every component, all of `global.css`, all five fonts, the grease-pencil landing and its dev desk, the scribble-writer integration, the about/devlog pages, and their dependencies (three, R3F, drei, gsap, motion, perfect-freehand, React, Tailwind, MDX, sitemap, design-system, zod, sharp). What remains is one plain-text placeholder page with the logogram and contact links, the logo SVGs, the base/site helpers, the Velite content config and `vercel.json`. Everything old is recoverable from the snapshot commit `a201273`; the cut is `3cce46a`. The same-day `Logogram.astro` + `SketchNav` entry under Added went with it, but the logo SVGs stay. ROADMAP Phase 3, TASKS and FOUNDER_DECISIONS (B3, B4, B5, W1/W2/W3, W5 superseded) are updated to match.
   - **Why:** The founder did not want the 3D "make my own style" landing, and a fully sketched UI was too hard for people to read. The studio restarts from scratch around **dawn** (Arun means dawn): light sky over dark earth, a ray of light at the moments work is shown, a clean generated base layer with the founder's hand-sketch layer on top, and TSL ink bleed as its own workstream. Settled over a four-round grilling session; the stack is re-chosen only after ideation, from real needs.

@@ -6,14 +6,17 @@ Loose on purpose. This is the kirukal layer for the studio rebuild: notes, sketc
 
 ## Explorations
 
-| Note                                       | Question it holds                                            |
-| ------------------------------------------ | ------------------------------------------------------------ |
-| [dawn.md](./dawn.md)                       | What dawn looks like, and the loop (night → dawn → day)      |
-| [ink-bleed.md](./ink-bleed.md)             | How the ink bleed comes — the TSL watercolor workstream      |
-| [sketch-layer.md](./sketch-layer.md)       | How the hand sketches come on top of the base layer          |
-| [eye-link.md](./eye-link.md)               | How it all links with the eye                                |
-| [link-everything.md](./link-everything.md) | How dawn, ink, sketch, eye and the work link with each other |
-| [both-sides.md](./both-sides.md)           | Parked: engineering and design showing on one page at once   |
+| Note                                       | Question it holds                                             |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| [dawn.md](./dawn.md)                       | What dawn looks like, and the loop (night → dawn → day)       |
+| [ink-bleed.md](./ink-bleed.md)             | How the ink bleed comes — the TSL watercolor workstream       |
+| [sketch-layer.md](./sketch-layer.md)       | How the hand sketches come on top of the base layer           |
+| [eye-link.md](./eye-link.md)               | How it all links with the eye                                 |
+| [eye.md](./eye.md)                         | The engraved eye plate, cut by the burin engine (the landing) |
+| [ink-opening.md](./ink-opening.md)         | The first visit: a hand draws the eye in ink, then it opens   |
+| [ink-strokes.md](./ink-strokes.md)         | How the hand lays a line: the pen's vocabulary, part by part  |
+| [link-everything.md](./link-everything.md) | How dawn, ink, sketch, eye and the work link with each other  |
+| [both-sides.md](./both-sides.md)           | Parked: engineering and design showing on one page at once    |
 
 ## Folders
 

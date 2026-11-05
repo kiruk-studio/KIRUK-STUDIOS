@@ -67,3 +67,49 @@ Use this shape (markdown `##` heading + bullets):
 - **Root cause:** The critic measures tone, coverage, slope and spacing, not the shape a short stroke makes. Numbers are necessary, not sufficient, as the codex learned with contrast (KC-8).
 - **Fix:** Narrow bands are now shaded with lines that follow the form (`bandLine`, with hysteresis and minimum runs), and the plate was re-proofed. Ledger row MA-5 in `packages/mai/docs/ledger.md`.
 - **Guard:** `/kiruk-mai-proof` makes the 4× look mandatory, with seven written questions (ends, joins, edges, rhythm, short strokes, blots, dry media) before any SHOW verdict. `/kiruk-mai` has the rule "narrow forms follow the form". A second miss of this class becomes a critic check on stroke aspect ratio.
+
+## 2026-11-05 — A page under an overlay still answered the visitor's hand
+
+- **Mistake:** While the first-visit loader covered the studio landing, the landing kept reacting to the visitor's pointer, on a page nobody could see.
+  - Every move over the loader turned the hidden plate's eye and re-cut its ink pass.
+  - A press on the loader's eye made the hidden eye blink.
+  - A drag would have started its wet-paper simulation, which runs for 40 s.
+- **Root cause:** `EyeEngine` listens on `window` (pointermove, pointerdown, pointerup). `inert` and `visibility: hidden` on the page's wrapper stop focus and hit-testing inside it. They do not stop listeners on `window`, so the loader's own events bubbled through to them. The tube loader before it had the same leak.
+- **Fix:** The ink loader's pointer handlers call `stopPropagation()`. React's handlers run at the document root, so the native event never reaches `window`.
+  - Measured on the production build: 15 ink passes over 2.5 s of sweeping the loader, which is the hidden eye's idle saccades only.
+- **Guard:** An overlay that owns the screen stops its pointer events from bubbling. Before shipping a new overlay over the landing, sweep the pointer over it and compare `window.__burin.debug().ink` before and after.
+
+## 2026-11-05 — The cloud container cannot prove a WebGL hand-off
+
+- **Mistake (near-miss):** Hours went into a stall that appeared only after the loader's way in. Bisecting found it was the landing's WebGL blocking the main thread in native code under SwiftShader, not the loader.
+  - Along the way, a production server left running on the test port served stale chunks against a fresh build, and one run read as a regression.
+- **Root cause:** The container has no GPU. WebGL runs in SwiftShader and the headless shell composites in software.
+  - The visible landing costs about 300 ms a frame there, and some reveal and teardown sequences block for minutes.
+  - The original tube loader never reached its own eye in that container at all.
+- **Fix:**
+  - Loader logic was verified with `--disable-3d-apis` (the landing falls back to its poster) and on routes without the plate.
+  - Timing was verified with WebGL on, up to the way in.
+  - The hand-off onto the live plate is left for a hardware check.
+- **Guard:**
+  - In the cloud container, test overlay and loader logic with `--disable-3d-apis`.
+  - Treat a stall that appears only with WebGL as unproven until it is seen on hardware (the founder's `burin-check`).
+  - Before trusting a result from a local server, confirm which process owns the port: check `NEXT_DIST_DIR` in `/proc/<pid>/environ`, and restart it after every build.
+
+## 2026-11-05 — A drawing outgrew the frame that holds it
+
+- **Mistake (caught before commit):** The redrawn eye's socket rings reached past ±1.78 eye units, but the loader's canvases stop at ±1.78 (`INK_BOX` in `apps/kiruk-studio/.../loader/ink/frame.ts`). At the desktop size their frayed edge was cut into a straight vertical line on both sides.
+- **Root cause:** The drawing (`packages/burin`) and the box that holds it (`apps/kiruk-studio`) live in different packages. The art was tuned in a harness with a larger canvas, where nothing was cut.
+- **Fix:** The socket's tone fades out before ±1.72 across and 1.56 above (`socketTone`, "the sheet"), and the fade is ragged with the same noise as the fray.
+- **Guard:**
+  - The art harness outlines the loader's box over the drawing.
+  - `ink-strokes.md` states the drawing's extent next to the box's.
+  - When a drawing grows, check it against the frame in the real loader, not only in the harness.
+
+## 2026-11-05 — A stale server held the test port again
+
+- **Mistake:** After a rebuild, a check ran against the previous production server. It still held port 3200, and the new server had failed with `EADDRINUSE`. The stale pages asked for chunks the new build had replaced, the loader never mounted, and the run read as a regression for a minute. This is the same failure class as the entry above, "The cloud container cannot prove a WebGL hand-off".
+- **Root cause:** The stop step was `pkill -f "next start -p 3200"`, but a running Next server retitles its process `next-server (v15…)`, so the pattern matched nothing. The new server's log, which said `EADDRINUSE`, was not read before the check ran.
+- **Fix:** The old server was stopped by its pid, the new one was started, and its log was read (`Ready`) before the checks were run again. They passed.
+- **Guard (stronger than before):**
+  - Stop a server by the port, not by its command line: find the pid with `ss -ltnp` and kill it.
+  - After starting a server, read its log for `Ready`, not `EADDRINUSE`, before any check.

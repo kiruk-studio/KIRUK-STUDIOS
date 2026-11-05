@@ -100,6 +100,8 @@ Until then, the private folder is the source and this repo is the reader.
 
 `apps/kiruk-studio` is the first public use of the private eye. It copies the eye machine and the opening, shows one manuscript look, and reveals one sheet after the iris. Era homepages and personal copy stay in kiruk.in. `apps/kiruk-web` is still the Astro placeholder until this page is the one on the studio domain.
 
+Since 2026-11-05 the studio's opening is its own: the ink opening draws the burin eye stroke by stroke and then wakes it ([`ideas/studio-dawn/ink-opening.md`](../studio-dawn/ink-opening.md)). The copied tube and live era eye are no longer imported by the studio's loader. Their files stay in the tree until the founder decides whether to keep them.
+
 ## Order of work
 
 1. Keep building the eye and the pen in kiruk.in. Use the skills there.
