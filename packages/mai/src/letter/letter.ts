@@ -190,7 +190,7 @@ export function glyph(font: HersheyFont, ch: string): Glyph {
 /** Width of a line of lettering at a cap height (mm), before the hand's variation. */
 /**
  * Lettering markup: `_x` or `_{xy}` sets a subscript, `^x` or `^{xy}` a superscript
- * (0.68 of the cap height); an apostrophe after a letter reads as a prime (A' → A′).
+ * (0.68 of the cap height). A prime is typed as ′ itself: an apostrophe stays an apostrophe (A' is not A′).
  */
 export interface Glyphed {
   ch: string;

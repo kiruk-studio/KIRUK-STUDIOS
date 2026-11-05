@@ -2,7 +2,7 @@
 
 One reference per part of the engine, in the order a stroke passes through them. Each says what the part models, the calculation (with the numbers the code uses), how to drive it, what the critic reads, and the misses that shaped it. The skills route here; load a part only when the plate needs it.
 
-The [calculus page](../../calculus/template.html) runs five of these parts live: change a control and the engine redraws its specimen while charting its own per-sample numbers. Build it with `pnpm --filter @kiruk/mai calculus`.
+The [calculus page](../../calculus/template.html) runs five of these parts live: change a control and the engine redraws its specimen while charting its own per-sample numbers. Build it with `pnpm --filter @kiruk/mai calculus`. The page follows the method of the founder’s reference, [the Calculus of Interfaces](https://calculus-of-interfaces.vercel.app/): the plate read as one function of its spec and seed, its decisions shown as steps, its limits stated.
 
 | #   | Part                           | Module                             | What it decides                                                     | Calculus bench |
 | --- | ------------------------------ | ---------------------------------- | ------------------------------------------------------------------- | -------------- |

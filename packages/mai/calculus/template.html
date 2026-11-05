@@ -371,9 +371,25 @@
     </div>
   </section>
 
+  <section class="bench" id="method" aria-labelledby="method-h">
+    <header>
+      <p class="eyebrow">7 · how the function is built</p>
+      <h2 id="method-h">A plate is a function of its spec and its seed</h2>
+      <p>Like the Calculus of Interfaces, which reads a page as <span class="mono">UI = f(props)</span>, this page reads a plate as <span class="mono">plate = f(spec, seed)</span>. The same spec and seed give the same marks, so every chart above is the function evaluated, not a sketch of it. Each bench is one part of <span class="mono">f</span>: the hand’s speed from the bend, the pen’s reservoir from the length laid, the tone from the light, a value from the ink between two points.</p>
+      <p>Where the function decides rather than varies, the decision is a threshold you can see: tone above 0.20 is hatched and deepened above 0.50 and 0.74; an empty reservoir forces a dip; an extension line shorter than 0.6 mm is not drawn. Move a control across one of those and the chart steps.</p>
+      <h3>Limits</h3>
+      <ul>
+        <li>The numbers are real, not illustrative: they are the engine’s own per-sample trace. But they are one run at one seed; another seed moves every tremor.</li>
+        <li>The benches run one stroke at a time; a whole plate is only counted (section 6), not charted stroke by stroke.</li>
+        <li>Nothing here is differentiated or bounded. The thresholds are hard steps, and no chart claims the plate is right at sizes it was not drawn at.</li>
+        <li>Label contrast and the critic’s pixel checks read a raster of the plate; this page shows their results, not the raster.</li>
+      </ul>
+    </header>
+  </section>
+
   <footer>
     <p>Built from packages/mai: every specimen on this page is drawn by the engine in your browser, with the same code and seeds as the plates. Charts plot the engine’s own per-sample numbers (<span class="mono">PlateSpec.trace</span>), not a re-derivation.</p>
-    <p>Rebuild with <span class="mono">pnpm --filter @kiruk/mai calculus</span>. Founder’s reference: <a href="https://calculus-of-interfaces.vercel.app/" rel="noopener" target="_blank">calculus-of-interfaces.vercel.app</a>.</p>
+    <p>Rebuild with <span class="mono">pnpm --filter @kiruk/mai calculus</span>. Its method follows the founder’s reference, <a href="https://calculus-of-interfaces.vercel.app/" rel="noopener" target="_blank">the Calculus of Interfaces</a> (Shu Ding, Vercel Labs): the artifact read as one pure function, its decisions named as steps, and its limits stated.</p>
   </footer>
 </div>
 <script>window.MAI_DATA = /*__DATA__*/null;</script>

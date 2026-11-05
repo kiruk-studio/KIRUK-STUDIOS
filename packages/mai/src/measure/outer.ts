@@ -607,7 +607,7 @@ export function frame(
 
 /**
  * A redline: the gap between two boxes, measured edge to edge where they face each other,
- * as a design review shows it (value in the plate's unit, or `px` with `pxPerMm`).
+ * as a design review shows it (value in the plate's unit, or `px` with `perMm`).
  */
 export function redline(
   plate: Plate,
