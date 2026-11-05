@@ -9,7 +9,7 @@
       "dimension": "lighting",
       "title": "Every tone is tied to a form under the one light",
       "status": "pass",
-      "value": "0 of 149 hatch strokes without a form",
+      "value": "0 of 128 hatch strokes without a form",
       "target": "0",
       "why": "One light per plate, declared (research 02 §11). Tone not tied to a form cannot be proved against it.",
       "fix": "Lay tone with hatch({ form }) so each stroke records its form and target tone."
@@ -76,7 +76,7 @@
       "dimension": "lighting",
       "title": "Ink follows the light on “shaft”",
       "status": "pass",
-      "value": "ρ = 0.89 (tone vs ink, 272 cells)",
+      "value": "ρ = 0.72 (tone vs ink, 220 cells)",
       "target": "ρ ≥ 0.6",
       "why": "Darker target tone must carry more ink everywhere on the form; Leonardo ¶555: shadow first on the part away from the light.",
       "fix": "Check the form’s normals and the plate light; do not hand-place hatching that the light does not ask for."
@@ -86,7 +86,7 @@
       "dimension": "lighting",
       "title": "The lit side of “shaft” stays paper",
       "status": "pass",
-      "value": "lit 0.002 vs dark 0.462 ink/mm²",
+      "value": "lit 0.01 vs dark 0.321 ink/mm²",
       "target": "lit ≤ 25% of dark",
       "why": "Where the light falls the paper is the light; ink there flattens the form."
     },
@@ -133,7 +133,81 @@
       "dimension": "measurement",
       "title": "dim-height stands clear of the drawing",
       "status": "pass",
-      "value": "45.52 mm from the feature",
+      "value": "43.52 mm from the feature",
+      "target": "≥ 6 mm (first tier 10–12 mm)",
+      "why": "Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart."
+    },
+    {
+      "id": "measure.true:capital-bottom",
+      "dimension": "measurement",
+      "title": "Dimension capital-bottom says what the ink measures",
+      "status": "pass",
+      "value": "label “329 mm”, ink 328.683 mm",
+      "target": "|Δ| ≤ 1.643",
+      "why": "Nothing on a plate is invented (codex step 2); a value is measured from the drawing, never typed.",
+      "fix": "Let dimension() compute the value, or correct the geometry, not the label."
+    },
+    {
+      "id": "measure.extension:capital-bottom",
+      "dimension": "measurement",
+      "title": "Extension lines of capital-bottom: gap and overshoot",
+      "status": "pass",
+      "value": "gap 1.5 mm, overshoot 2.6 mm",
+      "target": "gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm",
+      "why": "ISO 129-1 / ASME as cited in research 03 §2.2."
+    },
+    {
+      "id": "measure.on-ink:capital-bottom",
+      "dimension": "measurement",
+      "title": "capital-bottom measures the visible ink",
+      "status": "pass",
+      "value": "both ends on ink",
+      "target": "both ends within 0.8 mm of ink",
+      "why": "Measure to the visible ink or a stated datum, never to the bounding box (research 03 R9)."
+    },
+    {
+      "id": "measure.tier:capital-bottom",
+      "dimension": "measurement",
+      "title": "capital-bottom stands clear of the drawing",
+      "status": "pass",
+      "value": "107.69 mm from the feature",
+      "target": "≥ 6 mm (first tier 10–12 mm)",
+      "why": "Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart."
+    },
+    {
+      "id": "measure.true:capital-right",
+      "dimension": "measurement",
+      "title": "Dimension capital-right says what the ink measures",
+      "status": "pass",
+      "value": "label “281 mm”, ink 280.578 mm",
+      "target": "|Δ| ≤ 1.403",
+      "why": "Nothing on a plate is invented (codex step 2); a value is measured from the drawing, never typed.",
+      "fix": "Let dimension() compute the value, or correct the geometry, not the label."
+    },
+    {
+      "id": "measure.extension:capital-right",
+      "dimension": "measurement",
+      "title": "Extension lines of capital-right: gap and overshoot",
+      "status": "pass",
+      "value": "gap 1.5 mm, overshoot 2.6 mm",
+      "target": "gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm",
+      "why": "ISO 129-1 / ASME as cited in research 03 §2.2."
+    },
+    {
+      "id": "measure.on-ink:capital-right",
+      "dimension": "measurement",
+      "title": "capital-right measures the visible ink",
+      "status": "pass",
+      "value": "both ends on ink",
+      "target": "both ends within 0.8 mm of ink",
+      "why": "Measure to the visible ink or a stated datum, never to the bounding box (research 03 R9)."
+    },
+    {
+      "id": "measure.tier:capital-right",
+      "dimension": "measurement",
+      "title": "capital-right stands clear of the drawing",
+      "status": "pass",
+      "value": "13.4 mm from the feature",
       "target": "≥ 6 mm (first tier 10–12 mm)",
       "why": "Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart."
     },
@@ -197,7 +271,7 @@
       "dimension": "style",
       "title": "Line width breathes (not a plotter, not chaos)",
       "status": "pass",
-      "value": "median width CV 0.2 over 184 strokes",
+      "value": "median width CV 0.22 over 160 strokes",
       "target": "0.12–0.7 (architect)",
       "why": "Taper and variable weight are the defining marks of the hand (research 01 §1); constant width is the plotter tell."
     },
@@ -260,7 +334,7 @@
       "dimension": "style",
       "title": "Outline > interior > construction",
       "status": "pass",
-      "value": "contour 0.288 · hatch 0.214 · construction 0.062 (width × density)",
+      "value": "contour 0.288 · hatch 0.201 · construction 0.061 (width × density)",
       "target": "decreasing",
       "why": "Line weight hierarchy (research 02 R14)."
     },
@@ -269,7 +343,7 @@
       "dimension": "style",
       "title": "A fresh dip shows, sometimes",
       "status": "pass",
-      "value": "60% of dipped strokes pool",
+      "value": "70% of dipped strokes pool",
       "target": "10%–80%",
       "why": "The dip rhythm is the clock of a pen drawing: dark after the dip, paler as it drains."
     },
@@ -278,7 +352,7 @@
       "dimension": "connections",
       "title": "Contours land where they are meant to (near, not on)",
       "status": "pass",
-      "value": "median miss 0.074 mm, worst 0.67 mm",
+      "value": "median miss 0.068 mm, worst 0.67 mm",
       "target": "median 0.02–0.35, worst ≤ 1.2 mm",
       "why": "A hand lands a joined line a hair short or a hair past; exactly on is a plotter, far off is a broken drawing."
     },
@@ -315,7 +389,7 @@
       "dimension": "typography",
       "title": "Lettering holds 11 px on a 390 px phone",
       "status": "warn",
-      "value": "38 of 38 fall under 11 px (sheet shown at 1.39 px/mm)",
+      "value": "46 of 46 fall under 11 px (sheet shown at 1.39 px/mm)",
       "target": "0, or a phone layout that moves them out",
       "why": "Anything under ~11 px at phone width goes outside on a leader, per breakpoint (research 02 C2)."
     },
@@ -324,7 +398,7 @@
       "dimension": "typography",
       "title": "No two labels touch",
       "status": "pass",
-      "value": "38 labels, none overlapping",
+      "value": "46 labels, none overlapping",
       "target": "0",
       "why": "Each letter in clear space (research 02 R5)."
     },
@@ -360,7 +434,7 @@
       "dimension": "typography",
       "title": "One key system, few labelled parts",
       "status": "pass",
-      "value": "4 keys (4 letters, 0 numerals)",
+      "value": "4 named parts (4 letters, 0 numerals) on 4 key labels",
       "target": "≤ 7, letters or numerals, never mixed",
       "why": "Capitals for up to ~8 parts, numerals beyond, never mixed (research 02 R4); at most 7 labelled items (03 R12)."
     },
@@ -369,16 +443,36 @@
       "dimension": "typography",
       "title": "Lettering reads against the paper",
       "status": "pass",
-      "value": "0 under 4.5:1 on real pixels",
+      "value": "0 under 4.5:1 on real pixels (lowest 7.89:1, fig2-c3-label)",
       "target": "≥ 4.5:1",
-      "why": "WCAG 1.4.3; measured on the rendered pixels when a proof is run (codex KC-8: estimates lied once)."
+      "why": "WCAG 1.4.3, read on the rendered pixels when a proof is run (codex KC-8: estimates lied once), at 12 px/mm where a lettering stroke is three pixels wide, so the reading is the ink as laid and not the screen’s antialiasing."
+    },
+    {
+      "id": "type.glyphs",
+      "dimension": "typography",
+      "title": "Every character is drawn",
+      "status": "pass",
+      "value": "every drawn character has a glyph",
+      "target": "0 blank characters",
+      "why": "A character with no glyph comes out as a space: “41°” read “41” before the degree sign was drawn. A silent blank changes what a value says.",
+      "fix": "Add the glyph to EXTRA in letter/letter.ts (in Hershey units), or write the character the Hershey subset has."
+    },
+    {
+      "id": "type.blots",
+      "dimension": "typography",
+      "title": "A blot never fills a letter",
+      "status": "pass",
+      "value": "94 letter strokes, every pool under a third of its cap",
+      "target": "pool diameter ≤ 0.32 × cap height",
+      "why": "A fresh dip may blot the first letter, but a blot that fills a counter turns a 4 into a 9: a value nobody can trust (plate III, the 345 mm).",
+      "fix": "pools on letters are capped at 0.7 × the line width in ink/render.ts; check the renderer was not bypassed"
     },
     {
       "id": "bleed.feather",
       "dimension": "bleed",
       "title": "Ink wicks into the sheet as much as this paper allows",
       "status": "pass",
-      "value": "23.48 feathers per 100 mm, median 0.075 mm (sizing 0.6)",
+      "value": "22.53 feathers per 100 mm, median 0.077 mm (sizing 0.6)",
       "target": "≤ 30 per 100 mm on sized paper; length ≤ 0.35 mm",
       "why": "Feathering follows fibres and sizing; it stays local (founder, ideas/studio-dawn/ink-bleed.md: only the nearby area)."
     },
@@ -431,8 +525,8 @@
       "id": "layout.rise",
       "dimension": "layout",
       "title": "The weight of the ink sits at or above the middle",
-      "status": "warn",
-      "value": "ink centroid at 53% of the height",
+      "status": "pass",
+      "value": "ink centroid at 51% of the height",
       "target": "≤ 52%",
       "why": "The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid."
     },
@@ -450,7 +544,7 @@
       "dimension": "layout",
       "title": "White space is reserved on purpose",
       "status": "pass",
-      "value": "57% of the sheet is paper",
+      "value": "45% of the sheet is paper",
       "target": "30%–85%",
       "why": "Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5)."
     },
@@ -486,7 +580,7 @@
       "dimension": "creativity",
       "title": "Finish is selective; the process shows",
       "status": "pass",
-      "value": "6 of 6 forms toned; 56% of the construction stands bare",
+      "value": "6 of 6 forms toned; 54% of the construction stands bare",
       "target": "some parts left at line or construction; construction visible",
       "why": "Everything finished to the same degree is a named fake (research 01 §5, ¶579); kiruk shows its process (CLAUDE.md §2)."
     },
@@ -516,6 +610,128 @@
       "value": "open",
       "target": "founder’s verdict",
       "why": "Non-negotiables 1–3 (no trend-chasing, no boring work, no shallow branding) cannot be computed. Look at the 4× crops first, then the whole sheet at phone width."
+    },
+    {
+      "id": "measure.outer",
+      "dimension": "measurement",
+      "title": "The figure states its overall size",
+      "status": "pass",
+      "value": "2 overall dimensions, 1 graduated neatlines",
+      "target": "overall extents in the outer tier, or a graduated neatline",
+      "why": "A reader must be able to measure the whole, not only its parts (ISO 129; research 03 §2.2, R14).",
+      "fix": "extents(plate, marks) or neatline(plate, rect, { every, origin })"
+    },
+    {
+      "id": "measure.tiers-order",
+      "dimension": "measurement",
+      "title": "Smaller dimensions inside, the overall outside",
+      "status": "pass",
+      "value": "2 overall dimensions outermost",
+      "target": "every overall dimension in the outermost tier on its side",
+      "why": "ISO 129 / research 03 §2.2: smaller dimensions inside, larger outside, so lines do not cross."
+    },
+    {
+      "id": "measure.tier-gap",
+      "dimension": "measurement",
+      "title": "Parallel tiers stand a tier apart",
+      "status": "pass",
+      "value": "every overlapping pair ≥ 6 mm apart",
+      "target": "≥ 6 mm between overlapping parallel dimension lines (fail under 4 mm)",
+      "why": "Research 03 §2.2: tiers 6–10 mm apart. Closer, the values of two tiers sit side by side and read as one (plate III: 281 mm against 250 mm, 2 mm apart).",
+      "fix": "extents() steps one tier gap beyond the dimensions already on its side; set inner tiers further in."
+    },
+    {
+      "id": "measure.neatline:fig1-neat",
+      "dimension": "measurement",
+      "title": "Neatline fig1-neat is graduated true and frames its figure",
+      "status": "pass",
+      "value": "20 mm per step at 4 mm/mm; 0 ink strokes cross it",
+      "target": "the plate scale; no ink across the frame",
+      "why": "A graduated frame is a ruler laid round the figure: its steps must be the plate’s unit at the plate’s scale."
+    },
+    {
+      "id": "type.near",
+      "dimension": "typography",
+      "title": "A label sits near its point, or a leader joins them",
+      "status": "pass",
+      "value": "all within 8 mm or led",
+      "target": "≤ 8 mm, or a leader",
+      "why": "Labels sit within one leader length of their referent (research 03 R10)."
+    },
+    {
+      "id": "create.anatomy",
+      "dimension": "creativity",
+      "title": "The subject is listed part by part, and every part is complete",
+      "status": "pass",
+      "value": "9 parts, 0 incomplete",
+      "target": "every part drawn, keyed and noted, finished and measured as declared",
+      "why": "List the parts before drawing; check each on its own (the anatomy method: size, truth, the object, its parts, verify).",
+      "fix": "plate.part({ id, name, key, finish, form, measured, generatedBy }) for each part"
+    }
+  ],
+  "anatomy": [
+    {
+      "id": "abacus",
+      "name": "abacus",
+      "finish": "line",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "volute-outer",
+      "name": "the scroll and the canalis",
+      "finish": "line",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "canalis",
+      "name": "the canalis, shaded",
+      "finish": "tone",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "volute-eye",
+      "name": "the eye (oculus)",
+      "finish": "line",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "volute-cathetus",
+      "name": "the cathetus",
+      "finish": "construction",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "volute-fillet",
+      "name": "the fillet",
+      "finish": "line",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "egg",
+      "name": "echinus, egg and dart",
+      "finish": "tone",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "shaft",
+      "name": "the fluted shaft",
+      "finish": "tone",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "fig2",
+      "name": "Fig. 2, the eye ×6",
+      "finish": "line",
+      "ok": true,
+      "issues": []
     }
   ],
   "counts": {
@@ -526,7 +742,7 @@
       "human": 0
     },
     "measurement": {
-      "pass": 10,
+      "pass": 22,
       "warn": 0,
       "fail": 0,
       "human": 0
@@ -544,7 +760,7 @@
       "human": 0
     },
     "typography": {
-      "pass": 7,
+      "pass": 10,
       "warn": 1,
       "fail": 0,
       "human": 0
@@ -556,26 +772,26 @@
       "human": 0
     },
     "layout": {
-      "pass": 3,
-      "warn": 1,
+      "pass": 4,
+      "warn": 0,
       "fail": 0,
       "human": 0
     },
     "creativity": {
-      "pass": 6,
+      "pass": 7,
       "warn": 0,
       "fail": 0,
       "human": 1
     }
   },
   "stats": {
-    "marks": 346,
-    "inkStrokes": 184,
+    "marks": 500,
+    "inkStrokes": 160,
     "hatchFields": 6,
-    "texts": 38,
-    "dimensions": 2,
+    "texts": 46,
+    "dimensions": 4,
     "constructions": 43,
     "forms": 6,
-    "minHatchGap": 0.14604722359247546
+    "minHatchGap": 0.1792131945042783
   }
 }

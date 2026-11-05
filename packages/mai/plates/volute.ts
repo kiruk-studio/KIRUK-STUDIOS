@@ -33,6 +33,7 @@ import { contour, hatch } from '../src/light/hatch.ts';
 import { toneOf } from '../src/light/light.ts';
 import { bandLine, drawVoluteConstruction, voluteGeometry } from '../src/measure/constructions.ts';
 import { compass, dimension, leader, point, ruled, scaleBar } from '../src/measure/measure.ts';
+import { extents, neatline } from '../src/measure/outer.ts';
 import { createPlate, type Plate } from '../src/plate/plate.ts';
 import { restyle, STYLES } from '../src/styles/styles.ts';
 
@@ -66,7 +67,7 @@ function outsideH(y: number, x0: number, x1: number, poly: MVec[]): [number, num
   return out;
 }
 
-export default function volutePlate(): Plate {
+export default function volutePlate(o: { trace?: boolean } = {}): Plate {
   const style = restyle(STYLES.architect, {
     ink: 'iron-gall',
     paper: 'dawn-light',
@@ -74,6 +75,7 @@ export default function volutePlate(): Plate {
   });
   const p = createPlate({
     id: 'plate-03-volute',
+    trace: o.trace,
     title: 'Plate III — The eye of the volute',
     claim:
       'A volute is twelve quarter-circles struck from twelve centres inside its eye; each centre lies on the last arc’s end radius, so the scroll turns without a corner.',
@@ -142,7 +144,8 @@ export default function volutePlate(): Plate {
   const abBot = top[1] - 1.8;
   const shaftR = 38;
   const shaftTop = eye[1] + 9;
-  const shaftBot = 162;
+  // a stub of shaft is enough to seat the capital; more only weighs the sheet down
+  const shaftBot = 150;
   const echY = top2[1] + 4.6; // the echinus' centre line, under the fillet
   const echEnd = Math.min(
     ...lineInsidePolygon([0, echY], [1, 0], disc).map(([a]) => a),
@@ -150,7 +153,7 @@ export default function volutePlate(): Plate {
   );
 
   // ── 1 · construction (graphite, the lightest, first) ──
-  const axis = ruled(p, [axisX, 32], [axisX, 186], {
+  const axis = ruled(p, [axisX, 32], [axisX, shaftBot + 24], {
     id: 'axis',
     kind: 'axis',
     label: 'axis of the column',
@@ -164,8 +167,14 @@ export default function volutePlate(): Plate {
     id: 'mirror-cathetus',
     kind: 'axis',
   });
-  const mAbacus = ruled(p, [16, abBot], [axisX, abBot], { id: 'mirror-abacus' });
-  const mAbacusTop = ruled(p, [16, abTop], [axisX, abTop], { id: 'mirror-abacus-top' });
+  const mAbacus = ruled(p, [26, abBot], [axisX, abBot], {
+    id: 'mirror-abacus',
+    overshoot: [0.8, 1.6],
+  });
+  const mAbacusTop = ruled(p, [26, abTop], [axisX, abTop], {
+    id: 'mirror-abacus-top',
+    overshoot: [0.8, 1.6],
+  });
   const mCanalis = ruled(p, [mEye[0] - 4, top[1]], [axisX, top[1]], { id: 'mirror-canalis' });
   const mShaft = ruled(p, [axisX - shaftR, shaftTop], [axisX - shaftR, shaftBot], {
     id: 'mirror-shaft',
@@ -498,16 +507,40 @@ export default function volutePlate(): Plate {
   letter(p, 'D', [axisX + 4, echBot + 6.5], {
     cap: 3.5,
     kind: 'key',
-    refers: [axisX + 6, echY],
+    refers: [axisX + 6, echBot],
     id: 'key-D',
   });
 
   // ── 6 · dimension, measured from the ink at 1:4 ──
   dimension(p, top, [bottom[0], bottom[1]], {
     axis: 'y',
-    offset: right[0] - Math.max(top[0], bottom[0]) + 12,
+    offset: right[0] - Math.max(top[0], bottom[0]) + 10,
     id: 'dim-height',
     digits: 0,
+  });
+
+  // ── 6b · outer measurement: the finished half's overall size, outside the detail, and a
+  // frame graduated every 20 mm (at 1:4) counted from the eye of the volute ──
+  const finished = p.marks.filter(
+    (m) => m.layer === 'ink' && !m.id.startsWith('fig2') && m.spine.some((q) => q[0] < 172),
+  );
+  // the capital itself: the shaft is broken, and a broken view is never dimensioned to its
+  // break (ISO 129); the tiers still stand clear of the whole drawing
+  const capital = finished.filter((m) => !/^(shaft|flute-)/.test(m.id) && m.form !== 'shaft');
+  extents(p, capital, {
+    sides: ['bottom', 'right'],
+    tier: 9,
+    id: 'capital',
+    digits: 0,
+    clear: finished,
+  });
+  neatline(p, [24, 40, right[0] + 30, shaftBot + 18], {
+    every: 20,
+    major: 5,
+    origin: eye,
+    id: 'fig1-neat',
+    gap: 1.8,
+    numbersOn: ['top'],
   });
 
   // ── 7 · Fig. 2: the eye enlarged ×6 ──
@@ -609,17 +642,83 @@ export default function volutePlate(): Plate {
     'arc’s end radius, so no join turns a corner.',
   ];
   for (const [i, t] of notes.entries())
-    typeset(p, t.trim(), [t.startsWith(' ') ? 181 : 176, 127 + i * 4.4 + (i >= 7 ? 2.2 : 0)], {
+    typeset(p, t.trim(), [t.startsWith(' ') ? 191 : 186, 127 + i * 4.4 + (i >= 7 ? 2.2 : 0)], {
       cap: 2.5,
       kind: 'note',
       id: `note-${i + 1}`,
     });
-  scaleBar(p, [176, 174], { units: 200, segments: 4, label: 'mm · 1:4', id: 'scale' });
+  scaleBar(p, [186, 174], { units: 200, segments: 4, label: 'mm · 1:4', id: 'scale' });
   typeset(p, 'kiruk · drawn by mai · one light, upper left, 45°', [14, 192], {
     cap: 2.5,
     kind: 'caption',
     italic: true,
     id: 'colophon',
+  });
+
+  // ── 9 · the anatomy of the capital: every part, checked on its own ──
+  p.part({
+    id: 'abacus',
+    name: 'abacus',
+    finish: 'line',
+    measured: ['capital-bottom', 'capital-right'],
+  });
+  p.part({
+    id: 'volute-outer',
+    name: 'the scroll and the canalis',
+    finish: 'line',
+    measured: ['dim-height'],
+    generatedBy: ['volute-cathetus', 'volute-horizontal'],
+  });
+  p.part({
+    id: 'canalis',
+    name: 'the canalis, shaded',
+    finish: 'tone',
+    form: 'canalis',
+    measured: { none: 'its band narrows from the construction' },
+  });
+  p.part({
+    id: 'volute-eye',
+    name: 'the eye (oculus)',
+    key: 'A',
+    finish: 'line',
+    measured: ['dim-eye'],
+    generatedBy: ['volute-eye'],
+  });
+  p.part({
+    id: 'volute-cathetus',
+    name: 'the cathetus',
+    key: 'B',
+    finish: 'construction',
+    measured: { none: 'a plumb line has no length to state' },
+  });
+  p.part({
+    id: 'volute-fillet',
+    name: 'the fillet',
+    key: 'C',
+    finish: 'line',
+    measured: { none: 'its width follows from the centres drawn toward the eye' },
+  });
+  p.part({
+    id: 'egg',
+    name: 'echinus, egg and dart',
+    key: 'D',
+    finish: 'tone',
+    form: 'egg-1',
+    measured: { none: 'ornament spaced by eye, not by module' },
+  });
+  p.part({
+    id: 'shaft',
+    name: 'the fluted shaft',
+    finish: 'tone',
+    form: 'shaft',
+    measured: { none: 'broken, and a broken shaft is not dimensioned to its break (ISO 129)' },
+  });
+  p.part({
+    id: 'fig2',
+    name: 'Fig. 2, the eye ×6',
+    finish: 'line',
+    measured: ['dim-eye'],
+    generatedBy: ['fig2-centres'],
   });
   return p;
 }
