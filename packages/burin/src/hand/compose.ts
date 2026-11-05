@@ -171,7 +171,7 @@ export function handCompose(o: HandComposeInputs) {
   const ac2 = clamp(ac.mul(1.32).sub(valley.mul(0.62).mul(float(1).sub(ac))), 0, 1);
   // Red chalk is a strong colour where it lies: the deposit, then the pigment's full weight.
   Dc = Dc.mul(ac2.div(max(ac, 1e-3)))
-    .mul(1.45)
+    .mul(1.1)
     .mul(o.media.x.mul(fChalk).mul(inside));
 
   // ── wash: in the valleys ──
@@ -194,7 +194,7 @@ export function handCompose(o: HandComposeInputs) {
     const inI = step(0, iu.x).mul(step(iu.x, 1)).mul(step(0, iu.y)).mul(step(iu.y, 1));
     const Ti = mix(vec3(1, 1, 1), o.tex.sample('iris', iu).rgb, inI);
     // Laid on an engraved iris, the colour lives in the paper between the cuts: a full wash.
-    Di = density(Ti).mul(2.2);
+    Di = density(Ti).mul(0.85);
     const ai = cover(Di);
     Di = Di.mul(max(float(1).add(settle.mul(float(1.2).sub(ai)).mul(1.1)), 0)).mul(
       o.iris.show.mul(fWash),

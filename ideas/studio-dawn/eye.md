@@ -24,6 +24,7 @@ pupil; Da Vinci-style butterfly, ornithopter and nautilus sheets.
 - **Supporting design** — the platemark, a title block (_kiruk — to scribble, and make something._), lettered parts with Latin names and a key (j skipped, as old plates do), dotted proportion guides with a scale in iris diameters, _Fig. 1._, and a strip of the engine's own passes: I construction, II contour, III hatching, IV cross-hatching — the plate is V.
 - **The instrument** — the calculus of the eye set like a map legend: gaze, pupil and lid plotted with their derivatives as they move, a paper toggle, the engine's state. EB Garamond with old-style tabular figures; IM Fell display; JetBrains Mono for measures.
 - **HTML-in-Canvas** — all of the page's type lives in one overlay; where the API exists it is printed into the paper by the GPU (and stays selectable); elsewhere it renders as DOM.
+- **The hand** (2026-11-05) — p5.brush colours each impression in a worker (red chalk, bistre wash, iron-gall quill, lead white, the iris) and burin lays the sheets into its paper. See [hand.md](./hand.md).
 - **Flow** — skill `kiruk-burin` with `burin-check.mjs` (proof: desktop, phone, crops, held to light, as found, blink) and `bake-poster.mjs` (no-JS / first-paint poster).
 
 ## The dawn — two papers (2026-11-04)
