@@ -52,6 +52,14 @@ They had been raised while the bug hid them, and came back too strong (the iris 
 
 The bleed change stays as a design choice: hand pigment lifts only where the water `w > 0.12`.
 
+## The socket wash, graded
+
+The hollow under the brow was one bistre band at opacity 58, flat from end to end, and the blob that deepens it toward the nose dried with a hard rim and a dark pool. Now the hollow is three glazes at 30, each shorter toward the nose (ending at x = 0.95, 0.35, −0.35), so one glaze lies at the outer end and three at the inner. The nose blob dropped to 32 with a softer border (0.45 → 0.2), so it runs into the glazes instead of sitting on them. Checked on the raw wash layer (`__burin.handLayers().wash`) and in the composite at dpr 2.
+
+## The `__burin` hooks stay in production
+
+The proof script `.claude/skills/kiruk-burin/scripts/burin-check.mjs` drives any URL, production included, through `window.__burin`. The hooks expose no data and change only what is drawn, so they stay.
+
 ## Running it
 
 - `pnpm --filter @kiruk/studio dev`; skip the opening loader with `sessionStorage.setItem('kiruk-loading-seen','true')` and reload.
@@ -62,6 +70,5 @@ The bleed change stays as a design choice: hand pigment lifts only where the wat
 ## Open
 
 1. Founder: is the hand on by default? On the new paper too? Should the founder's own kirukal strokes go through `spine.fromSamples`?
-2. The socket wash is a flat band; grade it. Then the white heightening, the quill's strength and the carnation blush, each at dpr 2.
+2. The socket wash is graded; judge it. Then the white heightening, the quill's strength and the carnation blush, each at dpr 2.
 3. A WebGPU look check on real hardware after the re-tune.
-4. Keep or gate the `__burin` proof hooks in production.

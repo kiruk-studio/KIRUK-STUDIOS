@@ -210,23 +210,32 @@ export const eyeHand: HandRecipe = {
       const bistre = PIGMENTS.bistre.hex;
       const flesh = PIGMENTS.carnation.hex;
       const w = (i: number) => 0.06 * Math.sin(i * 1.7 + h.R(TAU));
-      // The hollow under the brow, then deeper toward the nose: the second wash runs into the first.
-      ctx.wash(
-        band(
-          P,
-          -1.32,
-          0.95,
-          (x) => brow(x) + 0.3,
-          (x) => crease(x) - 0.03,
-        ),
-        bistre,
-        58,
-        { bleed: 0.16, texture: 0.4, border: 0.55, split: 0.22, curvature: 0.6 },
-      );
-      ctx.wash(blob(P, -1.12, -0.36, 0.25, 0.36, w), bistre, 44, {
+      // The hollow under the brow, graded as a hand grades a wash: glazes laid one over another,
+      // each shorter toward the nose, so the pigment builds where
+      // the shade is deepest instead of lying as one flat band. Outer end ≈ one glaze, inner ≈ three.
+      const glazes: [x1: number, top: number, alpha: number][] = [
+        [0.95, 0.3, 30],
+        [0.35, 0.31, 30],
+        [-0.35, 0.32, 30],
+      ];
+      for (const [x1, top, alpha] of glazes) {
+        ctx.wash(
+          band(
+            P,
+            -1.32,
+            x1,
+            (x) => brow(x) + top,
+            (x) => crease(x) - 0.03,
+          ),
+          bistre,
+          alpha,
+          { bleed: 0.16, texture: 0.4, border: 0.55, split: 0.22, curvature: 0.6 },
+        );
+      }
+      ctx.wash(blob(P, -1.12, -0.36, 0.25, 0.36, w), bistre, 32, {
         bleed: 0.22,
         texture: 0.45,
-        border: 0.45,
+        border: 0.2,
       });
       // The fold of the crease: a narrow, darker band where the lid tucks in.
       ctx.wash(
