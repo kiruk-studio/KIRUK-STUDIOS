@@ -140,6 +140,17 @@ See `ROADMAP.md` Phases 4.5–7.
 - Dropped tasks → delete; log the "why" in `CHANGELOG.md`.
 - Priority: **P0** = blocks phase exit · **P1** = phase scope · **P2** = nice-to-have.
 
+## Hardening (2026-11-05)
+
+- [x] (P0) CI gates every PR on `pnpm typecheck`, `pnpm lint`, `pnpm test` and the studio build, and fails if p5.brush reaches a page chunk — `.github/workflows/ci.yml`
+- [x] (P0) pnpm version clash in the doctor, openspec and tokens workflows (Validate specs was failing on main too)
+- [x] (P1) `@kiruk/kirukal` typecheck error in its catalog test
+- [x] (P1) mai: one rule for the exact overlay (MA-31); Plates III and IV re-proofed, calculus page republished
+- [x] (P1) `@kiruk/burin` gets a vitest suite (it had none)
+- [ ] (P0) Founder: approve `openspec/changes/adopt-next-studio`, then Vercel `kiruk-web` → Root Directory `apps/kiruk-studio` (until then pushes do not reach studio.kiruk.in)
+- [ ] (P2) `apps/kiruk-forge` / `apps/kiruk-blogism` Toolcraft tests fail on Windows (symlinks, POSIX launchers) inside the hash-locked kit; expected to pass on Linux CI — confirm on the first CI run
+- [ ] (P2) mai: `A'` is not a prime; decide whether lettering should ever infer one (an apostrophe in "eye's" must stay an apostrophe)
+
 ## mai round two — execution plan for the unfinished work (handoff 2026-11-05)
 
 **Closed 2026-11-05** on `feat/hand-drawn-design-system` (WP-1…WP-9). Left open: WP-10 founder decisions, WP-11 polish, agent RED/GREEN runs of the four skills (`docs/evals.md`), and the founder’s diff review of the skill rewrites. Code-vs-plan disagreements found while writing the parts pages are recorded in `docs/parts/*.md` (e.g. `type.phone` computes, it does not read `phone.png`; default margins are 8%/10%, the 12–16 mm rule is the skill’s).
@@ -291,7 +302,9 @@ Blend p5.brush 3.0 (the hand: chalk, wash, quill, lead white) with `@kiruk/burin
 
 **Done 2026-11-05 (this session):** fix 1 seen on screen (live WebGPU, then headless WebGL 2 with each medium alone: chalk, quill and iris each draw their own sheet); fix 2 re-tune (iris ×0.85, chalk ×1.1, k-hatch 185, k-sanguine 160); proof shots 1440×900 dpr 1/2 and 390×844; `next build` passes, p5.brush only in the worker + lazy fallback chunk; `hand.md`, CHANGELOG, proposal `adopt-p5-brush-hand` (validated --strict), linked from `eye.md`.
 
-**Still open:** item 4 (grade the flat socket wash; white, quill, carnation at dpr 2), a WebGPU look on hardware after the re-tune, held-to-light / new paper / wet-brush proofs, gating the `__burin` hooks, and the founder questions in `hand.md`.
+**Also done 2026-11-05:** socket wash graded in three glazes (nose blob softened); `__burin` hooks kept in production on purpose (the proof surface of `burin-check.mjs`).
+
+**Still open:** white heightening, quill and carnation at dpr 2; a WebGPU look on hardware after the re-tune; held-to-light / new paper / wet-brush proofs; the founder questions in `hand.md`.
 
 **Original plan (kept for the record): fix first**
 

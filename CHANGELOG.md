@@ -8,6 +8,20 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ## [Unreleased]
 
+### Fixed
+
+- **Hardening pass (2026-11-05).** The engines get tests and the repo gets gates.
+  - **CI:** `.github/workflows/ci.yml` runs typecheck, lint and tests across every workspace and builds the studio on every pull request, and fails if p5.brush reaches a page chunk. Before this, CI ran only specs, tokens and the doctor, and "Validate specs" was failing on `main` because three workflows pinned pnpm 9 against `packageManager: pnpm@10`.
+  - **`@kiruk/burin` tests:** 0 → 97 (spine, dynamics, rig, pen, strokes, the hand client, and a regression test for the shared-sampler bug that fails if the five slots ever share a placeholder again).
+  - **Two hand faults the tests found, fixed:** a worker that crashed mid-sheet left the paint pending for ever, and every later paint queued behind it; with no hand anywhere, the status said `idle` after the first paint instead of `none`.
+  - **mai, one rule for the exact overlay (MA-31):** `outer.ts` and `measure.ts` disagreed, so the night sheet mixed exact neatlines with hand-ruled dimensions. Now overlay + ruling pen + a modern ink (rubric, departs). Plates III and IV re-proofed (0 fail); calculus page republished.
+  - **The socket wash, graded:** three bistre glazes, each shorter toward the nose, instead of one flat band; the nose blob lost its hard rim.
+  - **`@kiruk/kirukal`** typecheck error fixed; `pnpm typecheck` is green on all 9 workspaces.
+  - **Proposal `adopt-next-studio`** records that studio.kiruk.in is the Next studio, not the Astro placeholder, and asks for the Vercel build to follow Git (validated `--strict`, not applied).
+  - **Why:** the founder asked to fix everything and make the engine strong; an engine with no tests and a repo with no gates cannot stay strong.
+  - **Verified:** typecheck 9/9; lint 0 errors; tests kirukal 20, mai 62, burin 97; studio `next build`; the p5.brush check passes on a real build and catches a planted page chunk.
+  - **Not done:** the Vercel Root Directory switch (founder); Toolcraft tests in forge/blogism fail on Windows only (symlinks) and are expected to pass on Linux CI.
+
 ### Removed
 
 - **The copied tube and live 3D era eye leave the studio (2026-11-05).** Once the ink opening took over the first visit, nothing in `apps/kiruk-studio` imported the old loader. The founder chose to delete it: 60 files, about 18,100 lines, plus six stills and two dependencies.

@@ -134,3 +134,10 @@ Use this shape (markdown `##` heading + bullets):
 - **Root cause:** in three.js r186 `TextureNode.getUniformHash()` is the texture's `uuid`, and `UniformNode.getSharedNode()` gives same-hash nodes one uniform owned by the first node built. All five slots started on one shared placeholder.
 - **Fix:** one placeholder texture per slot; strengths brought back down once each medium could be seen alone.
 - **Guard:** never share a placeholder texture between TSL texture nodes that will be swapped independently. Before tuning a layer's strength, show it alone (`__burin.handMedia`) and confirm it is the layer you think.
+
+## 2026-11-05 — An engine shipped with no tests, and CI never ran them anyway
+
+- **Mistake:** `@kiruk/burin` (7.7k lines, the live eye and the hand) had no tests, and CI ran no typecheck, lint or tests for any workspace. A typecheck error sat in `@kiruk/kirukal`, the spec job failed on `main`, and two faults sat in the hand client: a worker crash mid-sheet hung every later paint, and the status lied when there was no hand.
+- **Root cause:** each package was built and proved by eye in a browser; the pre-commit hooks lint staged files only; nobody added a workflow for the whole repo.
+- **Fix:** `.github/workflows/ci.yml` (typecheck, lint, tests, studio build); 97 burin tests; both hand faults fixed and kept as regression tests.
+- **Guard:** CI blocks a pull request on any workspace's types, lint errors or tests. A new package lands with `test` and `check-types` scripts, or it is not wired into turbo.
