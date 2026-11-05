@@ -66,6 +66,11 @@ export type BleedInputs = {
   plate: Texture | null;
   paper: Texture;
   noise: Texture;
+  /**
+   * The hand's media (hand/compose.ts): its quill ink and washes re-wet like the cut lines,
+   * and a wash being laid wets the sheet under it (`wet`, water per second at full wash).
+   */
+  hand?: { sources: (css: N) => { ink: N; wash: N }; wet: U };
 };
 
 export const BLEED = {
@@ -116,8 +121,17 @@ export function bleedStep(o: BleedInputs) {
     for (const q of dg) lap = lap.add(flow(q, 0.5));
     const dt = o.dt;
 
-    // Ink under the water: the engraved lines and the printed type.
-    const inkHere = max(texture(o.ink, uv).x, o.plate ? texture(o.plate, uv).w : float(0));
+    // Ink under the water: the engraved lines and the printed type; and the hand's quill and
+    // washes, which lift only under real water (a brush, a wash being laid), never the damp of
+    // a fresh print: the colourist works on a dry sheet.
+    const inkHere: N = max(texture(o.ink, uv).x, o.plate ? texture(o.plate, uv).w : float(0));
+    let handInk: N = float(0);
+    let washWet: N = float(0);
+    if (o.hand) {
+      const h = o.hand.sources(css);
+      handInk = max(h.ink.mul(0.85), h.wash.mul(0.32));
+      washWet = smoothstep(0.03, 0.3, h.wash).mul(o.hand.wet);
+    }
 
     // Sources: the brush stroke and the damp sheet.
     const b = o.brush;
@@ -136,7 +150,10 @@ export function bleedStep(o: BleedInputs) {
       ),
     );
     const w1 = clamp(
-      w.add(lap.mul(BLEED.diffuse).mul(k)).add(brushW.add(dampW).mul(dt)).sub(evap.mul(dt)),
+      w
+        .add(lap.mul(BLEED.diffuse).mul(k))
+        .add(brushW.add(dampW).add(washWet).mul(dt))
+        .sub(evap.mul(dt)),
       0,
       1.4,
     );
@@ -148,7 +165,8 @@ export function bleedStep(o: BleedInputs) {
       const wetBoth = min(q.x, w);
       plap = plap.add(q.y.sub(p).mul(smoothstep(0.01, 0.12, wetBoth)));
     }
-    const pickup = inkHere
+    const lifts = max(inkHere, handInk.mul(smoothstep(0.12, 0.4, w)));
+    const pickup = lifts
       .mul(smoothstep(0.02, 0.3, w))
       .mul(BLEED.pickup)
       .mul(dt)

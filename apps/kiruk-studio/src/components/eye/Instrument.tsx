@@ -13,7 +13,7 @@
 import { BLINK } from '@kiruk/burin/motion';
 import { drawnScale, EYE, GLOBE, IRIS_MM, MM_PER_LIGNE, UNITS, type Unit } from '@kiruk/burin/rig';
 import { DAWN } from './dawn';
-import { actions, type Trace, useEye } from './store';
+import { actions, type HandMedium, type Trace, useEye } from './store';
 
 const PW = 236;
 const PH = 54;
@@ -24,6 +24,15 @@ const WIRE_NAME = (w: number) => (w === 0 ? 'hidden' : w === 1 ? 'full' : 'faint
 const toDeg = (r: number) => Math.round((r * 180) / Math.PI);
 
 const sgn = (v: number, dp = 2) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(dp)}`;
+
+/** The hand's media, in the order a colourist works: under the cut, then over the print. */
+const MEDIA: { key: HandMedium | 'iris'; name: string; what: string }[] = [
+  { key: 'chalk', name: 'red chalk', what: 'the underdrawing' },
+  { key: 'wash', name: 'bistre', what: 'the shade, in washes' },
+  { key: 'iris', name: 'the iris', what: 'its colour' },
+  { key: 'body', name: 'lead white', what: 'where the light falls' },
+  { key: 'ink', name: 'the quill', what: 'hatching in the deepest shade' },
+];
 
 function Chart({
   tr,
@@ -114,6 +123,8 @@ export function Instrument() {
   const sunEl = useEye((s) => s.sunEl);
   const making = useEye((s) => s.making);
   const make = useEye((s) => s.make);
+  const handMake = useEye((s) => s.handMake);
+  const hand = useEye((s) => s.hand);
 
   const engine =
     backend === 'pending'
@@ -343,7 +354,15 @@ export function Instrument() {
           <kbd>C</kbd> — the construction first, then each pass cut across the eye, as the studies
           below show them
           {making
-            ? `: now ${['I', 'II', 'III', 'IV', 'the plate'][Math.min(4, Math.max(0, Math.ceil(make) - 1))]}`
+            ? `: now ${
+                make >= 5 && handMake < 3
+                  ? handMake < 2
+                    ? 'the washes'
+                    : 'lead white and the quill'
+                  : ['I', 'II', 'III', 'IV', 'the plate'][
+                      Math.min(4, Math.max(0, Math.ceil(make) - 1))
+                    ]
+              }`
             : ''}
           .
         </p>
@@ -354,9 +373,65 @@ export function Instrument() {
         </p>
       </section>
 
+      <section className="ins-sec">
+        <h3>
+          <span className="sc">vii.</span> Hand
+        </h3>
+        <fieldset className="ins-units ins-media">
+          <legend className="vh">The hand's media</legend>
+          {MEDIA.map((m) => {
+            const on = m.key === 'iris' ? hand.iris : hand.media[m.key];
+            return (
+              <button
+                key={m.key}
+                type="button"
+                aria-pressed={hand.on && on}
+                disabled={!hand.on}
+                title={m.what}
+                onClick={() => actions.toggleMedium(m.key)}
+              >
+                {m.name}
+              </button>
+            );
+          })}
+        </fieldset>
+        <dl className="ins-read">
+          <dt>№</dt>
+          <dd>
+            impression {hand.seed.toLocaleString('en')}
+            {hand.state === 'painting'
+              ? ' · the hand is at work'
+              : hand.state === 'idle'
+                ? ` · coloured in ${hand.ms} ms`
+                : hand.state === 'none' || hand.state === 'failed'
+                  ? ' · uncoloured (no WebGL 2 for the hand)'
+                  : ''}
+          </dd>
+        </dl>
+        <p className="ins-note">
+          The plate prints the same every time; a colourist&rsquo;s hand never does. Red chalk went
+          down before a line was cut. Bistre sinks into the paper&rsquo;s valleys and dries darkest
+          at its rim; the chalk and the white catch only its peaks; the quill is starved on the
+          tooth like the cut lines; wet it, and the washes run.{' '}
+          <button
+            type="button"
+            className="ins-btn"
+            aria-pressed={hand.on}
+            onClick={() => actions.setHand(!hand.on)}
+          >
+            {hand.on ? 'Coloured by hand' : 'The plain print'}
+          </button>{' '}
+          <kbd>H</kbd>{' '}
+          <button type="button" className="ins-btn" onClick={() => actions.impression()}>
+            A new impression
+          </button>{' '}
+          <kbd>I</kbd>
+        </p>
+      </section>
+
       <section className="ins-sec ins-engine">
         <h3>
-          <span className="sc">vii.</span> Engine
+          <span className="sc">viii.</span> Engine
         </h3>
         <dl className="ins-read">
           <dt>burin</dt>
@@ -373,6 +448,16 @@ export function Instrument() {
           </dd>
           <dt>type</dt>
           <dd>{plate ? 'printed by HTML-in-Canvas' : 'set in the DOM'}</dd>
+          <dt>hand</dt>
+          <dd>
+            {hand.via === 'worker'
+              ? 'p5.brush in a worker (WebGL 2) → bitmaps → TSL'
+              : hand.via === 'main'
+                ? 'p5.brush on the page (WebGL 2) → bitmaps → TSL'
+                : hand.state === 'starting' || hand.state === 'painting'
+                  ? 'p5.brush, waking'
+                  : 'none'}
+          </dd>
         </dl>
       </section>
     </aside>

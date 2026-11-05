@@ -43,15 +43,17 @@ import {
   RenderTarget,
   RepeatWrapping,
   RGBAFormat,
-  type Texture,
+  Texture,
   UnsignedByteType,
   WebGPURenderer,
 } from 'three/webgpu';
 import { BLEED, bleedLook, bleedStep } from '../bleed/bleed';
+import { createHandTextures, handCompose, handRelief, handSources } from '../hand/compose';
+import { HAND_LAYERS, type HandSheet } from '../hand/media';
 import { rasterLogogram } from '../logogram';
 import { paperNode } from '../paper/paper';
 import type { Pose } from '../subjects/eye/rig';
-import { eyeGlory, eyeInk } from '../subjects/eye/shader';
+import { eyeGlory, eyeInk, eyeIrisDecal } from '../subjects/eye/shader';
 import { bakeNoise, bakePaper, NOISE_TILE, PAPER_TILE } from './textures';
 
 /**
@@ -97,6 +99,18 @@ export type EyeFrame = {
   wire: number;
   /** the plate's passes, 1 … 5 (5 = finished); fractional while it is being made again */
   make: number;
+  /** the hand on this impression (absent: as last set) */
+  hand?: HandFrame;
+};
+
+/** How the hand's layers show this frame. */
+export type HandFrame = {
+  /** red chalk, wash, quill, lead white: 0 … 1 each */
+  media: [number, number, number, number];
+  /** the iris colour, 0 … 1 */
+  iris: number;
+  /** the hand's passes while it is made again: 0 … 3 (chalk, washes, white and quill); 3 = all */
+  make: number;
 };
 
 export type Passes = {
@@ -110,9 +124,24 @@ export type Passes = {
   brushPrev: [number, number, number];
   /** damp sheet, water/s near ink */
   damp: number;
+  /** a wash being laid wets the sheet under it: water/s at full wash */
+  handWet?: number;
 };
 
 export type EngineInfo = { backend: 'webgpu' | 'webgl2'; dpr: number; plate: boolean };
+
+/** An ImageBitmap from the hand as a texture the renderer samples at screen orientation. */
+function bitmapTex(b: ImageBitmap): Texture {
+  const t = new Texture(b as unknown as HTMLImageElement);
+  t.colorSpace = NoColorSpace;
+  t.flipY = false;
+  t.premultiplyAlpha = false;
+  t.generateMipmaps = false;
+  t.magFilter = t.minFilter = LinearFilter;
+  t.wrapS = t.wrapT = ClampToEdgeWrapping;
+  t.needsUpdate = true;
+  return t;
+}
 
 function dataTex(data: Uint8Array, n: number) {
   const t = new DataTexture(data, n, n, RGBAFormat);
@@ -227,7 +256,15 @@ export async function createEyeEngine(
     sun: uniform(vec3(-0.56, -0.61, 0.56)),
     wire: uniform(0),
     make: uniform(5),
+    // The hand: the rect its layers cover, the iris decal's rect, what shows, its passes, its water.
+    handRegion: uniform(vec4(0, 0, 1, 1)),
+    handIris: uniform(vec4(0, 0, 1, 1)),
+    handMedia: uniform(vec4(0, 0, 0, 0)),
+    handIrisOn: uniform(0),
+    handMake: uniform(3),
+    handWet: uniform(0),
   };
+  const hand = createHandTextures();
 
   // ── 1 · the ink pass ──
   const eye = eyeInk({
@@ -252,7 +289,7 @@ export async function createEyeEngine(
       depthWrite: false,
     });
   const inkMat = dataMat();
-  inkMat.fragmentNode = vec4(eye.x, eye.y, eye.z, 1);
+  inkMat.fragmentNode = vec4(eye.x, eye.y, eye.z, eye.w);
   const inkQuad = new QuadMesh(inkMat);
 
   // ── 2 · the bleed, ping-pong ──
@@ -267,6 +304,11 @@ export async function createEyeEngine(
     plate: plateTex,
     paper: paperTex,
     noise: noiseTex,
+    hand: {
+      sources: (css: any) =>
+        handSources({ region: u.handRegion, tex: hand, media: u.handMedia }, css),
+      wet: u.handWet,
+    },
   };
   const simAB = dataMat();
   simAB.fragmentNode = bleedStep({ ...simIn, src: rtA.texture });
@@ -289,6 +331,7 @@ export async function createEyeEngine(
     paper: paperTex,
     noise: noiseTex,
     watermark: markTex,
+    buckle: handRelief({ region: u.handRegion, tex: hand, media: u.handMedia, make: u.handMake }),
   });
   const L = paper.L;
   const px = vec2(1, 1).div(u.res);
@@ -356,18 +399,36 @@ export async function createEyeEngine(
 
   const look = bleedLook(state);
   const eyeInkC = starve(ink.x).mul(float(1).sub(knock));
-  let color: any = paper.color.mul(lift);
+  // The hand: chalk and washes lie under the engraving, the quill over it, lead white on top.
+  const css = screenUV.mul(u.res);
+  const decal = eyeIrisDecal({ css, eye: u.eye, pose: u.pose, rect: u.handIris, opening: ink.w });
+  const handOn = handCompose({
+    css,
+    region: u.handRegion,
+    tex: hand,
+    paper,
+    light: u.light,
+    media: u.handMedia,
+    iris: { uv: decal.uv, show: decal.show.mul(u.handIrisOn) },
+    make: u.handMake,
+    along: decal.along,
+    knock,
+    noise: noiseTex,
+  });
+  let color: any = paper.color.mul(lift).mul(handOn.under);
   color = color.mul(mix(vec3(1), vec3(...CONS_RGB), ink.y.mul(0.62).mul(float(1).sub(knock))));
   color = color.mul(mix(vec3(1), INK, eyeInkC));
   color = color.mul(mix(vec3(1), INK, starve(rays).mul(0.92)));
   // The construction, under the ink: sanguine on the old sheet, blueprint on the new.
   const WIRE = mix(vec3(...SANGUINE_RGB), vec3(...BLUEPRINT_RGB), paper.dawn);
   color = color.mul(mix(vec3(1), WIRE, ink.z.mul(0.9).mul(float(1).sub(knock))));
+  color = color.mul(handOn.over);
   // The bleed: wet paper is darker; carried ink a warm wash; what dried, a stain with a darker rim.
   color = color.mul(float(1).sub(look.wet.mul(0.07)));
   color = color.mul(mix(vec3(1), WASH, look.wash));
   color = color.mul(mix(vec3(1), STAIN, look.stain));
   color = color.mul(mix(vec3(1), INK, look.rim.mul(0.75)));
+  color = mix(color, handOn.body.rgb, handOn.body.a);
   if (plateTex) {
     // Dark type is ink: it multiplies into the sheet and starves on the tooth. Light colour
     // (a paper sample, a selection wash) is body colour laid on top, lit like the sheet,
@@ -384,6 +445,7 @@ export async function createEyeEngine(
 
   // Counters, and the slowest CPU time each pass has taken (ms): a pass that recompiles shows here.
   const debug = {
+    hand: 0,
     sim: 0,
     ink: 0,
     compose: 0,
@@ -431,6 +493,14 @@ export async function createEyeEngine(
 
   const info: EngineInfo = { backend, dpr, plate: !!plateTex };
   let disposed = false;
+  // The hand's sheet on the GPU: its textures, and the bitmaps they were made from.
+  let handSheet: HandSheet | null = null;
+  const handTex: Partial<Record<(typeof HAND_LAYERS)[number] | 'iris', Texture>> = {};
+  const closeBitmaps = (sh: HandSheet | null) => {
+    if (!sh) return;
+    for (const b of Object.values(sh.layers)) b.close();
+    sh.iris?.bitmap.close();
+  };
 
   return {
     info,
@@ -448,6 +518,37 @@ export async function createEyeEngine(
       u.grid.value.set(nw, nh);
       clearSim();
     },
+    /**
+     * Lay a sheet from the hand (hand/index.ts) into the paper, or take it away (null). The
+     * engine owns the sheet's bitmaps from here: it closes them when the next one arrives.
+     */
+    setHand(sheet: HandSheet | null) {
+      if (disposed) return closeBitmaps(sheet);
+      debug.hand++;
+      const prev = handSheet;
+      handSheet = sheet;
+      const slots = [...HAND_LAYERS, 'iris'] as const;
+      for (const slot of slots) {
+        const bmp = !sheet
+          ? null
+          : slot === 'iris'
+            ? (sheet.iris?.bitmap ?? null)
+            : sheet.layers[slot];
+        const old = handTex[slot];
+        const t = bmp ? bitmapTex(bmp) : null;
+        hand.set(slot, t);
+        if (t) handTex[slot] = t;
+        else delete handTex[slot];
+        old?.dispose();
+      }
+      if (sheet) {
+        u.handRegion.value.set(...sheet.region);
+        if (sheet.iris) u.handIris.value.set(...sheet.iris.rect);
+      }
+      closeBitmaps(prev);
+    },
+    /** The sheet the hand last laid in (its bitmaps stay open until the next one): for proofs. */
+    handSheet: () => handSheet,
     plateChanged() {
       if (plateTex) plateTex.needsUpdate = true;
     },
@@ -484,6 +585,11 @@ export async function createEyeEngine(
       u.sun.value.set(...f.sun);
       u.wire.value = f.wire;
       u.make.value = f.make;
+      if (f.hand) {
+        u.handMedia.value.set(...f.hand.media);
+        u.handIrisOn.value = handSheet?.iris ? f.hand.iris : 0;
+        u.handMake.value = f.hand.make;
+      }
       const r = regionOf(f);
       const moved =
         r[0] !== region[0] || r[1] !== region[1] || r[2] !== region[2] || r[3] !== region[3];
@@ -501,6 +607,7 @@ export async function createEyeEngine(
         u.brush.value.set(...p.brush);
         u.brushPrev.value.set(p.brushPrev[0], p.brushPrev[1], p.brushPrev[2], 0);
         u.damp.value = p.damp;
+        u.handWet.value = p.handWet ?? 0;
         debug.sim += p.bleed;
         const ts = performance.now();
         for (let i = 0; i < p.bleed; i++) {
@@ -524,6 +631,10 @@ export async function createEyeEngine(
     dispose() {
       disposed = true;
       for (const t of [paperTex, noiseTex, starTex, markTex, plateTex]) t?.dispose();
+      for (const t of Object.values(handTex)) t?.dispose();
+      hand.dispose();
+      closeBitmaps(handSheet);
+      handSheet = null;
       for (const rt of [rtInk, rtA, rtB]) rt.dispose();
       for (const m of [inkMat, simAB, simBA, composeMat]) m.dispose();
       renderer.dispose();

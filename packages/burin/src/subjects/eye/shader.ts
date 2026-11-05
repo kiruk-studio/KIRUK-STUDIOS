@@ -64,6 +64,7 @@ import {
   texture,
   vec2,
   vec3,
+  vec4,
 } from 'three/tsl';
 import type { Texture } from 'three/webgpu';
 import { between, contour, engrave, hash1, stipple } from '../../gpu/lines';
@@ -153,11 +154,30 @@ export function eyeGlory(o: { res: U; dpr: U; eye: U; light: U }) {
   })();
 }
 
-/** Returns vec3(ink, construction, wire). */
+/**
+ * The iris colour the hand painted at rest, carried onto the turning eye: where this pixel's
+ * point of the iris lies in the decal (painted at the rest pose), and how much of it shows —
+ * under the live lids (`opening`, from the ink pass), and never over the pupil, so the
+ * catchlight stays clean. Mirrors the iris mapping in eyeInk.
+ */
+export function eyeIrisDecal(o: { css: N; eye: U; pose: U; rect: U; opening: N }) {
+  const p = o.css.sub(o.eye.xy).div(o.eye.z);
+  const gx = o.pose.x;
+  const gy = o.pose.y;
+  const ic = vec2(gx.mul(EYE.iris.gx), gy.mul(EYE.iris.gy).add(EYE.iris.cy));
+  const rxy = vec2(pow(cos(gx.mul(0.61)), 0.9), cos(gy.mul(0.44))).mul(EYE.iris.R);
+  const q = p.sub(ic).div(rxy);
+  const rest = vec2(0, EYE.iris.cy).add(q.mul(EYE.iris.R));
+  const uv = o.eye.xy.add(rest.mul(o.eye.z)).sub(o.rect.xy).div(o.rect.zw);
+  const show = o.opening.mul(smoothstep(o.pose.w.sub(0.01), o.pose.w.add(0.05), length(q)));
+  return { uv, show, along: p.x };
+}
+
+/** Returns vec4(ink, construction, wire, opening): w is 1 inside the palpebral opening. */
 export function eyeInk(o: EyeInputs) {
   return Fn(() => {
     const css = o.region.xy.add(screenUV.mul(o.region.zw));
-    const out = vec3(0, 0, 0).toVar();
+    const out = vec4(0, 0, 0, 0).toVar();
     const aa = float(0.62).div(o.dpr);
 
     // ── which eye: a study in the strip, or the plate ──
@@ -968,6 +988,8 @@ export function eyeInk(o: EyeInputs) {
       out.x.assign(clamp(ink, 0, 1));
       out.y.assign(cons.mul(consK));
       out.z.assign(clamp(wireOut, 0, 1));
+      // The opening, for what is laid on the eye later (the hand's iris colour): under the lids, none.
+      out.w.assign(inOpen);
     });
     return out;
   })();

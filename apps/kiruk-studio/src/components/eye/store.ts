@@ -10,6 +10,24 @@ export type Trace = { t: number[]; x: number[]; v: number[] };
 export type Caliper = { a: [number, number]; b: [number, number]; snapA?: string; snapB?: string };
 const empty = (): Trace => ({ t: [], x: [], v: [] });
 
+/** The hand's media on the plate: red chalk, bistre wash, the quill, lead white. */
+export type HandMedium = 'chalk' | 'wash' | 'ink' | 'body';
+export type HandState = {
+  /** the hand on the plate at all */
+  on: boolean;
+  media: Record<HandMedium, boolean>;
+  /** the iris coloured */
+  iris: boolean;
+  /** the impression: one seed, one hand */
+  seed: number;
+  state: 'starting' | 'idle' | 'painting' | 'failed' | 'none';
+  via: 'worker' | 'main' | null;
+  /** the last impression's paint time, ms */
+  ms: number;
+};
+/** A new impression number (every hand-coloured impression is its own). */
+export const newImpression = () => 1000 + Math.floor(Math.random() * 9000);
+
 export type EyeState = {
   backend: 'pending' | 'webgpu' | 'webgl2' | 'css';
   dpr: number;
@@ -55,6 +73,9 @@ export type EyeState = {
   /** under the pointer while the calipers are out: eye units, and the landmark it would snap to */
   hover: { x: number; y: number; snap?: string } | null;
   clock: number;
+  /** while it is made again: the hand's passes, 0 … 3 (3 at rest) */
+  handMake: number;
+  hand: HandState;
 };
 
 let state: EyeState = {
@@ -96,6 +117,16 @@ let state: EyeState = {
   caliper: null,
   hover: null,
   clock: 0,
+  handMake: 3,
+  hand: {
+    on: true,
+    media: { chalk: true, wash: true, ink: true, body: true },
+    iris: true,
+    seed: 0,
+    state: 'starting',
+    via: null,
+    ms: 0,
+  },
 };
 const subs = new Set<() => void>();
 
@@ -110,6 +141,12 @@ export const actions = {
   calipers: (on: boolean) => eyeStore.set({ calipers: on, hover: null }),
   clearCaliper: () => eyeStore.set({ caliper: null }),
   make: () => {},
+  /** the hand on the plate, or the plain print */
+  setHand: (_on: boolean) => {},
+  /** one medium (or the iris) on or off */
+  toggleMedium: (_m: HandMedium | 'iris') => {},
+  /** a new impression: the hand colours the print again, differently */
+  impression: () => {},
 };
 
 export const eyeStore = {

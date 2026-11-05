@@ -4,6 +4,8 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+packageExtensionsChecksum: sha256-/1x5yN+SWhl4qHOTuIEhNWkF3w5Ei+XHtA3Sz40rgbI=
+
 importers:
 
   .:
@@ -436,6 +438,10 @@ importers:
         version: 5.9.3
 
   packages/burin:
+    dependencies:
+      p5.brush:
+        specifier: 3.0.0
+        version: 3.0.0
     devDependencies:
       '@types/three':
         specifier: ^0.186.0
@@ -4816,6 +4822,14 @@ packages:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
     engines: {node: '>=14.16'}
 
+  p5.brush@3.0.0:
+    resolution: {integrity: sha512-dSpJlr+CYBtUNEarH9Kv75OVuVrQ9VHSxI0ukRmSqXYDIhyoA+dxqsuVsPNQId5o4uo2zknSAOCCeOaAA30b8w==}
+    peerDependencies:
+      p5: ^2.2
+    peerDependenciesMeta:
+      p5:
+        optional: true
+
   pac-proxy-agent@7.2.0:
     resolution: {integrity: sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==}
     engines: {node: '>= 14'}
@@ -5249,6 +5263,9 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
+
+  simplex-noise@4.0.3:
+    resolution: {integrity: sha512-qSE2I4AngLQG7BXqoZj51jokT4WUXe8mOBrvfOXpci8+6Yu44+/dD5zqDpOx3Ux792eamTd2lLcI8jqFntk/lg==}
 
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
@@ -10178,6 +10195,10 @@ snapshots:
 
   p-timeout@6.1.4: {}
 
+  p5.brush@3.0.0:
+    dependencies:
+      simplex-noise: 4.0.3
+
   pac-proxy-agent@7.2.0:
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
@@ -10770,6 +10791,8 @@ snapshots:
   siginfo@2.0.0: {}
 
   signal-exit@4.1.0: {}
+
+  simplex-noise@4.0.3: {}
 
   sisteransi@1.0.5: {}
 
