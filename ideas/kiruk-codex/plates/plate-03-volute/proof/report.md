@@ -6,9 +6,9 @@ Plate `plate-03-volute` · style `architect` · verdict **WARN**
 | ----------- | ---: | ---: | ---: | ---: |
 | lighting    |   10 |    0 |    0 |    0 |
 | measurement |   22 |    0 |    0 |    0 |
-| style       |    9 |    0 |    0 |    0 |
+| style       |   10 |    0 |    0 |    0 |
 | connections |    3 |    0 |    0 |    0 |
-| typography  |   10 |    1 |    0 |    0 |
+| typography  |   11 |    1 |    0 |    0 |
 | bleed       |    5 |    0 |    0 |    0 |
 | layout      |    4 |    0 |    0 |    0 |
 | creativity  |    7 |    0 |    0 |    1 |
@@ -101,6 +101,8 @@ Plate `plate-03-volute` · style `architect` · verdict **WARN**
   - why: Overlay: one hue, true segments and arcs, no jitter, texture or filter (research 03 R1, R3). The drawing keeps the hand; the line keeps its precision.
 - **PASS** Outline > interior > construction — contour 0.288 · hatch 0.201 · construction 0.061 (width × density) (target decreasing)
   - why: Line weight hierarchy (research 02 R14).
+- **PASS** The pen runs low sometimes, not all the time — 1% of 3.03 m of pen ink runs starved (target 0%–20% (architect))
+  - why: A starved line breaks on the paper’s peaks; a few passages show the dip rhythm, a plate of them shows a dry pen (anomaly 5, research 01 §1).
 - **PASS** A fresh dip shows, sometimes — 70% of dipped strokes pool (target 10%–80%)
   - why: The dip rhythm is the clock of a pen drawing: dark after the dip, paler as it drains.
 
@@ -131,6 +133,8 @@ Plate `plate-03-volute` · style `architect` · verdict **WARN**
   - why: Capitals for up to ~8 parts, numerals beyond, never mixed (research 02 R4); at most 7 labelled items (03 R12).
 - **PASS** Lettering reads against the paper — 0 under 4.5:1 on real pixels (lowest 7.89:1, fig2-c3-label) (target ≥ 4.5:1)
   - why: WCAG 1.4.3, read on the rendered pixels when a proof is run (codex KC-8: estimates lied once), at 12 px/mm where a lettering stroke is three pixels wide, so the reading is the ink as laid and not the screen’s antialiasing.
+- **PASS** Values are lettered in a type ink, not a line ink — every value in an ink meant for type (target 0 values in rubric-line or another strokes-only ink)
+  - why: The tokens keep the rubric line (#B5462B) for rules, guides and leaders and give measure type its own red (#983A22); values lettered in the line red read 2.9–4.1:1 on Dawn Departs (ledger MA-17).
 - **PASS** Every character is drawn — every drawn character has a glyph (target 0 blank characters)
   - why: A character with no glyph comes out as a space: “41°” read “41” before the degree sign was drawn. A silent blank changes what a value says.
 - **PASS** A blot never fills a letter — 94 letter strokes, every pool under a third of its cap (target pool diameter ≤ 0.32 × cap height)
@@ -157,9 +161,9 @@ Plate `plate-03-volute` · style `architect` · verdict **WARN**
   - why: Rule the sheet first: margins, subject zone, key and notes zones (research 02 R1).
 - **PASS** The weight of the ink sits at or above the middle — ink centroid at 51% of the height (target ≤ 52%)
   - why: The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid.
-- **PASS** The sheet is balanced left to right — ink centroid at 48% of the width (target 50% ± 12%)
+- **PASS** The sheet is balanced left to right — ink centroid at 49% of the width (target 50% ± 12%)
   - why: The subject is centred and largest; commentary frames it (research 02 R2).
-- **PASS** White space is reserved on purpose — 45% of the sheet is paper (target 30%–85%)
+- **PASS** White space is reserved on purpose — 44% of the sheet is paper (target 30%–85%)
   - why: Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5).
 
 ## Creativity

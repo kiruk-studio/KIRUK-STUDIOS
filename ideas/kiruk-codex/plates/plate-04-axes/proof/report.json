@@ -133,6 +133,16 @@
       "why": "Overlay: one hue, true segments and arcs, no jitter, texture or filter (research 03 R1, R3). The drawing keeps the hand; the line keeps its precision."
     },
     {
+      "id": "style.starved",
+      "dimension": "style",
+      "title": "The pen runs low sometimes, not all the time",
+      "status": "pass",
+      "value": "1% of 1.34 m of pen ink runs starved",
+      "target": "0%–20% (night)",
+      "why": "A starved line breaks on the paper’s peaks; a few passages show the dip rhythm, a plate of them shows a dry pen (anomaly 5, research 01 §1).",
+      "fix": "Shorten strokes or let the hand dip (do not hold the reservoir); a heavier pressure spends ink faster."
+    },
+    {
       "id": "style.dip-pools",
       "dimension": "style",
       "title": "A fresh dip shows, sometimes",
@@ -242,6 +252,16 @@
       "why": "WCAG 1.4.3, read on the rendered pixels when a proof is run (codex KC-8: estimates lied once), at 12 px/mm where a lettering stroke is three pixels wide, so the reading is the ink as laid and not the screen’s antialiasing."
     },
     {
+      "id": "type.value-ink",
+      "dimension": "typography",
+      "title": "Values are lettered in a type ink, not a line ink",
+      "status": "pass",
+      "value": "every value in an ink meant for type",
+      "target": "0 values in rubric-line or another strokes-only ink",
+      "why": "The tokens keep the rubric line (#B5462B) for rules, guides and leaders and give measure type its own red (#983A22); values lettered in the line red read 2.9–4.1:1 on Dawn Departs (ledger MA-17).",
+      "fix": "Letter values with valueInk(plate, role), which takes the ink’s type twin."
+    },
+    {
       "id": "type.glyphs",
       "dimension": "typography",
       "title": "Every character is drawn",
@@ -320,7 +340,7 @@
       "dimension": "layout",
       "title": "The weight of the ink sits at or above the middle",
       "status": "pass",
-      "value": "ink centroid at 50% of the height",
+      "value": "ink centroid at 51% of the height",
       "target": "≤ 52%",
       "why": "The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid."
     },
@@ -329,7 +349,7 @@
       "dimension": "layout",
       "title": "The sheet is balanced left to right",
       "status": "pass",
-      "value": "ink centroid at 48% of the width",
+      "value": "ink centroid at 52% of the width",
       "target": "50% ± 12%",
       "why": "The subject is centred and largest; commentary frames it (research 02 R2)."
     },
@@ -338,7 +358,7 @@
       "dimension": "layout",
       "title": "White space is reserved on purpose",
       "status": "pass",
-      "value": "62% of the sheet is paper",
+      "value": "61% of the sheet is paper",
       "target": "30%–85%",
       "why": "Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5)."
     },
@@ -561,7 +581,7 @@
       "human": 0
     },
     "style": {
-      "pass": 10,
+      "pass": 11,
       "warn": 0,
       "fail": 0,
       "human": 0
@@ -573,7 +593,7 @@
       "human": 0
     },
     "typography": {
-      "pass": 10,
+      "pass": 11,
       "warn": 1,
       "fail": 0,
       "human": 0

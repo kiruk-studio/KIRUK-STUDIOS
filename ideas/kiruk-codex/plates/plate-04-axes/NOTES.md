@@ -1,5 +1,5 @@
 ---
-status: drawn 2026-11-05 by mai — critic WARN (0 fail, 1 warn); founder has not reviewed
+status: drawn 2026-11-05 by mai, re-proofed after critic v0.2 — critic WARN (0 fail, 1 warn); founder has not reviewed
 plate: IV
 engine: packages/mai (style night: departs ink and chalk on the night sheet)
 source: packages/mai/plates/axes.ts
@@ -43,7 +43,7 @@ eye-motif: drawn — the globe of the eye itself, with its cornea and pupil, tur
 
 `node packages/mai/scripts/proof.ts packages/mai/plates/axes.ts ideas/kiruk-codex/plates/plate-04-axes/proof --px 4 --commit`
 
-The result is 53 checks, **0 fail, 1 warn, 1 look**. The full report is in [`proof/report.md`](proof/report.md); the parts table (anatomy) is at its end.
+The result is 55 checks, **0 fail, 1 warn, 1 look**. The full report is in [`proof/report.md`](proof/report.md); the parts table (anatomy) is at its end.
 
 - **Line types:** 39 hidden strokes, all dashed (`line.hidden`); 10 dashed lines, the hand's dashes uneven as a hand's are (`line.dashes`); every long chain line named at an end (`connect.axes-named`).
 - **Anatomy:** 8 parts (globe, cornea, planes, the three axes, sweep, plan), each drawn, finished as declared, keyed where it has a key, and measured or given a reason it is not.

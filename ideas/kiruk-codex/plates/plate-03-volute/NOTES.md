@@ -1,5 +1,5 @@
 ---
-status: drawn 2026-11-05 by mai, outer measurement added the same day — critic WARN (0 fail, 1 warn); founder has not reviewed
+status: drawn 2026-11-05 by mai, outer measurement added the same day, re-proofed after critic v0.2 — critic WARN (0 fail, 1 warn); founder has not reviewed
 plate: III
 engine: packages/mai (style architect, restyled to iron-gall on Dawn Light)
 source: packages/mai/plates/volute.ts
@@ -50,7 +50,7 @@ eye-motif: drawn — the oculus of the Ionic volute, the eye the scroll is struc
 
 `node packages/mai/scripts/proof.ts packages/mai/plates/volute.ts ideas/kiruk-codex/plates/plate-03-volute/proof --px 4 --commit`
 
-The result is 72 checks, **0 fail, 1 warn, 1 look**. The full report is in [`proof/report.md`](proof/report.md); the parts table (anatomy) is at its end.
+The result is 74 checks, **0 fail, 1 warn, 1 look**. The full report is in [`proof/report.md`](proof/report.md); the parts table (anatomy) is at its end.
 
 - **Anatomy:** 9 parts (abacus, scroll, canalis, eye A, cathetus B, fillet C, echinus D, shaft, Fig. 2), each drawn, finished as declared (line, tone or construction), keyed and noted where it has a key, and measured or given a reason it is not.
 - **Outer measurement:** two overall dimensions, outermost on their sides and 8 mm beyond the inner tier (`measure.tiers-order`, `measure.tier-gap`); the neatline graduated at the plate's scale, with no ink across it.
@@ -61,6 +61,7 @@ Fixed on the way, recorded in `packages/mai/docs/ledger.md`:
 
 - Round one: MA-5 (the canalis hatched as leaves, and the critic passed it), MA-6 (the shaft's joins read as bamboo), MA-8 (pens ran dry 2.5× too fast), MA-9 and MA-10 (the critic's own false fails).
 - Round two: MA-16 (a fresh-dip blot filled the 4 of "345 mm"), MA-17 (the frame's 1.8 mm numbers read 4.2:1), MA-21 (the frame and a long shaft stub pulled the ink's weight to 54% of the height; the stub is now shorter), MA-22 (the overall dimensions first ran to the shaft's break line), MA-23 (the overall stood 2 mm from the volute height), MA-24 (the scale label's middle dot came out blank).
+- After the round: MA-27 (the hand braked at polyline vertices, so its speed rippled; found on the calculus page; curvature now by chord turning) and MA-30 (`style.starved` was promised in the docs before it existed; it now runs, and passes).
 
 ## Questions for the founder
 
