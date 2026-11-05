@@ -12,6 +12,7 @@ import { EYE, LANDMARKS } from '@kiruk/burin/rig';
 import type { CSSProperties } from 'react';
 import { Construction } from './Construction';
 import { DawnToggle } from './DawnToggle';
+import { KeyFit } from './KeyFit';
 import { Neatline } from './Neatline';
 import { Notes } from './Notes';
 import { ScaleLabels } from './ScaleLabels';
@@ -162,6 +163,7 @@ export function EyeOverlay() {
         ))}
       </ol>
 
+      <KeyFit />
       <Neatline />
       <Notes />
     </div>
