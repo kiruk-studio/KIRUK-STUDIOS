@@ -9,5 +9,11 @@
  * zero-JS subset is ./server.
  */
 
+export * from './catalog';
+export type { ButtonProps } from './components/Button';
+export { Button } from './components/Button';
+export type { FrameProps } from './components/Frame';
+export { Frame } from './components/Frame';
 export * from './engine';
+export * from './marks';
 export * from './server';

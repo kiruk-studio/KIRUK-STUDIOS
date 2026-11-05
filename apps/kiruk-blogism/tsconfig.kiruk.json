@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "First-party typecheck under the repo's strict base. apps/kiruk-blogism/tsconfig.json is hash-protected by the vendored Toolcraft manifest and cannot extend tsconfig.base.json, so kiruk's own source is checked here — see 'TypeScript strict mode everywhere' in openspec/specs/tech-stack/spec.md.",
+  "//boundary": "Only src/kiruk/** is listed. It must NOT import from src/toolcraft/**: the base config sets noUncheckedIndexedAccess, the vendored kit does not satisfy it, and those files are hash-locked so the errors cannot be fixed. src/app/* is the thin adapter layer that may import the kit; it is typechecked by the kit's own locked `typecheck` script instead.",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src/kiruk/**/*.ts", "src/kiruk/**/*.tsx"],
+  "exclude": ["node_modules", "dist", "src/toolcraft"]
+}

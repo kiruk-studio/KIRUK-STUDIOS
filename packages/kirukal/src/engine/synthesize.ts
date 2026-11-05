@@ -39,10 +39,10 @@ export function outlineToPath(outline: readonly (readonly number[])[]): string {
   return `${d} Z`;
 }
 
-function strokeToPath(samples: readonly Sample[], strokeWidth: number): string {
+function strokeToPath(samples: readonly Sample[], strokeWidth: number, last = true): string {
   if (samples.length < 2) return '';
   const input = samples.map(([x, y, p]) => [x, y, p]);
-  return outlineToPath(getStroke(input, { ...STROKE_OPTIONS, size: strokeWidth }));
+  return outlineToPath(getStroke(input, { ...STROKE_OPTIONS, last, size: strokeWidth }));
 }
 
 /**
@@ -96,7 +96,7 @@ export function synthesizeFrame(recipe: StrokeRecipe, opts: SynthesizeOptions): 
       default:
         placed = [...stroke.samples];
     }
-    const d = strokeToPath(placed, opts.strokeWidth);
+    const d = strokeToPath(placed, opts.strokeWidth, opts.last ?? true);
     if (d !== '') paths.push(d);
   }
 
@@ -117,7 +117,7 @@ export function synthesizeMark(recipe: StrokeRecipe, opts: SynthesizeOptions): s
   if (take === undefined) return [];
   const paths: string[] = [];
   for (const stroke of take.strokes) {
-    const d = strokeToPath(stroke.samples, opts.strokeWidth);
+    const d = strokeToPath(stroke.samples, opts.strokeWidth, opts.last ?? true);
     if (d !== '') paths.push(d);
   }
   return paths;

@@ -84,4 +84,9 @@ export interface SynthesizeOptions {
   readonly seed: number;
   /** Rendered stroke width in px. Absolute — never scaled by the box. */
   readonly strokeWidth: number;
+  /**
+   * perfect-freehand `last` flag. Live in-progress strokes pass false so the
+   * taper does not pinch while the pointer is still down.
+   */
+  readonly last?: boolean;
 }

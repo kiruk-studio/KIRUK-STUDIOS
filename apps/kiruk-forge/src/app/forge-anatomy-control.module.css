@@ -1,0 +1,70 @@
+.desk {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pieces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.piece {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.takes {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  pointer-events: none;
+  border: 1px solid var(--toolcraft-custom-viz-line);
+  border-radius: 999px;
+  display: block;
+  height: 8px;
+  width: 8px;
+}
+
+.dotFilled {
+  background: var(--toolcraft-custom-viz-data);
+  border-color: var(--toolcraft-custom-viz-data);
+}
+
+.dotActive {
+  background: var(--toolcraft-custom-viz-ink);
+  border-color: var(--toolcraft-custom-viz-ink);
+}
+
+.status {
+  color: var(--toolcraft-custom-viz-line-strong);
+  font-size: 12px;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.preview {
+  background: var(--toolcraft-custom-viz-surface);
+  border: 1px solid var(--toolcraft-custom-viz-border);
+  border-radius: var(--radius-lg);
+  min-width: 0;
+  padding: 10px;
+}
+
+.previewHost {
+  color: var(--toolcraft-custom-viz-ink);
+  min-height: 40px;
+}
+
+.previewFrame {
+  min-height: 72px;
+  padding: 12px;
+}

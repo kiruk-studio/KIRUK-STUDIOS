@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 2,
+  "providers": {
+    "vgpu": {
+      "approvedRelease": {
+        "adapterContractVersion": 1,
+        "commands": [
+          "enable",
+          "install",
+          "wgsl-check",
+          "delivery"
+        ],
+        "compatibilitySourceHash": "dc82812ba609243a7f0bb54ce1b872aee204d631de4af941c8968833099d7af7",
+        "dependencies": [
+          {
+            "integrity": "sha512-NeEETis2aCr0I9/8dy42lueNGNs3GZxL+0OmjLI82wlgPD/4WpW/XNX4xduc+ChxFqOJtjEYsz297VS9GmIuyA==",
+            "name": "vgpu",
+            "role": "runtime",
+            "version": "0.3.1"
+          },
+          {
+            "integrity": "sha512-/D3l/+0Kw/Hnr79AvxsLUjp21/ZeTcbBmvltXkftyHBXqs0YZf+0AVOeMpMyWjV24lGPrPgIqDsGpmKS38y7Ow==",
+            "name": "@vgpu/wgsl",
+            "role": "wgsl-tooling",
+            "version": "0.3.1"
+          }
+        ],
+        "testedAt": "2026-08-30T09:30:05.769Z"
+      },
+      "capability": "shader-webgpu-vgpu",
+      "requiredExports": [
+        ".",
+        "./mock",
+        "./node"
+      ],
+      "viteLoader": "@vgpu/wgsl/loader-vite"
+    }
+  }
+}

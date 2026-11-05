@@ -1,0 +1,75 @@
+.stage {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.live {
+  align-items: stretch;
+  display: flex;
+  height: 100%;
+  justify-content: stretch;
+  min-height: 0;
+  min-width: 0;
+  pointer-events: none;
+  width: 100%;
+}
+
+.buttonHost {
+  background: var(--toolcraft-custom-viz-surface);
+  border: 1px solid var(--toolcraft-custom-viz-line-strong);
+  border-radius: 8px;
+  color: var(--toolcraft-custom-viz-ink);
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 8px 20px;
+}
+
+.frameHost {
+  background: var(--toolcraft-custom-viz-surface);
+  border: 1px solid var(--toolcraft-custom-viz-line-strong);
+  color: var(--toolcraft-custom-viz-ink);
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 24px;
+}
+
+.outline {
+  color: var(--toolcraft-custom-viz-line-strong);
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  width: 100%;
+}
+
+.hotspot {
+  background: transparent;
+  border: 1px solid var(--toolcraft-custom-viz-line);
+  border-radius: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hotspot:focus-visible {
+  outline: 2px solid var(--toolcraft-custom-viz-ink);
+  outline-offset: 2px;
+}
+
+.hotspotActive {
+  border-color: var(--accent);
+}
+
+.pen {
+  cursor: crosshair;
+  display: block;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  touch-action: none;
+  width: 100%;
+}

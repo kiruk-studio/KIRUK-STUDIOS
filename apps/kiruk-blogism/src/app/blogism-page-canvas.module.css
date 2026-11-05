@@ -1,0 +1,7 @@
+.surface {
+  cursor: crosshair;
+  display: block;
+  height: 100%;
+  touch-action: none;
+  width: 100%;
+}
