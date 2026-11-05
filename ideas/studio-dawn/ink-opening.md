@@ -58,7 +58,7 @@ The way-in hint waits until the page underneath is ready: loaded, its type set, 
 5. **Colours are working values.** They are the dawn papers and inks (color.dawn.\*) and the engine's own sanguine and blueprint, as they look multiplied into the paper. They are not tokens, the same as the engine's constants.
 6. **The construction fades as the ink comes.** It goes from full to the plate's faint 0.3, the way the plate's own construction leads and then gives way.
 7. **About five seconds of drawing.** That is the plate's timeline at 1.12×. A press, a wheel, Enter or Space hurries the hand about nine times over. Enter, Space, a click or a tap on the eye goes in once it is awake. Reduced motion shows the finished drawing, still.
-8. **The tube and the live 3D era eye are no longer used by the studio's loader.** Their files stay in the tree, unimported, until the founder decides.
+8. **The tube and the live 3D era eye are no longer used by the studio's loader.** Their files stay in the tree, unimported, until the founder decides. _The founder decided the same day: they are deleted, with `@react-three/fiber` and `postprocessing` (CHANGELOG, 2026-11-05, Removed). kiruk.in stays the eye machine's one source._
 9. **The loader keeps the visitor's hand to itself.** Its pointer events stop at the loader. The page underneath no longer turns its eye, blinks or wets its paper under a hand it cannot see (LEARNINGS, 2026-11-05).
 10. **Black is crossed, not flooded.** One family of lines never merges into solid black. The darks come from a second family crossing it ([ink-strokes.md](./ink-strokes.md)).
 11. **The white's shade belongs to the face.** The lids' shadow, the corners and the globe's far side are lines fixed to the face, crossing the globe's arcs. They do not travel with the gaze. The white is cut at the plica, so the caruncle stays in front of it.
@@ -93,7 +93,7 @@ The way-in hint waits until the page underneath is ready: loaded, its type set, 
 1. Is the pace right? It is about five seconds of drawing, then about two of waking.
 2. Should the eye be drawn shut, with opening it as the loading animation, instead of drawn open and blinking awake?
 3. The corner names the pass being drawn. Keep the words, or let the drawing speak alone?
-4. Should the unused tube and 3D era eye be deleted from `apps/kiruk-studio`?
+4. ~~Should the unused tube and 3D era eye be deleted from `apps/kiruk-studio`?~~ **Answered 2026-11-05: yes, and they are deleted.** The loader and the landing behaved the same in a production build before and after.
 5. A returning visitor in a new session sees the whole drawing again. Should they get a shorter one?
 6. Port the redrawn look (rings, held light, the face's shade on the white) to the GPU plate, so the landing's hand-off meets the same eye?
 7. Is the shadow under the brow too heavy? Should the brow be bolder (the vintage eye) or more feathery (the anatomical plate)?

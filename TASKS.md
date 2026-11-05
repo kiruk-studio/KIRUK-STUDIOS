@@ -51,7 +51,7 @@
 - [ ] (P1) Founder checkpoint on the ink opening (pace, open vs shut, corner words) and a real-GPU check of the hand-off onto the plate — spec: ideas/studio-dawn/ink-opening.md
 - [x] (P1) 2026-11-05 Ink opening's eye redrawn after the founder's three engravings: the pen's vocabulary (hairline to swell, tapers, crossing for black), socket rings, held light, the face's shade fixed on the white, caruncle, brow, iris — spec: ideas/studio-dawn/ink-strokes.md
 - [ ] (P2) Founder decides: port the redrawn look (rings, held light, the white's fixed shade) to the GPU plate `packages/burin/src/subjects/eye/shader.ts`, so the landing's hand-off meets the same eye — spec: ideas/studio-dawn/ink-strokes.md
-- [ ] (P2) Decide whether to delete the unused 1970 tube and live 3D era eye from `apps/kiruk-studio` (no longer imported by the loader)
+- [x] (P2) 2026-11-05 Deleted the unused 1970 tube and live 3D era eye from `apps/kiruk-studio`, with `@react-three/fiber` and `postprocessing`. It was the founder's call: kiruk.in stays the eye machine's one source, and a second copy here would drift and publish the private site's structure. The files can be recovered at `5c4583c`. See CHANGELOG 2026-11-05 (Removed) — spec: ideas/private-craft-bridge/README.md
 - [~] (P1) **kiruk-codex skill** (`.claude/skills/kiruk-codex/`, plan `ideas/kiruk-codex/plan.md`): drafted 2026-10-20; Plate I tested twice and fixed; marks / depth / live added (untested on a mark plate); then founder review (name, rubric vs ultramarine, "TypeScript", type trio) and keep/delete the parked blend prototypes
 - [ ] (P1) Founder: drop ink-bleed + dawn references into `ideas/studio-dawn/references/` (gitignored)
 - [x] (P0) 2026-11-05 **mai ink engine** (`packages/mai`) + skills `/kiruk-mai`, `/kiruk-mai-proof`, `/kiruk-mai-style` + Plate III (the eye of the volute) — spec: packages/mai/README.md
@@ -60,7 +60,7 @@
 - [ ] (P2) mai: phone layout for landscape plates (critic `type.phone`)
 - [ ] (P2) Founder decision: red construction under a rubric overlay (critic `style.red-confusion`, research 02 C1)
 - [ ] (P2) Move folio `ink/pen.ts` and burin `vector/burin.ts` onto `@kiruk/mai` once the founder approves the engine
-- [ ] (P1) **Phase 4 — Stack + spec:** revise tech-stack, spec dawn palette tokens, mark old sketch/grease-pencil requirements superseded, close `openspec/changes/grease-pencil-scene`
+- [ ] (P1) **Phase 4 — Stack + spec:** revise tech-stack (incl. its WebGL clause: it requires R3F + drei + postprocessing, but the studio's live WebGL is plain `three/webgpu` + TSL and no workspace uses R3F since 2026-11-05), spec dawn palette tokens, mark old sketch/grease-pencil requirements superseded, close `openspec/changes/grease-pencil-scene`
 - [ ] (P2) **Phase 5 —** founder sketch layer + a curated skill per curated thing
 - [ ] (P1) Review the ways-of-working proposal (`ideas/ways-of-working/proposal.md`, from the research session)
 - [ ] (P2) Prags on `/work` only after Prakathiswar's written consent
