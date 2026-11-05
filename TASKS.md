@@ -49,6 +49,12 @@
 - [ ] (P1) **Phase 3 — Ideation** in `ideas/studio-dawn/`: dawn loop, ink-bleed TSL prototype, sketch layer, eye link
 - [~] (P1) **kiruk-codex skill** (`.claude/skills/kiruk-codex/`, plan `ideas/kiruk-codex/plan.md`): drafted 2026-10-20; Plate I tested twice and fixed; marks / depth / live added (untested on a mark plate); then founder review (name, rubric vs ultramarine, "TypeScript", type trio) and keep/delete the parked blend prototypes
 - [ ] (P1) Founder: drop ink-bleed + dawn references into `ideas/studio-dawn/references/` (gitignored)
+- [x] (P0) 2026-11-05 **mai ink engine** (`packages/mai`) + skills `/kiruk-mai`, `/kiruk-mai-proof`, `/kiruk-mai-style` + Plate III (the eye of the volute) — spec: packages/mai/README.md
+- [ ] (P1) Founder: review Plate III (four questions in `ideas/kiruk-codex/plates/plate-03-volute/NOTES.md`) and the three mai skills
+- [ ] (P1) mai: a codex plate in Leonardo's manner (the eye and its light) — quill, iron-gall, left-hand hatching, notes with readable twins
+- [ ] (P2) mai: phone layout for landscape plates (critic `type.phone`)
+- [ ] (P2) Founder decision: red construction under a rubric overlay (critic `style.red-confusion`, research 02 C1)
+- [ ] (P2) Move folio `ink/pen.ts` and burin `vector/burin.ts` onto `@kiruk/mai` once the founder approves the engine
 - [ ] (P1) **Phase 4 — Stack + spec:** revise tech-stack, spec dawn palette tokens, mark old sketch/grease-pencil requirements superseded, close `openspec/changes/grease-pencil-scene`
 - [ ] (P2) **Phase 5 —** founder sketch layer + a curated skill per curated thing
 - [ ] (P1) Review the ways-of-working proposal (`ideas/ways-of-working/proposal.md`, from the research session)

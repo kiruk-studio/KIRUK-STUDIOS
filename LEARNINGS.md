@@ -60,3 +60,10 @@ Use this shape (markdown `##` heading + bullets):
 - **Root cause:** A directory listing piped through `head -40` cut off before the day files, so they looked absent. They were also untracked, so git could not restore them.
 - **Fix:** Pulled the previous versions out of the earlier session transcript, diffed line by line, restored the one dropped detail (back-link to the series README).
 - **Guard:** Never decide a file is missing from a truncated listing; list the exact folder before writing. Untracked notes in `ideas/` have no git safety net — read before overwrite, and commit `ideas/` notes in the same session they are filed.
+
+## 2026-11-05 — A plate passed every number and still read as fake
+
+- **Mistake:** mai's critic passed Plate III with the volute's channel hatched in strokes 0.7–1.5 mm long. At 4× they read as leaves stuck along the line, a costume tell, though the critic's lighting numbers were good.
+- **Root cause:** The critic measures tone, coverage, slope and spacing, not the shape a short stroke makes. Numbers are necessary, not sufficient, as the codex learned with contrast (KC-8).
+- **Fix:** Narrow bands are now shaded with lines that follow the form (`bandLine`, with hysteresis and minimum runs), and the plate was re-proofed. Ledger row MA-5 in `packages/mai/docs/ledger.md`.
+- **Guard:** `/kiruk-mai-proof` makes the 4× look mandatory, with seven written questions (ends, joins, edges, rhythm, short strokes, blots, dry media) before any SHOW verdict. `/kiruk-mai` has the rule "narrow forms follow the form". A second miss of this class becomes a critic check on stroke aspect ratio.

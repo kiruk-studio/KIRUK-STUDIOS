@@ -10,6 +10,32 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ### Added
 
+- **mai, the ink engine, and three skills to drive it (2026-11-05).** New package [`@kiruk/mai`](packages/mai/README.md). மை (mai) is Tamil for ink, and for the kohl that lines an eye. It turns intended geometry into a plate that looks generated and reads as a hand.
+  - **The hand.** Speed slows into bends (the two-thirds power law). Tremor of 8–12 Hz shows only on slow strokes. Long fast runs drift. Strokes land with a hook, leave with a taper or a hook return, and lift at the hand's reach.
+  - **The pen and the ink.** 11 instruments and 11 inks. Iron-gall, navy, rubric, Dawn Light and Dawn Departs mirror their `color.dawn.*` tokens; the rest are labelled working values.
+  - **The anomalies of the act.** 17 are numbered on a [specimen sheet](packages/mai/specimens/anomalies/plate.png), including pools and drying rims, the dip rhythm, starvation onto the paper's peaks, railroading, feathering along fibres, nib catches, the ruler's crisp side, compass pricks and blind stylus lines. Damage of time (halos, browning) is off unless a plate states why.
+  - **Light, measure and lettering.** One declared light, and forms whose hatching is calibrated to tone: a general shadow first (Leonardo ¶555), the left hand's slope in the codex style, and lines that follow the form in narrow bands. Dimensions are computed from the ink at the plate's scale. Constructions must record what they generated. Lettering uses Hershey single-stroke glyphs drawn by the same hand, at ISO 3098 sizes.
+  - **The critic.** About 55 checks over lighting, measurement, style, connections, typography, bleed, layout and creativity. Each ends in a number, a target and a cited reason. It hunts plotter tells and costume tells, and always leaves one item open for the founder.
+  - **Skills** in `.claude/commands/`:
+    - [`/kiruk-mai`](.claude/commands/kiruk-mai.md) draws a plate: quality is decided first, then seven passes with research numbers.
+    - [`/kiruk-mai-proof`](.claude/commands/kiruk-mai-proof.md) gives the numbers, then a mandatory 4× look, then a verdict.
+    - [`/kiruk-mai-style`](.claude/commands/kiruk-mai-style.md) turns a reference into a measured style.
+  - **References:** [`docs/anomalies.md`](packages/mai/docs/anomalies.md), [`styles.md`](packages/mai/docs/styles.md), [`checks.md`](packages/mai/docs/checks.md) and a [ledger](packages/mai/docs/ledger.md) (MA-1 to MA-10).
+  - **First plate:** [Plate III, The eye of the volute](ideas/kiruk-codex/plates/plate-03-volute/NOTES.md). An Ionic volute is struck from twelve centres inside its eye (the oculus), so the studio's eye is found inside a historic construction. The right half is finished in iron-gall on Dawn Light and the left half left in construction. Fig. 2 numbers the centres at ×6, and the dimensions are measured from the ink.
+  - **Why:** The founder asked for the engine behind the studio's visuals, with strokes that capture the anomaly of ink, generated but human, able to handle historic design in every detail. They also asked that every element be checked (lighting, measurements, design style, connections, typography, ink bleed, layout, creativity), and that the engine and its skills be strong and specific. The five references the founder shared are mapped to styles in `docs/styles.md`; none is committed.
+  - **Verified:**
+    - `tsc` is clean, and Vitest passes 22 tests covering determinism, the hand, ink capacity, starvation, dry media, time off by default, the exact overlay, and critic cases for plotter and costume tells.
+    - Biome reports 0 errors (non-null-assertion warnings, as in `@kiruk/kirukal`).
+    - Plate III's proof: 56 checks, 0 fail, 2 warn (phone legibility of a landscape plate, and the rise at 53% against 52%).
+  - **Found and fixed:** ledger MA-1 to MA-10. Thorn feathers, hooks on every hatch stroke, blots everywhere, leaf-shaped hatching that the critic passed, bamboo joins, barcode graphite, pens running dry 2.5× too fast, and two false fails in the critic.
+  - **Not done:**
+    - The founder has not reviewed the plate or the skills.
+    - A Leonardo codex plate, the optics of the eye, is next.
+    - Landscape plates need a phone layout.
+    - Red construction under a rubric overlay is still an open question (research 02 C1).
+    - The folio's `ink/pen.ts` and burin's vector strokes are not migrated onto mai.
+    - mai is not wired into an app.
+
 - **The plate shows its making (2026-11-04).** Eight old pages, read for what each teaches, gave the eye plate on `apps/kiruk-studio` `/` five new parts:
   - **Make it again (C).** The plate replays: the construction first, then each pass cut as a front across the eye, while the strip underlines the study being cut. The engine's plate passes are now a uniform (`make`).
   - **Construction that writes on itself.** Notes run along the globe's arc and up the orbit (SVG `textPath`, printed in ink so the engine knocks the engraving out round them). Steps ① – ⑧ give the order of drawing, and a dashed compass radius has its arrow.

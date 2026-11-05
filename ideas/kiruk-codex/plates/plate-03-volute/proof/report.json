@@ -1,0 +1,581 @@
+{
+  "plate": "plate-03-volute",
+  "title": "Plate III — The eye of the volute",
+  "style": "architect",
+  "verdict": "warn",
+  "checks": [
+    {
+      "id": "light.tied",
+      "dimension": "lighting",
+      "title": "Every tone is tied to a form under the one light",
+      "status": "pass",
+      "value": "0 of 149 hatch strokes without a form",
+      "target": "0",
+      "why": "One light per plate, declared (research 02 §11). Tone not tied to a form cannot be proved against it.",
+      "fix": "Lay tone with hatch({ form }) so each stroke records its form and target tone."
+    },
+    {
+      "id": "light.follows:egg-1",
+      "dimension": "lighting",
+      "title": "Ink follows the light on “egg-1”",
+      "status": "pass",
+      "value": "ρ = 0.77 (tone vs ink, 41 cells)",
+      "target": "ρ ≥ 0.6",
+      "why": "Darker target tone must carry more ink everywhere on the form; Leonardo ¶555: shadow first on the part away from the light.",
+      "fix": "Check the form’s normals and the plate light; do not hand-place hatching that the light does not ask for."
+    },
+    {
+      "id": "light.lit-clear:egg-1",
+      "dimension": "lighting",
+      "title": "The lit side of “egg-1” stays paper",
+      "status": "pass",
+      "value": "lit 0 vs dark 0.39 ink/mm²",
+      "target": "lit ≤ 25% of dark",
+      "why": "Where the light falls the paper is the light; ink there flattens the form."
+    },
+    {
+      "id": "light.follows:egg-2",
+      "dimension": "lighting",
+      "title": "Ink follows the light on “egg-2”",
+      "status": "pass",
+      "value": "ρ = 0.79 (tone vs ink, 41 cells)",
+      "target": "ρ ≥ 0.6",
+      "why": "Darker target tone must carry more ink everywhere on the form; Leonardo ¶555: shadow first on the part away from the light.",
+      "fix": "Check the form’s normals and the plate light; do not hand-place hatching that the light does not ask for."
+    },
+    {
+      "id": "light.lit-clear:egg-2",
+      "dimension": "lighting",
+      "title": "The lit side of “egg-2” stays paper",
+      "status": "pass",
+      "value": "lit 0 vs dark 0.422 ink/mm²",
+      "target": "lit ≤ 25% of dark",
+      "why": "Where the light falls the paper is the light; ink there flattens the form."
+    },
+    {
+      "id": "light.follows:egg-3",
+      "dimension": "lighting",
+      "title": "Ink follows the light on “egg-3”",
+      "status": "pass",
+      "value": "ρ = 0.78 (tone vs ink, 41 cells)",
+      "target": "ρ ≥ 0.6",
+      "why": "Darker target tone must carry more ink everywhere on the form; Leonardo ¶555: shadow first on the part away from the light.",
+      "fix": "Check the form’s normals and the plate light; do not hand-place hatching that the light does not ask for."
+    },
+    {
+      "id": "light.lit-clear:egg-3",
+      "dimension": "lighting",
+      "title": "The lit side of “egg-3” stays paper",
+      "status": "pass",
+      "value": "lit 0 vs dark 0.402 ink/mm²",
+      "target": "lit ≤ 25% of dark",
+      "why": "Where the light falls the paper is the light; ink there flattens the form."
+    },
+    {
+      "id": "light.follows:shaft",
+      "dimension": "lighting",
+      "title": "Ink follows the light on “shaft”",
+      "status": "pass",
+      "value": "ρ = 0.89 (tone vs ink, 272 cells)",
+      "target": "ρ ≥ 0.6",
+      "why": "Darker target tone must carry more ink everywhere on the form; Leonardo ¶555: shadow first on the part away from the light.",
+      "fix": "Check the form’s normals and the plate light; do not hand-place hatching that the light does not ask for."
+    },
+    {
+      "id": "light.lit-clear:shaft",
+      "dimension": "lighting",
+      "title": "The lit side of “shaft” stays paper",
+      "status": "pass",
+      "value": "lit 0.002 vs dark 0.462 ink/mm²",
+      "target": "lit ≤ 25% of dark",
+      "why": "Where the light falls the paper is the light; ink there flattens the form."
+    },
+    {
+      "id": "light.contour-weight",
+      "dimension": "lighting",
+      "title": "Contours are heavy away from the light",
+      "status": "pass",
+      "value": "shadow side 2.45× the lit side",
+      "target": "≥ 1.15×",
+      "why": "The quill contour swells where the edge turns from the light (research 01 §1: variable weight).",
+      "fix": "Draw outlines with contour(), which weights pressure by the light."
+    },
+    {
+      "id": "measure.true:dim-height",
+      "dimension": "measurement",
+      "title": "Dimension dim-height says what the ink measures",
+      "status": "pass",
+      "value": "label “250 mm”, ink 249.994 mm",
+      "target": "|Δ| ≤ 1.25",
+      "why": "Nothing on a plate is invented (codex step 2); a value is measured from the drawing, never typed.",
+      "fix": "Let dimension() compute the value, or correct the geometry, not the label."
+    },
+    {
+      "id": "measure.extension:dim-height",
+      "dimension": "measurement",
+      "title": "Extension lines of dim-height: gap and overshoot",
+      "status": "pass",
+      "value": "gap 1.5 mm, overshoot 2.6 mm",
+      "target": "gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm",
+      "why": "ISO 129-1 / ASME as cited in research 03 §2.2."
+    },
+    {
+      "id": "measure.on-ink:dim-height",
+      "dimension": "measurement",
+      "title": "dim-height measures the visible ink",
+      "status": "pass",
+      "value": "both ends on ink",
+      "target": "both ends within 0.8 mm of ink",
+      "why": "Measure to the visible ink or a stated datum, never to the bounding box (research 03 R9)."
+    },
+    {
+      "id": "measure.tier:dim-height",
+      "dimension": "measurement",
+      "title": "dim-height stands clear of the drawing",
+      "status": "pass",
+      "value": "45.52 mm from the feature",
+      "target": "≥ 6 mm (first tier 10–12 mm)",
+      "why": "Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart."
+    },
+    {
+      "id": "measure.true:dim-eye",
+      "dimension": "measurement",
+      "title": "Dimension dim-eye says what the ink measures",
+      "status": "pass",
+      "value": "label “32 mm”, ink 32 mm",
+      "target": "|Δ| ≤ 0.5",
+      "why": "Nothing on a plate is invented (codex step 2); a value is measured from the drawing, never typed.",
+      "fix": "Let dimension() compute the value, or correct the geometry, not the label."
+    },
+    {
+      "id": "measure.extension:dim-eye",
+      "dimension": "measurement",
+      "title": "Extension lines of dim-eye: gap and overshoot",
+      "status": "pass",
+      "value": "gap 1.5 mm, overshoot 2.6 mm",
+      "target": "gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm",
+      "why": "ISO 129-1 / ASME as cited in research 03 §2.2."
+    },
+    {
+      "id": "measure.on-ink:dim-eye",
+      "dimension": "measurement",
+      "title": "dim-eye measures the visible ink",
+      "status": "pass",
+      "value": "both ends on ink",
+      "target": "both ends within 0.8 mm of ink",
+      "why": "Measure to the visible ink or a stated datum, never to the bounding box (research 03 R9)."
+    },
+    {
+      "id": "measure.tier:dim-eye",
+      "dimension": "measurement",
+      "title": "dim-eye stands clear of the drawing",
+      "status": "pass",
+      "value": "27.5 mm from the feature",
+      "target": "≥ 6 mm (first tier 10–12 mm)",
+      "why": "Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart."
+    },
+    {
+      "id": "measure.unit",
+      "dimension": "measurement",
+      "title": "The plate states a unit or module",
+      "status": "pass",
+      "value": "unit mm",
+      "target": "a scale bar or a dimension",
+      "why": "Every plate states a unit or module, or shows a familiar object at scale (research 01 R13, 02 R13)."
+    },
+    {
+      "id": "measure.sourced",
+      "dimension": "measurement",
+      "title": "Every fact on the plate has a source",
+      "status": "pass",
+      "value": "5 facts, 0 without a source",
+      "target": "all sourced",
+      "why": "If it is not in the truth table it is not on the sheet (codex step 2)."
+    },
+    {
+      "id": "style.width",
+      "dimension": "style",
+      "title": "Line width breathes (not a plotter, not chaos)",
+      "status": "pass",
+      "value": "median width CV 0.2 over 184 strokes",
+      "target": "0.12–0.7 (architect)",
+      "why": "Taper and variable weight are the defining marks of the hand (research 01 §1); constant width is the plotter tell."
+    },
+    {
+      "id": "style.tremor",
+      "dimension": "style",
+      "title": "The hand trembles a little, where it is slow",
+      "status": "pass",
+      "value": "median tremor 0.009 mm",
+      "target": "0.003–0.045 mm",
+      "why": "Physiological tremor (8–12 Hz) shows on slow strokes; none at all is a plotter, too much is a costume wobble."
+    },
+    {
+      "id": "style.ends",
+      "dimension": "style",
+      "title": "Strokes enter and leave like a pen",
+      "status": "pass",
+      "value": "100% tapered or pooled",
+      "target": "≥ 70%",
+      "why": "A quill lands on its weight, tapers or hooks as it leaves (research 01 §1); butt ends read as plotted."
+    },
+    {
+      "id": "style.slope",
+      "dimension": "style",
+      "title": "Each surface keeps its own direction",
+      "status": "pass",
+      "value": "5 hatch fields, one direction each",
+      "target": "one family per surface",
+      "why": "A different angle for each adjacent part, regular within it (research 02 §11, R9)."
+    },
+    {
+      "id": "style.uneven",
+      "dimension": "style",
+      "title": "Hatching is laid by hand, not by machine",
+      "status": "pass",
+      "value": "6 hatch fields, none mechanical",
+      "target": "gap CV ≥ 0.06 or length CV ≥ 0.12",
+      "why": "Equal gaps and equal lengths are the screen of a plotter."
+    },
+    {
+      "id": "style.palette",
+      "dimension": "style",
+      "title": "Few colours: ink, construction, overlay",
+      "status": "pass",
+      "value": "1 hue families (neutral)",
+      "target": "≤ 3",
+      "why": "Monochrome ink on a light ground plus at most one accent (research 01 R12); many colours or effects is a named fake (01 §5)."
+    },
+    {
+      "id": "style.overlay-crisp",
+      "dimension": "style",
+      "title": "The modern line is exact",
+      "status": "pass",
+      "value": "0 overlay marks drawn by hand",
+      "target": "0",
+      "why": "Overlay: one hue, true segments and arcs, no jitter, texture or filter (research 03 R1, R3). The drawing keeps the hand; the line keeps its precision."
+    },
+    {
+      "id": "style.hierarchy",
+      "dimension": "style",
+      "title": "Outline > interior > construction",
+      "status": "pass",
+      "value": "contour 0.288 · hatch 0.214 · construction 0.062 (width × density)",
+      "target": "decreasing",
+      "why": "Line weight hierarchy (research 02 R14)."
+    },
+    {
+      "id": "style.dip-pools",
+      "dimension": "style",
+      "title": "A fresh dip shows, sometimes",
+      "status": "pass",
+      "value": "60% of dipped strokes pool",
+      "target": "10%–80%",
+      "why": "The dip rhythm is the clock of a pen drawing: dark after the dip, paler as it drains."
+    },
+    {
+      "id": "connect.landing",
+      "dimension": "connections",
+      "title": "Contours land where they are meant to (near, not on)",
+      "status": "pass",
+      "value": "median miss 0.074 mm, worst 0.67 mm",
+      "target": "median 0.02–0.35, worst ≤ 1.2 mm",
+      "why": "A hand lands a joined line a hair short or a hair past; exactly on is a plotter, far off is a broken drawing."
+    },
+    {
+      "id": "connect.generative",
+      "dimension": "connections",
+      "title": "Every construction generated something",
+      "status": "pass",
+      "value": "0 of 43 generate nothing",
+      "target": "0 orphans",
+      "why": "Construction appears only if it generated the drawing (research 01 R11); ornamental circles and spirals are a named fake (01 §5).",
+      "fix": "plate.generated(constructionId, ...markIds) — or delete it."
+    },
+    {
+      "id": "connect.leaders",
+      "dimension": "connections",
+      "title": "Leaders never cross",
+      "status": "pass",
+      "value": "2 leader strokes, no crossings",
+      "target": "0 crossings",
+      "why": "ISO 128-22 / research 03 R4–5: no free ends, no crossings."
+    },
+    {
+      "id": "type.size",
+      "dimension": "typography",
+      "title": "Lettering meets ISO 3098 sizes",
+      "status": "pass",
+      "value": "0 under 1.8 mm, 0 notes/dimensions under 2.5 mm",
+      "target": "notes and dimensions ≥ 2.5 mm; nothing under 1.8 mm",
+      "why": "ISO 3098 heights; print ≥ 2.5 mm (research 03 §2.5, §8)."
+    },
+    {
+      "id": "type.phone",
+      "dimension": "typography",
+      "title": "Lettering holds 11 px on a 390 px phone",
+      "status": "warn",
+      "value": "38 of 38 fall under 11 px (sheet shown at 1.39 px/mm)",
+      "target": "0, or a phone layout that moves them out",
+      "why": "Anything under ~11 px at phone width goes outside on a leader, per breakpoint (research 02 C2)."
+    },
+    {
+      "id": "type.collisions",
+      "dimension": "typography",
+      "title": "No two labels touch",
+      "status": "pass",
+      "value": "38 labels, none overlapping",
+      "target": "0",
+      "why": "Each letter in clear space (research 02 R5)."
+    },
+    {
+      "id": "type.clear-ground",
+      "dimension": "typography",
+      "title": "Letters sit on clear paper, never on hatching",
+      "status": "pass",
+      "value": "all clear",
+      "target": "ink under a label ≤ 18%",
+      "why": "Letters sit in clear space, never on hatching or lines; otherwise outside on a leader (research 02 R5)."
+    },
+    {
+      "id": "type.on-sheet",
+      "dimension": "typography",
+      "title": "Every label is on the sheet",
+      "status": "pass",
+      "value": "0 off the sheet",
+      "target": "0",
+      "why": "A label off the sheet is lost."
+    },
+    {
+      "id": "type.mirror-twin",
+      "dimension": "typography",
+      "title": "Mirror script always has a readable twin",
+      "status": "pass",
+      "value": "0 mirror texts, 0 without a readable twin",
+      "target": "0",
+      "why": "Notes are readable, non-mirrored, true (research 01 R9); pseudo-mirror writing is a named fake (01 §5)."
+    },
+    {
+      "id": "type.keys",
+      "dimension": "typography",
+      "title": "One key system, few labelled parts",
+      "status": "pass",
+      "value": "4 keys (4 letters, 0 numerals)",
+      "target": "≤ 7, letters or numerals, never mixed",
+      "why": "Capitals for up to ~8 parts, numerals beyond, never mixed (research 02 R4); at most 7 labelled items (03 R12)."
+    },
+    {
+      "id": "type.contrast",
+      "dimension": "typography",
+      "title": "Lettering reads against the paper",
+      "status": "pass",
+      "value": "0 under 4.5:1 on real pixels",
+      "target": "≥ 4.5:1",
+      "why": "WCAG 1.4.3; measured on the rendered pixels when a proof is run (codex KC-8: estimates lied once)."
+    },
+    {
+      "id": "bleed.feather",
+      "dimension": "bleed",
+      "title": "Ink wicks into the sheet as much as this paper allows",
+      "status": "pass",
+      "value": "23.48 feathers per 100 mm, median 0.075 mm (sizing 0.6)",
+      "target": "≤ 30 per 100 mm on sized paper; length ≤ 0.35 mm",
+      "why": "Feathering follows fibres and sizing; it stays local (founder, ideas/studio-dawn/ink-bleed.md: only the nearby area)."
+    },
+    {
+      "id": "bleed.local",
+      "dimension": "bleed",
+      "title": "Bleed stays near its line",
+      "status": "pass",
+      "value": "longest mean wisp 0.279 mm",
+      "target": "≤ 0.6 mm",
+      "why": "When ink scatters it does not affect the overall area, only the nearby (founder)."
+    },
+    {
+      "id": "bleed.varies",
+      "dimension": "bleed",
+      "title": "Bleed varies with the sheet (not a filter)",
+      "status": "pass",
+      "value": "spread CV 0.24",
+      "target": "≥ 0.15",
+      "why": "Uniform bleed is a filter look; real bleed follows absorbency, load and fibre."
+    },
+    {
+      "id": "bleed.dry-media",
+      "dimension": "bleed",
+      "title": "Chalk, graphite and metalpoint never pool or feather",
+      "status": "pass",
+      "value": "0 dry marks with pools or feathers",
+      "target": "0",
+      "why": "Dry media sit on the tooth; they have no liquid to move."
+    },
+    {
+      "id": "bleed.pools",
+      "dimension": "bleed",
+      "title": "Blots are events, not decoration",
+      "status": "pass",
+      "value": "10% of wet strokes pool",
+      "target": "1%–40%",
+      "why": "Blots everywhere are costume; none at all is a plotter."
+    },
+    {
+      "id": "layout.margins",
+      "dimension": "layout",
+      "title": "The drawing keeps its margins",
+      "status": "pass",
+      "value": "0 ink strokes in the margins",
+      "target": "0",
+      "why": "Rule the sheet first: margins, subject zone, key and notes zones (research 02 R1)."
+    },
+    {
+      "id": "layout.rise",
+      "dimension": "layout",
+      "title": "The weight of the ink sits at or above the middle",
+      "status": "warn",
+      "value": "ink centroid at 53% of the height",
+      "target": "≤ 52%",
+      "why": "The codex “rise”: the sheet carries its weight high (kiruk-codex check.mjs; KC rows). Measured here as the ink-weighted centroid."
+    },
+    {
+      "id": "layout.balance",
+      "dimension": "layout",
+      "title": "The sheet is balanced left to right",
+      "status": "pass",
+      "value": "ink centroid at 48% of the width",
+      "target": "50% ± 12%",
+      "why": "The subject is centred and largest; commentary frames it (research 02 R2)."
+    },
+    {
+      "id": "layout.white",
+      "dimension": "layout",
+      "title": "White space is reserved on purpose",
+      "status": "pass",
+      "value": "57% of the sheet is paper",
+      "target": "30%–85%",
+      "why": "Main figure first, details around it, white space reserved (research 01 §2, R8); collage density is a named fake (01 §5)."
+    },
+    {
+      "id": "create.claim",
+      "dimension": "creativity",
+      "title": "The plate says what it explains",
+      "status": "pass",
+      "value": "“A volute is twelve quarter-circles struck from twelve centres inside its eye; each centre lies on the last arc’s end radius, so the scroll turns without a corner.”",
+      "target": "one true sentence, ≥ 6 words",
+      "why": "Claim first (codex): the drawing shows what it is; the line shows why it works."
+    },
+    {
+      "id": "create.eye",
+      "dimension": "creativity",
+      "title": "The eye motif is drawn, or its absence justified",
+      "status": "pass",
+      "value": "drawn: the oculus of the Ionic volute — the eye from which the scroll is struck",
+      "target": "a reference or a reason",
+      "why": "Non-negotiable 4 (CLAUDE.md §5)."
+    },
+    {
+      "id": "create.device",
+      "dimension": "creativity",
+      "title": "An explanatory device, not a pretty view",
+      "status": "pass",
+      "value": "construction and build-up, with an enlargement of the eye (×6)",
+      "target": "section · exploded · build-up · phase · side-by-side · thread · construction",
+      "why": "Choose the device by what must be explained (research 01 R4); one pretty 3/4 view with arrows is a named fake (01 §5)."
+    },
+    {
+      "id": "create.selective",
+      "dimension": "creativity",
+      "title": "Finish is selective; the process shows",
+      "status": "pass",
+      "value": "6 of 6 forms toned; 56% of the construction stands bare",
+      "target": "some parts left at line or construction; construction visible",
+      "why": "Everything finished to the same degree is a named fake (research 01 §5, ¶579); kiruk shows its process (CLAUDE.md §2)."
+    },
+    {
+      "id": "create.views",
+      "dimension": "creativity",
+      "title": "More than one view of the subject",
+      "status": "pass",
+      "value": "2 views",
+      "target": "≥ 2",
+      "why": "Leonardo asked for three or four views (research 01 R3, ¶798)."
+    },
+    {
+      "id": "create.costume",
+      "dimension": "creativity",
+      "title": "No costume: the look comes with its reasons",
+      "status": "pass",
+      "value": "none found",
+      "target": "none",
+      "why": "Research 01 §5: faux age, pseudo-mirror writing, ornamental geometry, all-over cross-hatching, many effects."
+    },
+    {
+      "id": "create.founder",
+      "dimension": "creativity",
+      "title": "Founder’s eye: a hand, not a plotter, not a costume — and new",
+      "status": "human",
+      "value": "open",
+      "target": "founder’s verdict",
+      "why": "Non-negotiables 1–3 (no trend-chasing, no boring work, no shallow branding) cannot be computed. Look at the 4× crops first, then the whole sheet at phone width."
+    }
+  ],
+  "counts": {
+    "lighting": {
+      "pass": 10,
+      "warn": 0,
+      "fail": 0,
+      "human": 0
+    },
+    "measurement": {
+      "pass": 10,
+      "warn": 0,
+      "fail": 0,
+      "human": 0
+    },
+    "style": {
+      "pass": 9,
+      "warn": 0,
+      "fail": 0,
+      "human": 0
+    },
+    "connections": {
+      "pass": 3,
+      "warn": 0,
+      "fail": 0,
+      "human": 0
+    },
+    "typography": {
+      "pass": 7,
+      "warn": 1,
+      "fail": 0,
+      "human": 0
+    },
+    "bleed": {
+      "pass": 5,
+      "warn": 0,
+      "fail": 0,
+      "human": 0
+    },
+    "layout": {
+      "pass": 3,
+      "warn": 1,
+      "fail": 0,
+      "human": 0
+    },
+    "creativity": {
+      "pass": 6,
+      "warn": 0,
+      "fail": 0,
+      "human": 1
+    }
+  },
+  "stats": {
+    "marks": 346,
+    "inkStrokes": 184,
+    "hatchFields": 6,
+    "texts": 38,
+    "dimensions": 2,
+    "constructions": 43,
+    "forms": 6,
+    "minHatchGap": 0.14604722359247546
+  }
+}
