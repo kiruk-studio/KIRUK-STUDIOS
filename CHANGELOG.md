@@ -8,6 +8,34 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ## [Unreleased]
 
+### Removed
+
+- **The copied tube and live 3D era eye leave the studio (2026-11-05).** Once the ink opening took over the first visit, nothing in `apps/kiruk-studio` imported the old loader. The founder chose to delete it: 60 files, about 18,100 lines, plus six stills and two dependencies.
+  - **What went** (paths are under `apps/kiruk-studio/`):
+    - The 1970 tube: `src/components/ui/loader/TubeOpening.tsx`, `src/components/ui/loader/open-eye.ts` and `src/components/ui/loader/tube/`.
+    - The page that ran it: `src/components/ui/immersive-era-loading-page.tsx`.
+    - The live 3D era eye: `src/components/three/`, with its bakes, TSL nodes, post passes and rig.
+    - The era libs (`src/lib/era-eye-frame.ts`, `src/lib/era-visuals.ts`, `src/lib/era-portfolio-page.ts`), `src/components/era-shell/` and `src/data/codex-theme.ts`.
+    - The six stills in `public/eye/posters/`.
+    - `@react-three/fiber` and `postprocessing`. The lockfile only loses lines.
+  - **What stays:**
+    - `public/eye/engraved-eye.jpg`: the landing's poster, and the ink loader's picture when it has no canvas.
+    - `src/components/ui/ghost-finger.tsx`: the loader's fingertip on phones.
+    - `src/lib/studio-ia.ts`: StudioNav and the sheet pages read it.
+    - `three`: burin and the folio paper engine import it directly.
+    - `framer-motion`: EyeFrame, the loader and the fingertip use it.
+  - **Why:** kiruk.in stays the source of the eye machine. The bridge note asks for one source and no second copy ([`ideas/private-craft-bridge/README.md`](ideas/private-craft-bridge/README.md)). A copy here drifts from the private eye, which still changes every week, and it publishes the personal site's structure into the open repo. The studio's opening is now its own drawing, so the copy had no job left. The only studio-only part was a thin `codex` skin over the 1981 etching look. Every deleted file is byte-identical at `5c4583c` on `main`, so `git checkout 5c4583c -- <path>` brings any of it back.
+  - **Verified:**
+    - The studio and burin typecheck, `pnpm install --frozen-lockfile` accepts the lockfile, and `next build` passes.
+    - Route sizes are unchanged, and the JavaScript chunks are the same files. The one stylesheet that changed is 1.8 kB smaller: Tailwind no longer emits about 30 utilities that only the deleted components used. No live file or burin uses any of them.
+    - The same browser script ran on a production build before and after, in headless Chromium. Every check passed both times, with the same console and network output, and nothing requests `/eye/posters/`. It covered:
+      - The landing with 3D off: drawing, waking, Enter, the poster, and a same-session refresh skipping the loader.
+      - The landing with software WebGL under the loader.
+      - `/work` by a click on the iris.
+      - Reduced motion.
+      - A phone tap with the fingertip.
+  - **Not done:** `openspec/specs/tech-stack/spec.md` still says WebGL surfaces use React Three Fiber 9 + drei + postprocessing. The studio's live WebGL (burin, the folio paper) is plain `three/webgpu` with TSL, and nothing in the monorepo depends on R3F now. Bringing the spec in line needs its own OpenSpec change. It is noted on the TASKS "Phase 4 — Stack + spec" item.
+
 ### Added
 
 - **The ink opening (2026-11-05).** On a first visit to `apps/kiruk-studio`, a hand now draws the engraved eye in ink, and then the eye opens. This replaces 1970's tube and the live 3D eye in a 1-bit look on black. The loader's own screen-reader line already promised _"a pen draws an eye on paper, then the eye opens"_.
@@ -31,7 +59,7 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
     - The pen costs about 3 ms a frame in software raster, in its worker.
   - **Not done:**
     - The hand-off onto the live GPU plate is unverified. This container renders WebGL in software, and once revealed the landing stalls there in native code. The original loader never reached its eye in this container at all. It needs a hardware check.
-    - The tube and live 3D era eye files are no longer imported by the studio but are still in the tree, waiting on the founder.
+    - The tube and live 3D era eye files are no longer imported by the studio but are still in the tree, waiting on the founder. _(Decided the same day: deleted. See **Removed** above.)_
     - The founder has not reviewed the pace, the corner words, or open versus shut.
 
 - **The plate shows its making (2026-11-04).** Eight old pages, read for what each teaches, gave the eye plate on `apps/kiruk-studio` `/` five new parts:

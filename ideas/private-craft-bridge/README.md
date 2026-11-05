@@ -98,9 +98,17 @@ Until then, the private folder is the source and this repo is the reader.
 
 ## Studio front door (2026-10-26)
 
-`apps/kiruk-studio` is the first public use of the private eye. It copies the eye machine and the opening, shows one manuscript look, and reveals one sheet after the iris. Era homepages and personal copy stay in kiruk.in. `apps/kiruk-web` is still the Astro placeholder until this page is the one on the studio domain.
+`apps/kiruk-studio` was the first public use of the private eye. It copied the eye machine and the opening, showed one manuscript look, and revealed one sheet after the iris. Era homepages and personal copy stay in kiruk.in. `apps/kiruk-web` is still the Astro placeholder until this page is the one on the studio domain.
 
-Since 2026-11-05 the studio's opening is its own: the ink opening draws the burin eye stroke by stroke and then wakes it ([`ideas/studio-dawn/ink-opening.md`](../studio-dawn/ink-opening.md)). The copied tube and live era eye are no longer imported by the studio's loader. Their files stay in the tree until the founder decides whether to keep them.
+Since 2026-11-05 the studio's opening is its own: the ink opening draws the burin eye stroke by stroke and then wakes it ([`ideas/studio-dawn/ink-opening.md`](../studio-dawn/ink-opening.md)). After that, nothing in the studio imported the copied tube or the live era eye.
+
+The same day the founder decided to delete the copy, and it is gone from `apps/kiruk-studio`. That covers the tube and its opening page, the 3D eye, the era shell, the era looks, the `codex` theme, their poster stills, and `@react-three/fiber` and `postprocessing`.
+
+- **Why:** This note's own rule is one source and no second copy. A copied tree in the open repo drifts from kiruk.in, where the eye still changes every week, and it publishes the personal site's structure. The studio's eye is now its own: the burin plate on the landing and the ink opening.
+- **What still comes from kiruk.in:** two small, live pieces stay.
+  - The ghost finger (`apps/kiruk-studio/src/components/ui/ghost-finger.tsx`) shows phones the tap into the ink opening. It runs there in tap-only mode.
+  - The resting-lid parabola from kiruk.in's navbar shapes `EyeFrame` and `StudioNav`.
+- **If the studio needs the private eye again:** it crosses as a package, under the rules in "When a piece is allowed to cross" above, not as a copied tree. The deleted files are byte-identical at commit `5c4583c` on `main` for reference.
 
 ## Order of work
 
