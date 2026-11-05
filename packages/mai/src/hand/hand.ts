@@ -14,15 +14,7 @@
  * travel direction varies while the slope stays constant).
  */
 import { noise1 } from '../core/noise.ts';
-import {
-  cumulative,
-  curvature,
-  lengthOf,
-  type Path,
-  pointAt,
-  resample,
-  tangents,
-} from '../core/path.ts';
+import { cumulative, lengthOf, type Path, pointAt, resample, tangents } from '../core/path.ts';
 import type { Rng } from '../core/rng.ts';
 import { DEG, dist, type MVec, type Vec } from '../core/vec.ts';
 
@@ -135,6 +127,8 @@ export interface Sample {
   /** Unit tangent. */
   tx: number;
   ty: number;
+  /** Curvature of the aim here, smoothed (1/mm): the power law's input (0 on hooks and tails). */
+  k: number;
 }
 
 export interface Performance {
@@ -154,6 +148,10 @@ export interface Performance {
   deviation: { rms: number; max: number; startMiss: number; endMiss: number };
   /** RMS of the high-frequency part of the deviation (the tremor actually left), mm. */
   tremorRms: number;
+  /** The power law's gain K in v = K·κ^(−1/3) (mm^(2/3)/s); 0 when the law is off (not free). */
+  gain: number;
+  /** The speed envelope's peak (mm/s): land, run, leave. */
+  peak: number;
 }
 
 const ROLE_PACE: Record<Role, number> = {
@@ -291,16 +289,34 @@ export function perform(intent: StrokeIntent, hand: HandSpec, rng: Rng): Perform
     intent.end ?? (role === 'contour' ? 'hook' : role === 'hatch' ? 'taper' : 'lift');
   const vPeak =
     hand.pace * (intent.pace ?? 1) * ROLE_PACE[role] * (1 - precision * 0.35) * rng.range(0.9, 1.1);
-  const kRaw = curvature(pts);
-  const kS = kRaw.map((_, i) => {
-    let s = 0;
-    let c = 0;
-    for (let j = Math.max(0, i - 4); j <= Math.min(n - 1, i + 4); j++) {
-      s += Math.abs(kRaw[j] as number);
-      c++;
-    }
-    return s / c;
-  });
+  // Curvature over a baseline of up to 1.5 mm of arc: the turning between the chords before and
+  // after each point, per mm. A smooth curve handed over as a polyline carries all its turning
+  // at the vertices; read point by point (or averaged in a box that vertices step in and out
+  // of), the hand braked at every vertex. Chords slide continuously along the polyline, so
+  // this reads the curve and gives ≈ 1/R on a circle (seen on the calculus page; MA-27).
+  // the baseline shrinks on a short stroke: a letter's curls are a millimetre across
+  const ds = L / Math.max(1, n - 1);
+  const chord = Math.max(0.4, Math.min(1.5, L / 12));
+  const m = Math.max(1, Math.min(Math.floor((n - 1) / 2), Math.round(chord / Math.max(ds, 1e-6))));
+  const kS: number[] = new Array<number>(n).fill(0);
+  for (let i = 0; i < n; i++) {
+    const a = pts[Math.max(0, i - m)] as MVec;
+    const b = pts[i] as MVec;
+    const c = pts[Math.min(n - 1, i + m)] as MVec;
+    const ux = b[0] - a[0];
+    const uy = b[1] - a[1];
+    const vx = c[0] - b[0];
+    const vy = c[1] - b[1];
+    const lu = Math.hypot(ux, uy);
+    const lv = Math.hypot(vx, vy);
+    if (lu < 1e-9 || lv < 1e-9) continue;
+    kS[i] = Math.abs(Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy)) / ((lu + lv) / 2);
+  }
+  // the very ends have no chord on one side: they take their neighbour's reading
+  if (n > 2) {
+    kS[0] = kS[1] as number;
+    kS[n - 1] = kS[n - 2] as number;
+  }
   const K = 0.27 * vPeak;
   const accel = Math.min(L * 0.3, 2.5 + L * 0.08);
   const decel = Math.min(L * 0.3, 2 + L * 0.07);
@@ -371,7 +387,17 @@ export function perform(intent: StrokeIntent, hand: HandSpec, rng: Rng): Perform
     }
     devs.push(Math.hypot(x - (pts[i] as MVec)[0], y - (pts[i] as MVec)[1]));
     hf.push(dHigh);
-    out.push({ x, y, s, t: ti, v: speed[i] as number, p: 0, tx: tg[0], ty: tg[1] });
+    out.push({
+      x,
+      y,
+      s,
+      t: ti,
+      v: speed[i] as number,
+      p: 0,
+      tx: tg[0],
+      ty: tg[1],
+      k: kS[i] as number,
+    });
   }
 
   // 4 · pressure: base, ramps, a slow breath, the pull, the light
@@ -447,6 +473,7 @@ export function perform(intent: StrokeIntent, hand: HandSpec, rng: Rng): Perform
         p: f.p * (0.25 + 0.6 * (1 - w)),
         tx: bx,
         ty: by,
+        k: 0,
       });
     }
     out.unshift(...pre);
@@ -480,6 +507,7 @@ export function perform(intent: StrokeIntent, hand: HandSpec, rng: Rng): Perform
         p: lastS.p * (1 - w) ** 1.3 * (end === 'hook' ? 0.9 : 0.55),
         tx: Math.cos(dir),
         ty: Math.sin(dir),
+        k: 0,
       });
     }
   }
@@ -539,5 +567,7 @@ export function perform(intent: StrokeIntent, hand: HandSpec, rng: Rng): Perform
       endMiss: Math.hypot(fN.x - pN[0], fN.y - pN[1]),
     },
     tremorRms,
+    gain: guide === 'free' ? K : 0,
+    peak: vPeak,
   };
 }

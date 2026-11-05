@@ -20,7 +20,8 @@ export type StyleId =
   | 'cosmograph'
   | 'architect'
   | 'engraver'
-  | 'dawn-new';
+  | 'dawn-new'
+  | 'night';
 
 export type LayerId =
   | 'stylus'
@@ -353,6 +354,50 @@ export const STYLES: Record<StyleId, StyleSpec> = {
     letter: { font: 'futural', height: 2.5, mirror: false },
     sources: [
       'design-tokens: Dawn paper pair — Dawn Departs takes dawn navy; construction in blueprint (burin)',
+    ],
+  },
+  night: {
+    id: 'night',
+    name: 'Night (light lines on the dark sheet)',
+    summary:
+      'The nightminds: light lines on the earth band of the dawn. A careful technical hand in Dawn Departs; hidden lines dashed, axes as chain lines named at both ends, construction in white chalk.',
+    paper: 'night',
+    hand: { ...HANDS.right, tremor: 0.014, drift: 0.004, pace: 120 },
+    roles: {
+      contour: kit('steel', 'departs', 'ink'),
+      hatch: kit('steel', 'departs', 'ink'),
+      stipple: kit('steel', 'departs', 'ink'),
+      letter: kit('steel', 'departs', 'letter'),
+      construction: kit('chalk', 'chalk', 'construction', 0.45),
+      underdrawing: kit('chalk', 'chalk', 'underdrawing', 0.4),
+      searching: kit('chalk', 'chalk', 'underdrawing', 0.35),
+      dimension: kit('ruling', 'departs', 'overlay', 0.9),
+      leader: kit('ruling', 'departs', 'overlay', 0.9),
+      overlay: kit('ruling', 'departs', 'overlay', 0.9),
+    },
+    hatch: {
+      rule: 'one-slope',
+      slope: -45,
+      slopeTolerance: 18,
+      gap: [0.6, 1.3],
+      cross: false,
+      crossAt: 0.8,
+      crossAngle: 90,
+      bow: -1,
+      reach: 8,
+    },
+    envelope: {
+      wCv: [0.1, 0.7],
+      tremor: [0.002, 0.04],
+      poolRate: [0.1, 0.85],
+      starved: [0, 0.2],
+      hues: 2,
+    },
+    letter: { font: 'futural', height: 3, mirror: false },
+    sources: [
+      'ideas/studio-dawn/dawn.md: night shows the nightminds; eye.md open question 8 (a night paper) — founder decision pending',
+      'founder reference 2026-11-05: an axis sphere in white on black (hidden circles dashed, axes named at both ends, turn arrows)',
+      'TOKENS: paper color.dawn.navy, ink color.dawn.departs — no new token',
     ],
   },
 };

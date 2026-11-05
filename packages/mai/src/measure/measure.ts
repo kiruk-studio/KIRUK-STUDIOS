@@ -15,10 +15,12 @@
  * further tiers 6–10 mm apart, arrowhead length:width ≈ 3:1. Every construction records
  * what it generated; one that generated nothing is ornament, and the critic fails it.
  */
+import { contrast } from '../core/color.ts';
 import { arc as arcPath, line } from '../core/path.ts';
 import { f2, polygonD } from '../core/svg.ts';
 import { add, DEG, type MVec, norm, perp, scale, sub, type Vec } from '../core/vec.ts';
 import type { Role } from '../hand/hand.ts';
+import { INKS, type InkId } from '../ink/inks.ts';
 import type { MarkPart } from '../ink/render.ts';
 import { letter, measureText } from '../letter/letter.ts';
 import type { Mark, Plate } from '../plate/plate.ts';
@@ -260,6 +262,24 @@ export interface DimensionOptions {
   axis?: 'x' | 'y';
   /** Value per sheet mm for this dimension (an enlargement has its own scale). */
   perMm?: number;
+  /** detail (default) · overall (outer extent) · chain (a link) · redline (a gap between boxes). */
+  kind?: 'detail' | 'overall' | 'chain' | 'redline';
+}
+
+/**
+ * The ink a value is lettered in. A line is seen; a value is read, in strokes a quarter of a
+ * millimetre wide that lose a fifth to two fifths of their contrast on real pixels.
+ *   1. An ink that is for strokes only names its type twin (`typeInk`): the rubric line
+ *      (#B5462B) letters its values in the rubric for type (#983A22), as the tokens say.
+ *   2. Otherwise a value takes its role's ink when that ink clears 7:1 against the paper.
+ *   3. Otherwise the lettering ink.
+ * (The measure specimen read 2.9:1 with values in the line red on Dawn Departs; KC-8.)
+ */
+export function valueInk(plate: Plate, role: Role): InkId {
+  const ink = plate.kit(role).ink;
+  const twin = INKS[ink].typeInk;
+  if (twin) return twin;
+  return contrast(INKS[ink].color, plate.paper.spec.tone) >= 7 ? ink : plate.kit('letter').ink;
 }
 
 export function dimension(plate: Plate, a: Vec, b: Vec, o: DimensionOptions): Built {
@@ -301,7 +321,8 @@ export function dimension(plate: Plate, a: Vec, b: Vec, o: DimensionOptions): Bu
   };
   const eA = ex(a, a1);
   const eB = ex(b, b1);
-  for (const [p, q] of [eA, eB])
+  // a dimension laid on the edges themselves (a redline) has no extension lines
+  for (const [p, q] of Math.hypot(eA[1][0] - eA[0][0], eA[1][1] - eA[0][1]) > 0.6 ? [eA, eB] : [])
     marks.push(
       ...plate.stroke(line(p, q, 0.3), {
         role,
@@ -400,26 +421,42 @@ export function dimension(plate: Plate, a: Vec, b: Vec, o: DimensionOptions): Bu
   if (ang <= -90) ang += 180;
   const cap = o.cap ?? 2.5;
   const mid: Vec = [(a1[0] + b1[0]) / 2, (a1[1] + b1[1]) / 2];
-  // above the line as read: the text's "up" is −y rotated with the line
-  const up: Vec = [Math.sin(ang * DEG), -Math.cos(ang * DEG)];
-  const at = add(mid, scale(up, 1.1));
   const tw = measureText(text, cap);
+  let at: Vec;
+  let rot = ang;
+  let anchor: 'middle' | 'start' = 'middle';
+  if (o.kind === 'redline') {
+    // a design redline reads level: the value sits beside the line, never turned with it
+    rot = 0;
+    const vertical = Math.abs(u[1]) > Math.abs(u[0]);
+    at = vertical ? [mid[0] + 1.2, mid[1] + cap / 2] : [mid[0], mid[1] - 1.1];
+    anchor = vertical ? 'start' : 'middle';
+  } else {
+    // above the line as read: the text's "up" is −y rotated with the line
+    const up: Vec = [Math.sin(ang * DEG), -Math.cos(ang * DEG)];
+    at = add(mid, scale(up, 1.1));
+    // a value wider than its span is set outside, past the far end (drafting practice)
+    if (tw > sheet - 1.2) {
+      const along: Vec = [Math.cos(ang * DEG), Math.sin(ang * DEG)];
+      const far = Math.max(
+        (a1[0] - mid[0]) * along[0] + (a1[1] - mid[1]) * along[1],
+        (b1[0] - mid[0]) * along[0] + (b1[1] - mid[1]) * along[1],
+      );
+      at = add(at, scale(along, far + tw / 2 + 2.2));
+    }
+  }
   const t = letter(plate, text, at, {
     cap,
-    anchor: 'middle',
+    anchor,
     kind: 'dimension',
-    rotate: ang,
+    rotate: rot,
     role: exact ? 'overlay' : 'letter',
     exact,
     id: `${id}-value`,
-    ink: kit.ink,
+    ink: valueInk(plate, role),
     layer: kit.layer,
   });
   marks.push(...t.marks);
-  if (tw > sheet - 1) {
-    // a value wider than its span is set outside, as drafting does; the critic reports it
-    t.item.kind = 'dimension';
-  }
   plate.dimensions.push({
     id,
     a: [a[0], a[1]],
@@ -435,6 +472,7 @@ export function dimension(plate: Plate, a: Vec, b: Vec, o: DimensionOptions): Bu
       [b[0], b[1]],
     ],
     textId: t.id,
+    kind: o.kind ?? 'detail',
   });
   return { id, marks };
 }
@@ -530,7 +568,7 @@ export function scaleBar(
         kind: 'scale',
         exact,
         role: exact ? 'overlay' : 'letter',
-        ink: kit.ink,
+        ink: valueInk(plate, role),
         layer: kit.layer,
         id: `${id}-n${i}`,
       }).marks,
@@ -544,7 +582,7 @@ export function scaleBar(
         kind: 'scale',
         exact,
         role: exact ? 'overlay' : 'letter',
-        ink: kit.ink,
+        ink: valueInk(plate, role),
         layer: kit.layer,
         id: `${id}-unit`,
       }).marks,

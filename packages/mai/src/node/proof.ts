@@ -89,15 +89,37 @@ function cropsFor(plate: Plate): { name: string; rect: [number, number, number, 
 export async function proofPlate(
   plate: Plate,
   dir: string,
-  o: { pxPerMm?: number; cropPxPerMm?: number; phoneWidthPx?: number; paperFile?: boolean } = {},
+  o: {
+    pxPerMm?: number;
+    cropPxPerMm?: number;
+    phoneWidthPx?: number;
+    paperFile?: boolean;
+    /** Resolution the label contrast is read at (default 12 px/mm: a 0.25 mm stroke is 3 px). */
+    contrastPxPerMm?: number;
+  } = {},
 ): Promise<ProofResult> {
   mkdirSync(join(dir, 'crops'), { recursive: true });
-  const baked = await bakePlate(plate, dir, { pxPerMm: o.pxPerMm ?? 5, paperFile: o.paperFile });
+  const px = o.pxPerMm ?? 5;
+  const baked = await bakePlate(plate, dir, { pxPerMm: px, paperFile: o.paperFile });
   const files =
     o.paperFile === false ? ['plate.svg', 'plate.png'] : ['plate.svg', 'paper.png', 'plate.png'];
   const proof = await decodePNG(baked.proofPng);
   const inkOnly = await decodePNG(baked.inkPng);
-  const pixels = pixelFacts(plate, proof, inkOnly);
+  // label contrast is read where the strokes resolve: at 4 px/mm a 0.25 mm stroke is one
+  // antialiased pixel and the reading hangs on a few junctions; at 12 px/mm it is the ink as
+  // laid (density, starve, the paper's tooth). Small screens are type.phone's question.
+  const cpx = Math.max(px, o.contrastPxPerMm ?? 12);
+  let contrast = proof;
+  if (cpx > px) {
+    const uri = `data:image/png;base64,${Buffer.from(baked.paperPng).toString('base64')}`;
+    const hi = await rasterSVG(
+      plate.toSVG({ paperHref: uri, pxPerMm: cpx }),
+      Math.round(plate.size[0] * cpx),
+      Math.round(plate.size[1] * cpx),
+    );
+    contrast = await decodePNG(hi);
+  }
+  const pixels = pixelFacts(plate, proof, inkOnly, { contrast });
   const report = critique(plate, { pixels, phoneWidthPx: o.phoneWidthPx ?? 390 });
   // phone-width view: the whole sheet as a phone shows it
   const phoneW = o.phoneWidthPx ?? 390;

@@ -43,13 +43,26 @@ export {
   type MarkPart,
   type StrokeStats,
 } from './ink/render.ts';
-export { glyph, ISO_3098, type Lettered, letter, measureText, typeset } from './letter/letter.ts';
+export * from './letter/labels.ts';
+export {
+  type Glyphed,
+  glyph,
+  ISO_3098,
+  type Lettered,
+  letter,
+  measureText,
+  tokens,
+  typeset,
+} from './letter/letter.ts';
 export * from './light/forms.ts';
 export { contour, type HatchOptions, hatch } from './light/hatch.ts';
 export * from './light/light.ts';
 export * from './measure/constructions.ts';
 export * from './measure/measure.ts';
+export * from './measure/outer.ts';
+export * from './measure/projection.ts';
 export * from './nib/instruments.ts';
 export * from './paper/paper.ts';
+export * from './plate/linetype.ts';
 export * from './plate/plate.ts';
 export * from './styles/styles.ts';

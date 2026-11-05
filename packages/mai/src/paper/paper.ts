@@ -13,8 +13,16 @@
  */
 import { fromHex, type RGB } from '../core/color.ts';
 import { clamp, fbm2, noise2, smoothstep } from '../core/noise.ts';
+import { hash3 } from '../core/rng.ts';
 
-export type PaperId = 'dawn-light' | 'dawn-departs' | 'rag' | 'blue' | 'prepared' | 'cartridge';
+export type PaperId =
+  | 'dawn-light'
+  | 'dawn-departs'
+  | 'night'
+  | 'rag'
+  | 'blue'
+  | 'prepared'
+  | 'cartridge';
 
 export interface PaperSpec {
   id: PaperId;
@@ -50,6 +58,16 @@ export const PAPERS: Record<PaperId, PaperSpec> = {
     sizing: 0.88,
     tooth: 0.22,
     source: 'TOKEN color.dawn.departs #CCFFFF; wove, crisp, no age',
+  },
+  night: {
+    id: 'night',
+    name: 'Night (the earth band of the dawn)',
+    kind: 'wove',
+    tone: fromHex('#1d1c2d'),
+    sizing: 0.8,
+    tooth: 0.4,
+    source:
+      'TOKEN color.dawn.navy #1D1C2D as a sheet: the dark before the dawn (ideas/studio-dawn/dawn.md "nightminds"; eye.md open question 8 — founder decision pending)',
   },
   rag: {
     id: 'rag',
@@ -154,6 +172,7 @@ export function rasterPaper(
   const [r0, g0, b0] = paper.spec.tone;
   const s = paper.seed * 7 + 3;
   const relief = 0.035 + 0.05 * paper.spec.tooth;
+  const dark = r0 + g0 + b0 < 1.2;
   const time = paper.time;
   for (let j = 0; j < H; j++) {
     for (let i = 0; i < W; i++) {
@@ -175,6 +194,13 @@ export function rasterPaper(
       let r = r0 * shade;
       let g = g0 * shade;
       let b = b0 * shade;
+      if (dark) {
+        // a dark sheet shows its grain as light flecks, not as relief
+        const fleck = (hash3(i, j, s + 31) - 0.5) * 0.045 + flocs * 0.012;
+        r += fleck;
+        g += fleck;
+        b += fleck * 1.1;
+      }
       if (time > 0) {
         // As found (only when a plate says why): a broad warm drift and rare foxing.
         const broad = 0.5 + 0.5 * fbm2(x * 0.012, y * 0.012, s + 9, 3);

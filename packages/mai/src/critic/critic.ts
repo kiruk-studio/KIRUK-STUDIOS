@@ -54,12 +54,22 @@ export interface PixelFacts {
   white: number;
 }
 
+export interface AnatomyRow {
+  id: string;
+  name: string;
+  finish: 'construction' | 'line' | 'tone';
+  ok: boolean;
+  issues: string[];
+}
+
 export interface Report {
   plate: string;
   title: string;
   style: string;
   verdict: 'pass' | 'warn' | 'fail';
   checks: Check[];
+  /** The plate's parts, each checked on its own. */
+  anatomy: AnatomyRow[];
   counts: Record<Dimension, Record<Status, number>>;
   stats: Record<string, number>;
 }
@@ -348,17 +358,21 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
       why: 'Nothing on a plate is invented (codex step 2); a value is measured from the drawing, never typed.',
       fix: 'Let dimension() compute the value, or correct the geometry, not the label.',
     });
+    // a redline sits in the gap it measures, ticked at the edges, with no extension lines
+    // (the design-review convention): the drafting tiers do not apply to it
+    const red = d.kind === 'redline';
     const gapA = Math.hypot(d.ext[0][0][0] - d.a[0], d.ext[0][0][1] - d.a[1]);
     const overA = Math.hypot(d.ext[0][1][0] - d.line[0][0], d.ext[0][1][1] - d.line[0][1]);
-    add({
-      id: `measure.extension:${d.id}`,
-      dimension: 'measurement',
-      title: `Extension lines of ${d.id}: gap and overshoot`,
-      status: gapA >= 0.8 && gapA <= 2.5 && overA >= 1.5 && overA <= 3.6 ? 'pass' : 'warn',
-      value: `gap ${r2(gapA)} mm, overshoot ${r2(overA)} mm`,
-      target: 'gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm',
-      why: 'ISO 129-1 / ASME as cited in research 03 §2.2.',
-    });
+    if (!red)
+      add({
+        id: `measure.extension:${d.id}`,
+        dimension: 'measurement',
+        title: `Extension lines of ${d.id}: gap and overshoot`,
+        status: gapA >= 0.8 && gapA <= 2.5 && overA >= 1.5 && overA <= 3.6 ? 'pass' : 'warn',
+        value: `gap ${r2(gapA)} mm, overshoot ${r2(overA)} mm`,
+        target: 'gap ≈ 1.5 (0.8–2.5), overshoot 2.5–3 (1.5–3.6) mm',
+        why: 'ISO 129-1 / ASME as cited in research 03 §2.2.',
+      });
     const inkMarks = marks.filter(
       (m) => m.layer === 'ink' && (m.role === 'contour' || m.role === 'hatch'),
     );
@@ -375,15 +389,16 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
       why: 'Measure to the visible ink or a stated datum, never to the bounding box (research 03 R9).',
     });
     const off = Math.hypot(d.line[0][0] - d.a[0], d.line[0][1] - d.a[1]);
-    add({
-      id: `measure.tier:${d.id}`,
-      dimension: 'measurement',
-      title: `${d.id} stands clear of the drawing`,
-      status: off >= 6 ? 'pass' : off >= 4 ? 'warn' : 'fail',
-      value: `${r2(off)} mm from the feature`,
-      target: '≥ 6 mm (first tier 10–12 mm)',
-      why: 'Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart.',
-    });
+    if (!red)
+      add({
+        id: `measure.tier:${d.id}`,
+        dimension: 'measurement',
+        title: `${d.id} stands clear of the drawing`,
+        status: off >= 6 ? 'pass' : off >= 4 ? 'warn' : 'fail',
+        value: `${r2(off)} mm from the feature`,
+        target: '≥ 6 mm (first tier 10–12 mm)',
+        why: 'Research 03 §2.2: first dimension line 10–12 mm out, tiers 6–10 mm apart.',
+      });
   }
   const hasScale =
     plate.dimensions.length > 0 || Object.keys(plate.truth).some((k) => k.startsWith('scale:'));
@@ -574,7 +589,7 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     why: 'Monochrome ink on a light ground plus at most one accent (research 01 R12); many colours or effects is a named fake (01 §5).',
   });
   const reds =
-    marks.some((m) => m.layer === 'overlay' && m.ink === 'rubric') &&
+    marks.some((m) => m.layer === 'overlay' && (m.ink === 'rubric' || m.ink === 'rubric-type')) &&
     marks.some(
       (m) => (m.layer === 'construction' || m.layer === 'underdrawing') && m.ink === 'sanguine',
     );
@@ -590,7 +605,10 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
       fix: 'Use stylus or graphite construction under a rubric overlay, or keep the overlay off this plate.',
     });
   const wobblyOverlay = marks.filter(
-    (m) => m.layer === 'overlay' && m.ink === 'rubric' && m.guide !== 'exact',
+    (m) =>
+      m.layer === 'overlay' &&
+      (m.ink === 'rubric' || m.ink === 'rubric-type') &&
+      m.guide !== 'exact',
   );
   add({
     id: 'style.overlay-crisp',
@@ -810,8 +828,10 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     why: 'Notes are readable, non-mirrored, true (research 01 R9); pseudo-mirror writing is a named fake (01 §5).',
   });
   const keys = texts.filter((t) => t.kind === 'key');
-  const letters = keys.filter((t) => /^[A-Z]{1,2}$/.test(t.text));
-  const nums = keys.filter((t) => /^\d+$/.test(t.text));
+  // A and A′ name one axis, and a part keeps its label in every view: count distinct names
+  const keyNames = [...new Set(keys.map((t) => t.text.replace(/[′'_^{}]/g, '')))];
+  const letters = keyNames.filter((k) => /^[A-Z]{1,2}$/.test(k));
+  const nums = keyNames.filter((k) => /^\d+$/.test(k));
   add({
     id: 'type.keys',
     dimension: 'typography',
@@ -819,12 +839,12 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     status:
       letters.length && nums.length
         ? 'fail'
-        : keys.length > 8
+        : keyNames.length > 8
           ? 'fail'
-          : keys.length > 7
+          : keyNames.length > 7
             ? 'warn'
             : 'pass',
-    value: `${keys.length} keys (${letters.length} letters, ${nums.length} numerals)`,
+    value: `${keyNames.length} named parts (${letters.length} letters, ${nums.length} numerals) on ${keys.length} key labels`,
     target: '≤ 7, letters or numerals, never mixed',
     why: 'Capitals for up to ~8 parts, numerals beyond, never mixed (research 02 R4); at most 7 labelled items (03 R12).',
   });
@@ -834,17 +854,78 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
       return (o.pixels.textContrast[t.id] as number) < 4.5;
     return !t.drawn && contrast(t.color, paperTone) < 4.5;
   });
+  const measured = Object.entries(o.pixels?.textContrast ?? {}).sort((a, b) => a[1] - b[1]);
+  const lowest = measured[0];
   add({
     id: 'type.contrast',
     dimension: 'typography',
     title: 'Lettering reads against the paper',
     status: lowContrast.length ? 'fail' : 'pass',
-    value: o.pixels
-      ? `${lowContrast.length} under 4.5:1 on real pixels`
-      : `${lowContrast.length} typeset under 4.5:1 (colour estimate)`,
+    value: `${
+      o.pixels
+        ? `${lowContrast.length} under 4.5:1 on real pixels`
+        : `${lowContrast.length} typeset under 4.5:1 (colour estimate)`
+    }${
+      lowContrast.length
+        ? `: ${lowContrast
+            .slice(0, 5)
+            .map(
+              (t) =>
+                `${t.id}${o.pixels?.textContrast[t.id] !== undefined ? ` ${r2(o.pixels.textContrast[t.id] as number)}:1` : ''}`,
+            )
+            .join(', ')}`
+        : ''
+    }${lowest ? ` (lowest ${r2(lowest[1])}:1, ${lowest[0]})` : ''}`,
     target: '≥ 4.5:1',
-    why: 'WCAG 1.4.3; measured on the rendered pixels when a proof is run (codex KC-8: estimates lied once).',
+    why: 'WCAG 1.4.3, read on the rendered pixels when a proof is run (codex KC-8: estimates lied once), at 12 px/mm where a lettering stroke is three pixels wide, so the reading is the ink as laid and not the screen’s antialiasing.',
   });
+  const unglyphed = texts.filter((t) => t.drawn && t.missing);
+  add({
+    id: 'type.glyphs',
+    dimension: 'typography',
+    title: 'Every character is drawn',
+    status: unglyphed.length ? 'fail' : 'pass',
+    value: unglyphed.length
+      ? unglyphed
+          .slice(0, 5)
+          .map((t) => `${t.id} lacks “${t.missing}”`)
+          .join(', ')
+      : 'every drawn character has a glyph',
+    target: '0 blank characters',
+    why: 'A character with no glyph comes out as a space: “41°” read “41” before the degree sign was drawn. A silent blank changes what a value says.',
+    fix: 'Add the glyph to EXTRA in letter/letter.ts (in Hershey units), or write the character the Hershey subset has.',
+  });
+  // a dip blots the first letter after it; a blot wider than a third of the letter fills its counter
+  const blots = marks.filter((m) => {
+    if (m.role !== 'letter' || !m.stats.poolMax || m.spine.length < 1) return false;
+    const q = m.spine[Math.floor(m.spine.length / 2)] as MVec;
+    const t = texts.find(
+      (x) =>
+        q[0] >= x.box[0] - 0.3 &&
+        q[0] <= x.box[2] + 0.3 &&
+        q[1] >= x.box[1] - 0.3 &&
+        q[1] <= x.box[3] + 0.3,
+    );
+    const cap = t ? t.cap : 2.5;
+    return 2 * m.stats.poolMax > cap * 0.32;
+  });
+  const lettered = marks.filter((m) => m.role === 'letter').length;
+  if (lettered)
+    add({
+      id: 'type.blots',
+      dimension: 'typography',
+      title: 'A blot never fills a letter',
+      status: blots.length ? 'fail' : 'pass',
+      value: blots.length
+        ? `${blots.length} letter strokes blotted past a third of the cap: ${blots
+            .slice(0, 4)
+            .map((m) => m.id)
+            .join(', ')}`
+        : `${lettered} letter strokes, every pool under a third of its cap`,
+      target: 'pool diameter ≤ 0.32 × cap height',
+      why: 'A fresh dip may blot the first letter, but a blot that fills a counter turns a 4 into a 9: a value nobody can trust (plate III, the 345 mm).',
+      fix: 'pools on letters are capped at 0.7 × the line width in ink/render.ts; check the renderer was not bypassed',
+    });
 
   // ───────────────────────── bleed ─────────────────────────
   const wet = marks.filter((m) => !INKS[m.ink].dry && m.stats.length > 0 && m.guide !== 'exact');
@@ -1042,8 +1123,13 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     (q) => !inkSp.some((r) => Math.abs(r[0] - q[0]) < 6 && Math.abs(r[1] - q[1]) < 6),
   ).length;
   const bareShare = consPts.length ? bare / consPts.length : 0;
+  // a line plate with a declared anatomy is selective by declaration
+  const declaredLine = plate.parts.length >= 3 && plate.parts.some((pt) => pt.finish !== 'tone');
   const selective =
-    formsHatched.size < plate.forms.length || plate.forms.length <= 1 || bareShare >= 0.2;
+    formsHatched.size < plate.forms.length ||
+    plate.forms.length <= 1 ||
+    bareShare >= 0.2 ||
+    declaredLine;
   add({
     id: 'create.selective',
     dimension: 'creativity',
@@ -1090,6 +1176,307 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     why: 'Non-negotiables 1–3 (no trend-chasing, no boring work, no shallow branding) cannot be computed. Look at the 4× crops first, then the whole sheet at phone width.',
   });
 
+  // ───────────────────────── outer measurement ─────────────────────────
+  const overall = plate.dimensions.filter((d) => d.kind === 'overall');
+  add({
+    id: 'measure.outer',
+    dimension: 'measurement',
+    title: 'The figure states its overall size',
+    status: overall.length || plate.neatlines.length ? 'pass' : 'warn',
+    value: `${overall.length} overall dimensions, ${plate.neatlines.length} graduated neatlines`,
+    target: 'overall extents in the outer tier, or a graduated neatline',
+    why: 'A reader must be able to measure the whole, not only its parts (ISO 129; research 03 §2.2, R14).',
+    fix: 'extents(plate, marks) or neatline(plate, rect, { every, origin })',
+  });
+  const horiz = (d: (typeof plate.dimensions)[number]) =>
+    Math.abs(d.line[0][1] - d.line[1][1]) < 0.01;
+  const reach = (d: (typeof plate.dimensions)[number]) =>
+    horiz(d) ? d.line[0][1] - (d.a[1] + d.b[1]) / 2 : d.line[0][0] - (d.a[0] + d.b[0]) / 2;
+  const inverted: string[] = [];
+  for (const o of overall) {
+    const oh = horiz(o);
+    const span = oh
+      ? [Math.min(o.line[0][0], o.line[1][0]), Math.max(o.line[0][0], o.line[1][0])]
+      : [Math.min(o.line[0][1], o.line[1][1]), Math.max(o.line[0][1], o.line[1][1])];
+    const side = Math.sign(reach(o));
+    const outO = oh ? o.line[0][1] * side : o.line[0][0] * side;
+    for (const d of plate.dimensions) {
+      if (d === o || d.kind === 'overall' || d.kind === 'redline' || horiz(d) !== oh) continue;
+      if (Math.sign(reach(d)) !== side) continue;
+      const dsp = oh
+        ? [Math.min(d.line[0][0], d.line[1][0]), Math.max(d.line[0][0], d.line[1][0])]
+        : [Math.min(d.line[0][1], d.line[1][1]), Math.max(d.line[0][1], d.line[1][1])];
+      if ((dsp[1] as number) < (span[0] as number) || (dsp[0] as number) > (span[1] as number))
+        continue;
+      const outD = oh ? d.line[0][1] * side : d.line[0][0] * side;
+      if (outD > outO + 0.3) inverted.push(`${d.id} outside ${o.id}`);
+    }
+  }
+  if (overall.length)
+    add({
+      id: 'measure.tiers-order',
+      dimension: 'measurement',
+      title: 'Smaller dimensions inside, the overall outside',
+      status: inverted.length ? 'fail' : 'pass',
+      value: inverted.length
+        ? inverted.slice(0, 4).join(', ')
+        : `${overall.length} overall dimensions outermost`,
+      target: 'every overall dimension in the outermost tier on its side',
+      why: 'ISO 129 / research 03 §2.2: smaller dimensions inside, larger outside, so lines do not cross.',
+    });
+  // parallel tiers that overlap must stand a tier apart, or their values collide
+  const tight: string[] = [];
+  const cramped: string[] = [];
+  const tiers = plate.dimensions.filter((d) => d.kind !== 'redline');
+  for (let i = 0; i < tiers.length; i++)
+    for (let j = i + 1; j < tiers.length; j++) {
+      const a = tiers[i] as (typeof tiers)[number];
+      const b = tiers[j] as (typeof tiers)[number];
+      if (horiz(a) !== horiz(b)) continue;
+      const k = horiz(a) ? 1 : 0;
+      const along = horiz(a) ? 0 : 1;
+      const sa = [
+        Math.min(a.line[0][along], a.line[1][along]),
+        Math.max(a.line[0][along], a.line[1][along]),
+      ] as const;
+      const sb = [
+        Math.min(b.line[0][along], b.line[1][along]),
+        Math.max(b.line[0][along], b.line[1][along]),
+      ] as const;
+      if (sa[1] <= sb[0] + 0.5 || sb[1] <= sa[0] + 0.5) continue;
+      const gap = Math.abs(a.line[0][k] - b.line[0][k]);
+      if (gap < 0.01) continue; // one chain, collinear
+      if (gap < 4) tight.push(`${a.id}/${b.id} ${r2(gap)} mm`);
+      else if (gap < 6) cramped.push(`${a.id}/${b.id} ${r2(gap)} mm`);
+    }
+  if (tiers.length > 1)
+    add({
+      id: 'measure.tier-gap',
+      dimension: 'measurement',
+      title: 'Parallel tiers stand a tier apart',
+      status: tight.length ? 'fail' : cramped.length ? 'warn' : 'pass',
+      value:
+        tight.length || cramped.length
+          ? [...tight, ...cramped].slice(0, 4).join(', ')
+          : 'every overlapping pair ≥ 6 mm apart',
+      target: '≥ 6 mm between overlapping parallel dimension lines (fail under 4 mm)',
+      why: 'Research 03 §2.2: tiers 6–10 mm apart. Closer, the values of two tiers sit side by side and read as one (plate III: 281 mm against 250 mm, 2 mm apart).',
+      fix: 'extents() steps one tier gap beyond the dimensions already on its side; set inner tiers further in.',
+    });
+  for (const n of plate.neatlines) {
+    const agree = Math.abs(n.perMm - plate.scale.perMm) < 1e-9 && n.unit === plate.scale.unit;
+    const [x0, y0, x1, y1] = n.rect;
+    const crossing = marks.filter((m) => {
+      if (m.layer !== 'ink' || m.spine.length < 2) return false;
+      let inside = 0;
+      let outside = 0;
+      for (const [x, y] of m.spine) {
+        if (x >= x0 - 0.4 && x <= x1 + 0.4 && y >= y0 - 0.4 && y <= y1 + 0.4) inside++;
+        else outside++;
+      }
+      return inside > 0 && outside > 0;
+    });
+    add({
+      id: `measure.neatline:${n.id}`,
+      dimension: 'measurement',
+      title: `Neatline ${n.id} is graduated true and frames its figure`,
+      status: !agree ? 'fail' : crossing.length ? 'warn' : 'pass',
+      value: `${n.every} ${n.unit} per step at ${r3(n.perMm)} ${n.unit}/mm; ${crossing.length} ink strokes cross it`,
+      target: 'the plate scale; no ink across the frame',
+      why: 'A graduated frame is a ruler laid round the figure: its steps must be the plate’s unit at the plate’s scale.',
+    });
+  }
+  for (const a of plate.angles) {
+    const num = Number.parseFloat(
+      a.text
+        .replace(/[^0-9.-]+/g, ' ')
+        .trim()
+        .split(' ')[0] ?? 'NaN',
+    );
+    const digits = a.text.match(/\.(\d+)/)?.[1]?.length ?? 0;
+    const ok = Number.isFinite(num) && Math.abs(num - a.degrees) <= 0.5 * 10 ** -digits + 1e-9;
+    add({
+      id: `measure.angle:${a.id}`,
+      dimension: 'measurement',
+      title: `Angle ${a.id} says what the rays make`,
+      status: ok ? 'pass' : 'fail',
+      value: `label “${a.text}”, rays ${r2(a.degrees)}°`,
+      target: '|Δ| ≤ half the last digit',
+      why: 'Nothing on a plate is invented; an angle is measured from its rays.',
+    });
+  }
+
+  // ───────────────────────── line types ─────────────────────────
+  const hiddenSolid = marks.filter((m) => m.hidden && (m.lineType ?? 'solid') === 'solid');
+  const hiddenCount = marks.filter((m) => m.hidden).length;
+  if (hiddenCount || hiddenSolid.length)
+    add({
+      id: 'line.hidden',
+      dimension: 'style',
+      title: 'What is behind is dashed',
+      status: hiddenSolid.length ? 'fail' : 'pass',
+      value: `${hiddenSolid.length} of ${hiddenCount} hidden strokes drawn solid`,
+      target: '0',
+      why: 'ISO 128: a dashed narrow line is a hidden edge (research 03 §2.1); a hidden edge drawn solid lies about depth.',
+    });
+  const dashGroups = new Map<string, Mark[]>();
+  for (const m of marks)
+    if (m.lineType && m.lineType !== 'solid' && m.group)
+      dashGroups.set(m.group, [...(dashGroups.get(m.group) ?? []), m]);
+  const evenHand: string[] = [];
+  const unevenExact: string[] = [];
+  for (const [gid, ms] of dashGroups) {
+    const ls = ms.filter((m) => m.stats.length > 0.6).map((m) => m.stats.length);
+    // the end dashes are fitted to the line; judge only lines with ≥ 5 dashes between them
+    if (ls.length < 7) continue;
+    const exact = ms.every((m) => m.guide === 'exact');
+    const c = cv(ls.slice(1, -1));
+    if (exact && c > 0.08) unevenExact.push(gid);
+    if (!exact && c < 0.05) evenHand.push(gid);
+  }
+  if (dashGroups.size)
+    add({
+      id: 'line.dashes',
+      dimension: 'style',
+      title: 'A hand’s dashes vary; an exact line’s do not',
+      status: unevenExact.length ? 'fail' : evenHand.length ? 'warn' : 'pass',
+      value: `${dashGroups.size} dashed lines; ${evenHand.length} drawn ones even, ${unevenExact.length} exact ones uneven`,
+      target: 'hand dash CV ≥ 0.05; exact dash CV ≤ 0.08',
+      why: 'Equal dashes by hand are a plotter’s; uneven dashes on the overlay break its precision (research 03 R3).',
+    });
+  const axesUnnamed: string[] = [];
+  for (const [gid, ms] of dashGroups) {
+    if (!ms.every((m) => m.lineType === 'chain')) continue;
+    const pts = ms.flatMap((m) => m.spine);
+    if (pts.length < 2) continue;
+    let far = 0;
+    let ends: [MVec, MVec] = [pts[0] as MVec, pts[1] as MVec];
+    for (let i = 0; i < pts.length; i += Math.max(1, Math.floor(pts.length / 40)))
+      for (let j = i + 1; j < pts.length; j += Math.max(1, Math.floor(pts.length / 40))) {
+        const d = Math.hypot(
+          (pts[i] as MVec)[0] - (pts[j] as MVec)[0],
+          (pts[i] as MVec)[1] - (pts[j] as MVec)[1],
+        );
+        if (d > far) {
+          far = d;
+          ends = [pts[i] as MVec, pts[j] as MVec];
+        }
+      }
+    if (far < 30) continue;
+    const named = (q: MVec) =>
+      texts.some((t) => {
+        const cx = Math.max(t.box[0], Math.min(q[0], t.box[2]));
+        const cy = Math.max(t.box[1], Math.min(q[1], t.box[3]));
+        return Math.hypot(cx - q[0], cy - q[1]) < 6;
+      });
+    if (!named(ends[0]) && !named(ends[1])) axesUnnamed.push(gid);
+  }
+  if ([...dashGroups.values()].some((ms) => ms.every((m) => m.lineType === 'chain')))
+    add({
+      id: 'connect.axes-named',
+      dimension: 'connections',
+      title: 'A long axis is named where it leaves the figure',
+      status: axesUnnamed.length ? 'warn' : 'pass',
+      value: axesUnnamed.length
+        ? `unnamed: ${axesUnnamed.slice(0, 5).join(', ')}`
+        : 'every long chain line named at an end',
+      target: 'a label within 6 mm of an end of every chain line over 30 mm',
+      why: 'An axis is read by its name (A–A′); the reader finds it where it runs out of the drawing.',
+    });
+
+  // ───────────────────────── labels near their points ─────────────────────────
+  const strays = texts.filter((t) => {
+    if (!t.refers || !(t.kind === 'key' || t.kind === 'numeral')) return false;
+    const q = t.refers;
+    const cx = Math.max(t.box[0], Math.min(q[0], t.box[2]));
+    const cy = Math.max(t.box[1], Math.min(q[1], t.box[3]));
+    const d = Math.hypot(cx - q[0], cy - q[1]);
+    const led = marks.some(
+      (m) => m.role === 'leader' && m.spine.some((s) => Math.hypot(s[0] - q[0], s[1] - q[1]) < 3.5),
+    );
+    return d > 8 && !led;
+  });
+  add({
+    id: 'type.near',
+    dimension: 'typography',
+    title: 'A label sits near its point, or a leader joins them',
+    status: strays.length ? 'warn' : 'pass',
+    value: strays.length
+      ? `far: ${strays
+          .slice(0, 5)
+          .map((t) => t.id)
+          .join(', ')}`
+      : 'all within 8 mm or led',
+    target: '≤ 8 mm, or a leader',
+    why: 'Labels sit within one leader length of their referent (research 03 R10).',
+  });
+
+  // ───────────────────────── the anatomy: every part on its own ─────────────────────────
+  const anatomy: AnatomyRow[] = plate.parts.map((pt) => {
+    const issues: string[] = [];
+    const pm = marks.filter(
+      (m) =>
+        m.part === pt.id ||
+        m.group === pt.id ||
+        m.id === pt.id ||
+        m.id.startsWith(`${pt.id}-`) ||
+        m.id.startsWith(`${pt.id}.`) ||
+        (!!pt.form && m.form === pt.form),
+    );
+    const inked = pm.some((m) => m.layer === 'ink' || m.layer === 'letter');
+    if (!pm.length) issues.push('nothing drawn');
+    if ((pt.finish === 'line' || pt.finish === 'tone') && !inked) issues.push('not inked');
+    if (pt.finish === 'construction' && inked) issues.push('inked, but declared construction');
+    if (pt.finish === 'tone') {
+      if (!pt.form) issues.push('toned without a form');
+      else if (
+        !hatches.some((m) => m.form === pt.form) &&
+        !marks.some((m) => m.form === pt.form && m.role === 'stipple')
+      )
+        issues.push(`no tone laid on form ${pt.form}`);
+    }
+    if (pt.key) {
+      if (!texts.some((t) => t.kind === 'key' && t.text === pt.key))
+        issues.push(`key ${pt.key} not on the drawing`);
+      if (
+        !texts.some(
+          (t) => (t.kind === 'note' || t.kind === 'caption') && t.text.startsWith(`${pt.key} `),
+        )
+      )
+        issues.push(`no note for ${pt.key}`);
+    }
+    if (pt.measured && !('none' in pt.measured))
+      for (const did of pt.measured)
+        if (!plate.dimensions.some((d) => d.id === did) && !plate.angles.some((a) => a.id === did))
+          issues.push(`measure ${did} missing`);
+    if (pt.measured && 'none' in pt.measured && pt.measured.none.trim().split(/\s+/).length < 3)
+      issues.push('unmeasured without a reason');
+    for (const cid of pt.generatedBy ?? [])
+      if (!plate.constructions.some((c) => c.id === cid))
+        issues.push(`construction ${cid} missing`);
+    return { id: pt.id, name: pt.name, finish: pt.finish, ok: issues.length === 0, issues };
+  });
+  const broken = anatomy.filter((a) => !a.ok);
+  add({
+    id: 'create.anatomy',
+    dimension: 'creativity',
+    title: 'The subject is listed part by part, and every part is complete',
+    status: !anatomy.length ? 'warn' : broken.length ? 'fail' : 'pass',
+    value: anatomy.length
+      ? `${anatomy.length} parts, ${broken.length} incomplete${
+          broken.length
+            ? `: ${broken
+                .slice(0, 4)
+                .map((a) => `${a.id} (${a.issues[0]})`)
+                .join('; ')}`
+            : ''
+        }`
+      : 'no parts table',
+    target: 'every part drawn, keyed and noted, finished and measured as declared',
+    why: 'List the parts before drawing; check each on its own (the anatomy method: size, truth, the object, its parts, verify).',
+    fix: 'plate.part({ id, name, key, finish, form, measured, generatedBy }) for each part',
+  });
+
   // ───────────────────────── verdict ─────────────────────────
   const counts = Object.fromEntries(
     DIMENSIONS.map((d) => [d, { pass: 0, warn: 0, fail: 0, human: 0 }]),
@@ -1106,6 +1493,7 @@ export function critique(plate: Plate, o: CritiqueOptions = {}): Report {
     style: S.id,
     verdict,
     checks,
+    anatomy,
     counts,
     stats: {
       marks: marks.length,
@@ -1160,6 +1548,17 @@ export function reportMarkdown(r: Report): string {
       lines.push(`- **${icon[c.status]}** ${c.title} — ${c.value} (target ${c.target})`);
       lines.push(`  - why: ${c.why}${c.fix && c.status !== 'pass' ? ` · fix: ${c.fix}` : ''}`);
     }
+    lines.push('');
+  }
+  if (r.anatomy.length) {
+    lines.push('## Anatomy');
+    lines.push('');
+    lines.push('| Part | Name | Finish | Status |');
+    lines.push('| --- | --- | --- | --- |');
+    for (const a of r.anatomy)
+      lines.push(
+        `| ${a.id} | ${a.name} | ${a.finish} | ${a.ok ? 'complete' : a.issues.join('; ')} |`,
+      );
     lines.push('');
   }
   lines.push('## Stats');

@@ -90,6 +90,8 @@ export interface StrokeStats {
   starved: number;
   railed: number;
   pools: number;
+  /** Radius of the largest pool on the stroke (mm). */
+  poolMax: number;
   catches: number;
   spatter: number;
   feathers: number;
@@ -120,6 +122,9 @@ export interface InkedStroke {
   spine: MVec[];
   /** Width along the spine, for the critic's weight checks. */
   widths: number[];
+  /** Per performed sample: the inked width (mm) and the pen's load (0..1), for the trace. */
+  w?: Float64Array;
+  load?: Float64Array;
 }
 
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -179,9 +184,12 @@ export function inkStroke(
   const wetPen = !dry && !blind;
   const tPaper = paper.spec.tooth;
 
+  // an exact line is the overlay's technical pen: a steady feed, no dip rhythm, no thinning
+  // (research 03 R1, R3: one hue, true lines, no texture). Its reservoir is left untouched.
+  const steady = exact;
   // ── the dip: when the pen is low, or would run dry well before this stroke ends ──
   let dip = false;
-  if (wetPen && Number.isFinite(ins.capacity)) {
+  if (wetPen && !steady && Number.isFinite(ins.capacity)) {
     const need =
       (inkSpec.flow / ins.capacity) *
       (Math.max(ins.w0, ins.w0 + (ins.w1 - ins.w0) * 0.45) / 0.4) *
@@ -202,7 +210,8 @@ export function inkStroke(
   const load = new Float64Array(n);
   let R = wetPen ? state.reservoir : 1;
   // capacity is mm of a 0.4 mm line per dip: a w-wide line uses (w / 0.4) / capacity per mm
-  const flowK = wetPen && Number.isFinite(ins.capacity) ? inkSpec.flow / ins.capacity : 0;
+  const flowK =
+    wetPen && !steady && Number.isFinite(ins.capacity) ? inkSpec.flow / ins.capacity : 0;
   for (let i = 0; i < n; i++) {
     const sm = S[i] as Sample;
     const u = L > 0 ? clamp(sm.s / Math.max(L, 1e-6)) : 0;
@@ -223,9 +232,9 @@ export function inkStroke(
     }
     const slow = clamp((45 - sm.v) / 45);
     const fast = clamp((sm.v - 160) / 160);
-    load[i] = wetPen ? clamp(R ** 0.55 * (1 + 0.22 * slow) - 0.1 * fast) : 1;
+    load[i] = wetPen && !steady ? clamp(R ** 0.55 * (1 + 0.22 * slow) - 0.1 * fast) : 1;
     // a loaded pen lays a fuller line; a draining one thins
-    if (wetPen && !burin) w[i] = (w[i] as number) * (0.84 + 0.24 * (load[i] as number));
+    if (wetPen && !burin && !steady) w[i] = (w[i] as number) * (0.84 + 0.24 * (load[i] as number));
   }
   if (wetPen) state.reservoir = R;
 
@@ -271,6 +280,7 @@ export function inkStroke(
     starved: 0,
     railed: 0,
     pools: 0,
+    poolMax: 0,
     catches: 0,
     spatter: 0,
     feathers: 0,
@@ -332,7 +342,7 @@ export function inkStroke(
       color: [1, 1, 1],
       normal: true,
     });
-    return { parts, stats, spine, widths };
+    return { parts, stats, spine, widths, w, load };
   }
 
   // ── which samples are wet, starved, railed, skipped ──
@@ -608,7 +618,8 @@ export function inkStroke(
     if (restStart > 0.03) {
       const wi = Math.max(w[Math.min(n - 1, 2)] as number, ins.w0 * 1.5);
       const r = Math.min(
-        0.95,
+        // a letter blots too, but a blot as wide as its counter is a spoiled letter
+        perf.role === 'letter' ? wi * 0.7 : 0.95,
         Math.max(
           wi * 0.55,
           (wi / 2) *
@@ -626,7 +637,7 @@ export function inkStroke(
       const last = S[n - 1] as Sample;
       const wi = Math.max(w[Math.max(0, n - 3)] as number, ins.w0 * 1.5);
       const r = Math.min(
-        0.85,
+        perf.role === 'letter' ? wi * 0.7 : 0.85,
         (wi / 2) *
           (1.0 + 0.9 * inkSpec.pool * Math.sqrt(perf.dwellEnd / 0.12)) *
           (0.7 + 0.4 * (load[n - 1] as number)),
@@ -658,6 +669,7 @@ export function inkStroke(
       }
     }
     stats.pools = pools.length;
+    stats.poolMax = pools.reduce((m, pl) => Math.max(m, pl.r), 0);
     if (poolD.length)
       parts.push({
         kind: 'pool',
@@ -725,7 +737,7 @@ export function inkStroke(
     });
   }
 
-  return { parts, stats, spine, widths };
+  return { parts, stats, spine, widths, w, load };
 }
 
 /** A compact description of a stroke for debugging and the specimen captions. */

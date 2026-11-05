@@ -37,6 +37,30 @@ import {
   type StyleId,
   type StyleSpec,
 } from '../styles/styles.ts';
+import { dashes, type LineType } from './linetype.ts';
+
+/** Split a polyline wherever it turns by more than `deg` degrees (a corner). */
+function splitAtCorners(path: Path, deg: number): MVec[][] {
+  const out: MVec[][] = [];
+  let cur: MVec[] = [[path[0]![0], path[0]![1]]];
+  const lim = (deg * Math.PI) / 180;
+  for (let i = 1; i < path.length; i++) {
+    const p = path[i] as Vec;
+    cur.push([p[0], p[1]]);
+    const q = path[i + 1];
+    if (!q) break;
+    const a = Math.atan2(p[1] - path[i - 1]![1], p[0] - path[i - 1]![0]);
+    const b = Math.atan2(q[1] - p[1], q[0] - p[0]);
+    let d = Math.abs(b - a);
+    if (d > Math.PI) d = 2 * Math.PI - d;
+    if (d > lim && cur.length > 1) {
+      out.push(cur);
+      cur = [[p[0], p[1]]];
+    }
+  }
+  if (cur.length > 1) out.push(cur);
+  return out;
+}
 
 /** Roles a hand draws in several lifts when the line is longer than its reach. */
 const LIFT_ROLES = new Set<Role>(['contour', 'underdrawing', 'searching', 'heightening']);
@@ -75,8 +99,16 @@ export interface Mark {
   tone?: number;
   /** Hatch direction family, degrees, when it is a hatch stroke. */
   slope?: number;
+  /** Line type it was drawn in (a dash of a dashed line carries the line's type). */
+  lineType?: LineType;
+  /** It shows something behind a nearer surface (hidden-line convention: must be dashed). */
+  hidden?: boolean;
+  /** The part of the subject it draws (see `Plate.part`). */
+  part?: string;
   /** Order in which the hand made it. */
   order: number;
+  /** The stroke's calculation, when the plate keeps traces (`PlateSpec.trace`). */
+  trace?: StrokeTrace;
 }
 
 export interface TextItem {
@@ -101,6 +133,8 @@ export interface TextItem {
   /** What it refers to (a part's anchor point), for leaders and the label checks. */
   refers?: Vec;
   rotate?: number;
+  /** Characters the hand has no glyph for (drawn lettering only): they came out blank. */
+  missing?: string;
 }
 
 export interface DimensionRecord {
@@ -118,6 +152,49 @@ export interface DimensionRecord {
   /** Points on the ink the extension lines measure from (for the "measure the ink" check). */
   feature: [Vec, Vec];
   textId: string;
+  /** detail (default) · overall (the figure's outer extent) · chain (one link) · redline (a gap between boxes). */
+  kind?: 'detail' | 'overall' | 'chain' | 'redline';
+}
+
+/** A graduated frame (neatline) round a figure or the sheet: its scale must agree. */
+export interface NeatlineRecord {
+  id: string;
+  rect: [number, number, number, number];
+  /** Value per sheet mm, the graduation step (in values) and its unit. */
+  perMm: number;
+  every: number;
+  unit: string;
+  origin: Vec;
+}
+
+/** An angular dimension: the arc, and the value it states. */
+export interface AngleRecord {
+  id: string;
+  vertex: Vec;
+  a: Vec;
+  b: Vec;
+  degrees: number;
+  text: string;
+  textId: string;
+}
+
+/**
+ * A part of the subject (its anatomy): what it is called, how far it is finished, what
+ * made it, what measures it and which note names it. The critic checks every part.
+ */
+export interface PartRecord {
+  id: string;
+  name: string;
+  /** Key letter on the drawing, if keyed. */
+  key?: string;
+  /** construction: left as construction · line: outlined · tone: outlined and shaded. */
+  finish: 'construction' | 'line' | 'tone';
+  /** Form id, when it is toned under the light. */
+  form?: string;
+  /** Dimension ids that measure it, or a reason it is not measured. */
+  measured?: string[] | { none: string };
+  /** Construction ids that generated it. */
+  generatedBy?: string[];
 }
 
 export interface ConstructionRecord {
@@ -171,6 +248,31 @@ export interface PlateSpec {
   views?: number;
   /** Drawing scale: a value is (sheet mm × perMm) in `unit`. Default 1 mm = 1 mm. */
   scale?: { unit: string; perMm: number; digits?: number };
+  /**
+   * Keep each stroke's calculation on its mark (`Mark.trace`): speed, curvature, pressure,
+   * width and ink load per sample. For the calculus view and tests; off by default (memory).
+   */
+  trace?: boolean;
+}
+
+/** One stroke's calculation, sample by sample (arrays share an index). */
+export interface StrokeTrace {
+  /** Arc length (mm) and time since touchdown (s). */
+  s: number[];
+  t: number[];
+  /** The performed centreline (mm). */
+  x: number[];
+  y: number[];
+  /** Speed (mm/s), curvature of the aim (1/mm), pressure (0..1). */
+  v: number[];
+  k: number[];
+  p: number[];
+  /** Inked width (mm) and the pen's load (0..1). */
+  w: number[];
+  load: number[];
+  /** The power law's gain K for this stroke (0 when the law is off) and the envelope's peak speed. */
+  K: number;
+  peak: number;
 }
 
 export interface StrokeOptions {
@@ -195,6 +297,16 @@ export interface StrokeOptions {
   form?: string;
   tone?: number;
   slope?: number;
+  /** Line type (ISO 128): dashes are separate strokes. Default solid. */
+  line?: LineType;
+  /** Reference width for the dash pattern (mm); default: the instrument's mid width. */
+  d?: number;
+  /** Fit the pattern symmetrically so a dash lies on the middle (centre lines cross on dashes). */
+  centred?: boolean;
+  /** Draws something behind a nearer surface (the critic requires it dashed). */
+  hidden?: boolean;
+  /** The part of the subject this stroke draws. */
+  part?: string;
   id?: string;
 }
 
@@ -210,6 +322,9 @@ export class Plate {
   readonly dimensions: DimensionRecord[] = [];
   readonly constructions: ConstructionRecord[] = [];
   readonly forms: FormRecord[] = [];
+  readonly neatlines: NeatlineRecord[] = [];
+  readonly angles: AngleRecord[] = [];
+  readonly parts: PartRecord[] = [];
   readonly truth: Record<string, TruthEntry> = {};
   private inkStates = new Map<string, InkState>();
   private counter = 0;
@@ -272,13 +387,86 @@ export class Plate {
    */
   stroke(path: Path, o: StrokeOptions): Mark[] {
     if (path.length < 2) return [];
+    if (o.line && o.line !== 'solid') {
+      // a dashed line is many short strokes: the pen lifts between dashes
+      const ins = INSTRUMENTS[o.instrument ?? this.kit(o.role).instrument];
+      const d = o.d ?? ins.w0 + (ins.w1 - ins.w0) * 0.4;
+      const baseId = o.id ?? this.nextId(o.role);
+      const rng = this.rng.fork(`dash:${baseId}`);
+      const exact = (o.guide ?? 'free') === 'exact';
+      const out: Mark[] = [];
+      dashes(path, o.line, { d, hand: !exact, rng, centred: o.centred }).forEach((dash, i) => {
+        if (exact && dash.dot) {
+          // an exact dot is a round dot about the line's width across: a 0.5 d dash drawn by
+          // the overlay's pen never reaches its width, and the chain line lost its dots (MA-28)
+          const c = dash.pts[Math.floor(dash.pts.length / 2)] as MVec;
+          const r = Math.max(0.09, d * 0.55);
+          const ring: MVec[] = [];
+          for (let k = 0; k < 14; k++)
+            ring.push([
+              c[0] + r * Math.cos((k / 14) * Math.PI * 2),
+              c[1] + r * Math.sin((k / 14) * Math.PI * 2),
+            ]);
+          out.push(
+            this.addShape({
+              role: o.role,
+              layer: o.layer,
+              ink: o.ink,
+              parts: [
+                {
+                  kind: 'body',
+                  d: `M${ring.map((q) => `${f2(q[0])} ${f2(q[1])}`).join('L')}Z`,
+                  density: 0.92,
+                },
+              ],
+              spine: [c],
+              group: o.group ?? baseId,
+              id: `${baseId}.d${i + 1}`,
+              part: o.part,
+            }),
+          );
+          return;
+        }
+        const m = this.strokeOne(dash.pts, {
+          ...o,
+          id: `${baseId}.d${i + 1}`,
+          group: o.group ?? baseId,
+          start: 'touch',
+          end: dash.dot ? 'stop' : 'lift',
+          anchored: false,
+          overshoot: undefined,
+        });
+        if (m) out.push(m);
+      });
+      return out;
+    }
     const guide = o.guide ?? 'free';
     const insKind = INSTRUMENTS[o.instrument ?? this.kit(o.role).instrument].kind;
+    if (guide === 'ruler' && insKind !== 'ruling' && path.length > 2) {
+      // a ruled outline is one stroke per edge: the pen lifts at every corner (and dips when it needs to)
+      const pieces = splitAtCorners(path, 25);
+      if (pieces.length > 1) {
+        const baseId = o.id ?? this.nextId(o.role);
+        return pieces.flatMap((piece, i) =>
+          this.stroke(piece, {
+            ...o,
+            id: `${baseId}.e${i + 1}`,
+            group: o.group ?? baseId,
+            start: 'touch',
+            end: 'lift',
+          }),
+        );
+      }
+    }
     // a burin cuts a line in one pass; a ruling pen runs the ruler's length
     const liftable =
-      guide === 'free' && LIFT_ROLES.has(o.role) && insKind !== 'burin' && insKind !== 'ruling';
+      (guide === 'free' || guide === 'ruler') &&
+      LIFT_ROLES.has(o.role) &&
+      insKind !== 'burin' &&
+      insKind !== 'ruling';
     const L = lengthOf(path);
-    const reach = this.hand.reach;
+    // against a ruler the arm runs further before it lifts
+    const reach = this.hand.reach * (guide === 'ruler' ? 1.8 : 1);
     if (!liftable || L <= reach * 1.15) {
       const m = this.strokeOne(path, o);
       return m ? [m] : [];
@@ -370,10 +558,35 @@ export class Plate {
       form: o.form,
       tone: o.tone,
       slope: o.slope,
+      lineType: o.line ?? 'solid',
+      hidden: o.hidden,
+      part: o.part,
       order: this.marks.length,
     };
+    if (this.spec.trace) {
+      const S = perf.samples;
+      mark.trace = {
+        s: S.map((q) => q.s),
+        t: S.map((q) => q.t),
+        x: S.map((q) => q.x),
+        y: S.map((q) => q.y),
+        v: S.map((q) => q.v),
+        k: S.map((q) => q.k),
+        p: S.map((q) => q.p),
+        w: inked.w ? Array.from(inked.w) : S.map(() => inked.stats.wMean),
+        load: inked.load ? Array.from(inked.load) : S.map(() => 1),
+        K: perf.gain,
+        peak: perf.peak,
+      };
+    }
     this.marks.push(mark);
     return mark;
+  }
+
+  /** Name a part of the subject: the plate's anatomy, checked part by part. */
+  part(p: PartRecord) {
+    this.parts.push(p);
+    return p;
   }
 
   /** Record a fact the plate draws, with its source. Nothing on a plate is invented. */
@@ -412,6 +625,7 @@ export class Plate {
     spine?: MVec[];
     group?: string;
     id?: string;
+    part?: string;
   }): Mark {
     const k = this.kit(o.role);
     const spine = o.spine ?? [];
@@ -436,6 +650,7 @@ export class Plate {
         starved: 0,
         railed: 0,
         pools: 0,
+        poolMax: 0,
         catches: 0,
         spatter: 0,
         feathers: 0,
@@ -453,6 +668,7 @@ export class Plate {
       widths: spine.map(() => 0),
       intended: spine,
       group: o.group,
+      part: o.part,
       order: this.marks.length,
     };
     this.marks.push(mark);
@@ -512,7 +728,8 @@ export class Plate {
         );
       else
         out.push(`<rect width="${f2(W)}" height="${f2(H)}" fill="${hex(this.paper.spec.tone)}"/>`);
-    } else out.push(`<rect width="${f2(W)}" height="${f2(H)}" fill="#ffffff"/>`);
+    } else
+      out.push(`<rect width="${f2(W)}" height="${f2(H)}" fill="${hex(this.paper.spec.tone)}"/>`);
 
     for (const layer of LAYER_ORDER) {
       if (o.hide?.includes(layer)) continue;
@@ -520,6 +737,7 @@ export class Plate {
       if (!marks.length) continue;
       const multiply: string[] = [];
       const normal: string[] = [];
+      const screen: string[] = [];
       // halos first, merged per ink: a stain does not compound with itself
       const halos = new Map<InkId, string[]>();
       for (const m of marks)
@@ -551,7 +769,10 @@ export class Plate {
               ? ` data-mark="${m.id}" data-role="${m.role}"`
               : '';
           const el = `<path${tag} d="${p.d}" ${attrs}/>`;
-          if (p.grain === 'light') grainL.push(el);
+          if (inkSpec.blend === 'screen' && !p.normal) {
+            // light ink on a dark sheet adds light: screen, with its grain still on the tooth
+            screen.push(p.grain ? `<g filter="url(#mai-grain-${p.grain})">${el}</g>` : el);
+          } else if (p.grain === 'light') grainL.push(el);
           else if (p.grain === 'heavy') grainH.push(el);
           else if (p.normal || inkSpec.blend === 'normal') normal.push(el);
           else multiply.push(el);
@@ -561,13 +782,21 @@ export class Plate {
       if (grainH.length) multiply.push(`<g filter="url(#mai-grain-heavy)">${grainH.join('')}</g>`);
       out.push(`<g id="layer-${layer}" style="mix-blend-mode:multiply">${multiply.join('')}</g>`);
       if (normal.length) out.push(`<g id="layer-${layer}-light">${normal.join('')}</g>`);
+      if (screen.length)
+        out.push(
+          `<g id="layer-${layer}-screen" style="mix-blend-mode:screen">${screen.join('')}</g>`,
+        );
     }
 
     // typeset text (drawn lettering is already in the marks)
     const typeset = this.texts.filter((t) => !t.drawn);
     if (typeset.length) {
       const face = this.spec.typeface ?? "'IM Fell English', 'EB Garamond', Georgia, serif";
-      out.push(`<g id="layer-type" style="mix-blend-mode:multiply" font-family="${esc(face)}">`);
+      const dark =
+        this.paper.spec.tone[0] + this.paper.spec.tone[1] + this.paper.spec.tone[2] < 1.2;
+      out.push(
+        `<g id="layer-type" style="mix-blend-mode:${dark ? 'screen' : 'multiply'}" font-family="${esc(face)}">`,
+      );
       for (const t of typeset) {
         const size = t.cap / 0.66;
         const tr = t.mirror

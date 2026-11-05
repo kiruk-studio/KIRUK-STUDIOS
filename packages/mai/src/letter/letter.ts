@@ -24,7 +24,7 @@ export const ISO_3098 = [1.8, 2.5, 3.5, 5, 7, 10, 14, 20] as const;
 const CAP_UNITS = 21;
 const BASELINE = 22;
 
-type Glyph = { strokes: MVec[][]; advance: number };
+type Glyph = { strokes: MVec[][]; advance: number; missing?: boolean };
 const cache = new Map<string, Glyph>();
 
 function parseGlyph(d: string): MVec[][] {
@@ -46,24 +46,183 @@ function parseGlyph(d: string): MVec[][] {
   return out;
 }
 
+/** Ring points for the synthetic glyphs (Hershey units). */
+const ring = (cx: number, cy: number, r: number, n = 14): MVec[] =>
+  Array.from(
+    { length: n + 1 },
+    (_, i) =>
+      [cx + r * Math.cos((i / n) * Math.PI * 2), cy + r * Math.sin((i / n) * Math.PI * 2)] as MVec,
+  );
+
+/**
+ * Glyphs the Hershey subset lacks, drawn in the same units (cap top 1, baseline 22):
+ * degree, prime, times, diameter, plus-minus, the middle dot, en and em dashes, the
+ * apostrophe, an arrow and delta. Anything else outside ASCII is recorded as missing on
+ * its text (`type.glyphs` fails it), never drawn as a silent blank.
+ */
+const EXTRA: Record<string, Glyph> = {
+  '°': { strokes: [ring(5, 4.5, 2.6)], advance: 10 },
+  '·': { strokes: [ring(5, 12, 0.9, 6)], advance: 10 },
+  '–': {
+    strokes: [
+      [
+        [2, 12],
+        [14, 12],
+      ],
+    ],
+    advance: 16,
+  },
+  '—': {
+    strokes: [
+      [
+        [2, 12],
+        [26, 12],
+      ],
+    ],
+    advance: 28,
+  },
+  '’': {
+    strokes: [
+      [
+        [5, 1],
+        [5, 3.5],
+        [3.8, 6.5],
+      ],
+    ],
+    advance: 8,
+  },
+  '→': {
+    strokes: [
+      [
+        [2, 12],
+        [20, 12],
+      ],
+      [
+        [14.5, 7.5],
+        [20, 12],
+        [14.5, 16.5],
+      ],
+    ],
+    advance: 22,
+  },
+  Δ: {
+    strokes: [
+      [
+        [10, 1],
+        [1, 22],
+        [19, 22],
+        [10, 1],
+      ],
+    ],
+    advance: 20,
+  },
+  '′': {
+    strokes: [
+      [
+        [5, 1],
+        [4, 6],
+      ],
+    ],
+    advance: 7,
+  },
+  '×': {
+    strokes: [
+      [
+        [4, 8],
+        [14, 18],
+      ],
+      [
+        [14, 8],
+        [4, 18],
+      ],
+    ],
+    advance: 18,
+  },
+  Ø: {
+    strokes: [
+      ring(10, 11.5, 8, 24),
+      [
+        [2, 21],
+        [18, 2],
+      ],
+    ],
+    advance: 20,
+  },
+  '±': {
+    strokes: [
+      [
+        [10, 6],
+        [10, 16],
+      ],
+      [
+        [4, 11],
+        [16, 11],
+      ],
+      [
+        [4, 19],
+        [16, 19],
+      ],
+    ],
+    advance: 20,
+  },
+};
+
 export function glyph(font: HersheyFont, ch: string): Glyph {
   const key = `${font}:${ch}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const code = ch.charCodeAt(0);
   let g: Glyph;
-  if (ch === ' ' || code < 33 || code > 126) g = { strokes: [], advance: 16 };
+  const extra = EXTRA[ch];
+  if (extra) g = extra;
+  else if (ch === ' ' || ch === '\u00a0') g = { strokes: [], advance: 16 };
+  else if (code < 33 || code > 126) g = { strokes: [], advance: 16, missing: true };
   else {
     const entry = HERSHEY[font][code - 33];
     g = entry
       ? { strokes: parseGlyph(entry[0]), advance: entry[1] * 2 }
-      : { strokes: [], advance: 16 };
+      : { strokes: [], advance: 16, missing: true };
   }
   cache.set(key, g);
   return g;
 }
 
 /** Width of a line of lettering at a cap height (mm), before the hand's variation. */
+/**
+ * Lettering markup: `_x` or `_{xy}` sets a subscript, `^x` or `^{xy}` a superscript
+ * (0.68 of the cap height); an apostrophe after a letter reads as a prime (A' → A′).
+ */
+export interface Glyphed {
+  ch: string;
+  /** 1 for normal, 0.68 for sub- and superscripts. */
+  size: number;
+  /** Baseline shift as a fraction of the cap height (down positive). */
+  shift: number;
+}
+
+export function tokens(text: string): Glyphed[] {
+  const out: Glyphed[] = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i] as string;
+    if ((ch === '_' || ch === '^') && i + 1 < text.length) {
+      const sub = ch === '_';
+      let body: string;
+      if (text[i + 1] === '{') {
+        const close = text.indexOf('}', i + 2);
+        body = text.slice(i + 2, close < 0 ? undefined : close);
+        i = close < 0 ? text.length : close;
+      } else {
+        body = text[i + 1] as string;
+        i += 1;
+      }
+      for (const b of body) out.push({ ch: b, size: 0.68, shift: sub ? 0.32 : -0.55 });
+      continue;
+    }
+    out.push({ ch, size: 1, shift: 0 });
+  }
+  return out;
+}
+
 export function measureText(
   text: string,
   cap: number,
@@ -72,7 +231,8 @@ export function measureText(
 ): number {
   const k = cap / CAP_UNITS;
   let w = 0;
-  for (const ch of text) w += glyph(font, ch).advance * k + cap * tracking;
+  for (const t of tokens(text))
+    w += glyph(font, t.ch).advance * k * t.size + cap * tracking * t.size;
   return Math.max(0, w - cap * tracking);
 }
 
@@ -132,10 +292,13 @@ export function letter(plate: Plate, text: string, at: Vec, o: LetterOptions = {
   const laid: { pts: MVec[]; gi: number }[] = [];
   let pen = 0;
   let gi = 0;
-  for (const ch of text) {
-    const g = glyph(font, ch);
-    const sz = exact ? 1 : 1 + rng.normal() * 0.025;
-    const drift = exact ? 0 : noise1(gi * 0.45, seedB) * cap * 0.035;
+  let missing = '';
+  for (const tk of tokens(text)) {
+    const g = glyph(font, tk.ch);
+    // a character the hand cannot draw comes out blank: record it, never drop it silently
+    if (g.missing && !missing.includes(tk.ch)) missing += tk.ch;
+    const sz = (exact ? 1 : 1 + rng.normal() * 0.025) * tk.size;
+    const drift = (exact ? 0 : noise1(gi * 0.45, seedB) * cap * 0.035) + tk.shift * cap;
     const sl = baseSlant + (exact ? 0 : rng.normal() * 1.2 * DEG);
     const tsl = Math.tan(sl);
     for (const s of g.strokes) {
@@ -146,7 +309,7 @@ export function letter(plate: Plate, text: string, at: Vec, o: LetterOptions = {
       });
       laid.push({ pts, gi });
     }
-    pen += g.advance * k * sz + cap * tracking * (exact ? 1 : rng.range(0.7, 1.3));
+    pen += g.advance * k * sz + cap * tracking * tk.size * (exact ? 1 : rng.range(0.7, 1.3));
     gi++;
   }
   const total = pen - cap * tracking;
@@ -204,6 +367,7 @@ export function letter(plate: Plate, text: string, at: Vec, o: LetterOptions = {
     color: [0, 0, 0],
     refers: o.refers,
     rotate: o.rotate,
+    missing: missing || undefined,
   });
   return { id, marks, item };
 }
@@ -246,7 +410,12 @@ export function typeset(
     mirror: !!o.mirror,
     twin: o.twin,
     box: [x0, at[1] - cap * 1.05, x0 + w, at[1] + cap * 0.3],
-    color: o.color ?? [0.137, 0.102, 0.078],
+    // ink on a light sheet; on the night sheet, Dawn Departs (TOKEN color.dawn.departs)
+    color:
+      o.color ??
+      (plate.paper.spec.tone[0] + plate.paper.spec.tone[1] + plate.paper.spec.tone[2] < 1.2
+        ? [0.8, 1, 1]
+        : [0.137, 0.102, 0.078]),
     italic: o.italic,
     refers: o.refers,
     rotate: o.rotate,

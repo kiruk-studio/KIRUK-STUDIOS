@@ -15,11 +15,14 @@ export type InkId =
   | 'sepia'
   | 'carbon'
   | 'rubric'
+  | 'rubric-type'
   | 'sanguine'
   | 'blueprint'
   | 'graphite'
   | 'silverpoint'
-  | 'white';
+  | 'white'
+  | 'departs'
+  | 'chalk';
 
 export interface InkSpec {
   id: InkId;
@@ -42,10 +45,15 @@ export interface InkSpec {
   flow: number;
   /** Dry medium: no pools, no bleed; the paper's tooth breaks the line. */
   dry: boolean;
-  /** Blend onto the sheet: pigments multiply; white heightening lies on top. */
-  blend: 'multiply' | 'normal';
+  /** Blend onto the sheet: pigments multiply; white heightening lies on top; light ink on a dark sheet screens. */
+  blend: 'multiply' | 'normal' | 'screen';
   /** Where the colour comes from. */
   source: string;
+  /**
+   * The ink this ink's values are lettered in, when this one is for strokes only (the token
+   * rule: rubric-line rules, guides and leaders; rubric for type that measures).
+   */
+  typeInk?: InkId;
 }
 
 const W = (s: string) => fromHex(s);
@@ -142,6 +150,23 @@ export const INKS: Record<InkId, InkSpec> = {
     blend: 'multiply',
     source:
       'TOKEN color.dawn.rubric-line #B5462B (rules, guides, leaders); type uses color.dawn.rubric #983A22',
+    typeInk: 'rubric-type',
+  },
+  'rubric-type': {
+    id: 'rubric-type',
+    name: 'Rubric red, for type',
+    color: W('#983a22'),
+    halo: [0.85, 0.62, 0.5],
+    density: 0.94,
+    bleed: 0.3,
+    haloStrength: 0.08,
+    pool: 0.5,
+    rim: 0.35,
+    flow: 0.9,
+    dry: false,
+    blend: 'multiply',
+    source:
+      'TOKEN color.dawn.rubric #983A22: type that measures and numbers (measure labels, plate numbers), ≥ 4.5:1 on both papers; never body copy or fills',
   },
   sanguine: {
     id: 'sanguine',
@@ -217,6 +242,37 @@ export const INKS: Record<InkId, InkSpec> = {
     dry: false,
     blend: 'normal',
     source: 'WORKING VALUE — lead white / body colour laid on a toned sheet',
+  },
+  departs: {
+    id: 'departs',
+    name: 'Dawn Departs (light ink, for the night sheet)',
+    color: W('#ccffff'),
+    halo: W('#ccffff'),
+    density: 0.9,
+    bleed: 0.18,
+    haloStrength: 0,
+    pool: 0.45,
+    rim: 0.2,
+    flow: 1,
+    dry: false,
+    blend: 'screen',
+    source:
+      'TOKEN color.dawn.departs #CCFFFF, used as a light line on the night sheet (navy): the blue before sunrise drawn on the dark',
+  },
+  chalk: {
+    id: 'chalk',
+    name: 'White chalk',
+    color: [0.92, 0.92, 0.89],
+    halo: [0.92, 0.92, 0.89],
+    density: 0.55,
+    bleed: 0,
+    haloStrength: 0,
+    pool: 0,
+    rim: 0,
+    flow: 0,
+    dry: true,
+    blend: 'screen',
+    source: 'WORKING VALUE — white chalk on a dark ground (construction on the night sheet)',
   },
 };
 
