@@ -60,7 +60,7 @@ the hand and the code.
 
 ## The bleed (2026-11-04)
 
-Drag across the plate and the sheet gets wet. Ink lifts off the lines and the type,
+Shift-drag across the plate (a plain drag measures, since 2026-11-05) and the sheet gets wet. Ink lifts off the lines and the type,
 travels with the water along the fibres, and dries darkest at its edge. The stain fades
 with a half-life of about 11 s. On load the sheet is only damp: it darkens for a moment but
 lifts no ink. The instrument's _v. Ink_ plots how wet the sheet is and how fast it dries.
@@ -89,8 +89,10 @@ connected. They also asked for a stronger, clearer engine and better performance
   - A 10 mm bar, with the scale the figure is drawn at ("Fig. 1 at 3.87 : 1" at
     1440×900). That scale changes as the page is resized; lengths in d and mm do not.
 
-  Four units (U): d, mm, px and Paris lines. Calipers (M): drag between any two points,
-  and the ends snap to the anatomy.
+  Four units (U): d, mm, px and Paris lines. Calipers: drag between any two points,
+  and the ends snap to the anatomy. M holds the calipers out: the snap shows under the
+  pointer before the press, and a drag measures over the type as well.
+  _2026-11-05, founder:_ a plain drag measures; the wet brush moved to shift-drag.
 
 - **Notes.** Seven notes, i to vi plus a mirror line, read as one chain: scribble,
   measure, light, paper, water, make. Pretext lays them out into whatever room the

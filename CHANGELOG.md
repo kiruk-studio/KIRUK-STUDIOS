@@ -8,6 +8,12 @@ Format loosely follows [Keep a Changelog](https://keepachangelog.com/) with an a
 
 ## [Unreleased]
 
+### Changed
+
+- **A drag on the plate measures (2026-11-05).** On studio.kiruk.in a plain drag now draws the calipers between any two points, ends snapped to the anatomy; the wet brush moved to shift-drag. M still holds the calipers out (snap preview, measuring over the type). A click still blinks the eye and clears a span. The plate's cursor is a crosshair; its type stays a text cursor. Copy updated in the instrument, note v and `ideas/studio-dawn/eye.md`.
+  - **Why:** the founder looked for drag-to-measure on the live page and read it as missing: it sat behind M, and a plain drag wet the paper.
+  - **Verified:** local dev, pointer events: a drag gave `2.69 d · caruncle → outer corner`; a click cleared it; a shift-drag drew no span. Studio typecheck and biome clean.
+
 ### Fixed
 
 - **Hardening pass (2026-11-05).** The engines get tests and the repo gets gates.

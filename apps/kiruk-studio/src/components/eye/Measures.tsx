@@ -10,7 +10,7 @@
  *   A   the aperture, lid to lid, live through a blink
  *   p   the pupil, live through the light reflex
  *   bar ten millimetres of the real eye at this layout, and the scale it is drawn at
- *   calipers (M, then drag): any span, its ends snapped to the nearest landmark
+ *   calipers (drag; M shows the snap first): any span, its ends snapped to the nearest landmark
  *
  * Every length reads in the chosen unit (U): d (the iris), mm (the human eye), px (this
  * screen, so it converts with the layout), or Paris lines (the engraver's unit).

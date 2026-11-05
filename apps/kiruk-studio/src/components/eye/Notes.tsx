@@ -65,7 +65,7 @@ export const NOTES: NoteDef[] = [
   {
     id: 'v',
     no: 'v.',
-    text: 'Wet it: drag across the lashes. The ink lifts, runs along the fibres, dries darkest at its edge and fades, the way a scribble does once it has become the thing. → vi',
+    text: 'Wet it: shift-drag across the lashes. The ink lifts, runs along the fibres, dries darkest at its edge and fades, the way a scribble does once it has become the thing. → vi',
     target: [0.3, 0.36],
     zones: ['bottom', 'margin', 'left'],
   },

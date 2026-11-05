@@ -781,8 +781,12 @@
 .m-cal .m-line {
   stroke-width: 1.3;
 }
-.eye-page[data-calipers="on"] {
+/* A drag on the plate measures, so the plate is a crosshair; the type stays text. */
+.eye-page {
   cursor: crosshair;
+}
+.eye-page:not([data-calipers="on"]) .eye-overlay :is(header, ol, .fig-no, .g-label, .note) {
+  cursor: text;
 }
 @media (max-width: 899px) {
   .m-a,

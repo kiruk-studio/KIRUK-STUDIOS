@@ -13,8 +13,9 @@
  * One light: the pointer moves it, and it lights both the paper (with a slow drift) and
  * the eye (without, so a still page never re-cuts the engraving).
  *
- *   drag on the plate   a wet brush: the paper takes water, the ink bleeds, then dries and fades
- *   M, then drag        calipers: measure between any two points, ends snap to landmarks
+ *   drag on the plate   calipers: measure between any two points, ends snap to landmarks
+ *   shift + drag        a wet brush: the paper takes water, the ink bleeds, then dries and fades
+ *   M                   calipers out: the snap shows under the pointer, and a drag measures over the type too
  *   U                   the unit: d (the iris) · mm · px · Paris lines
  *   W                   the construction: faint · full · hidden
  *   C                   make it again: the construction, then each pass cut across the eye
@@ -556,12 +557,14 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
           (e.clientY - geo.eye[1]) / geo.eye[2],
         );
       const st = eyeStore.get();
+      if (caliperDrag && st.caliper) {
+        const b = snapAt(e.clientX, e.clientY);
+        eyeStore.set({ caliper: { ...st.caliper, b: [b.x, b.y], snapB: b.snap } });
+        return;
+      }
       if (st.calipers) {
         const now = performance.now();
-        if (caliperDrag && st.caliper) {
-          const b = snapAt(e.clientX, e.clientY);
-          eyeStore.set({ caliper: { ...st.caliper, b: [b.x, b.y], snapB: b.snap } });
-        } else if (now - hoverAt > 30) {
+        if (now - hoverAt > 30) {
           hoverAt = now;
           eyeStore.set({ hover: snapAt(e.clientX, e.clientY) });
         }
@@ -579,21 +582,23 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
     const onLeave = (e: PointerEvent) => {
       if (!e.relatedTarget) motion?.leave();
     };
-    // The plate's type stays selectable; a drag anywhere else is the wet brush.
+    // The plate's type stays selectable; a drag anywhere else measures, a shift-drag wets.
     const onText = (el: EventTarget | null) =>
       !!(el as HTMLElement | null)?.closest?.(
         '.eye-overlay :is(header, ol, .fig-no, .g-label, .note)',
       );
     const onDown = (e: PointerEvent) => {
       if (onUi(e.target) || e.button !== 0) return;
-      if (eyeStore.get().calipers) {
+      const out = eyeStore.get().calipers;
+      if (!out && onText(e.target)) return;
+      if (out || !e.shiftKey) {
         e.preventDefault();
         caliperDrag = true;
+        down = [e.clientX, e.clientY];
         const a = snapAt(e.clientX, e.clientY);
         eyeStore.set({ caliper: { a: [a.x, a.y], b: [a.x, a.y], snapA: a.snap } });
         return;
       }
-      if (onText(e.target)) return;
       // A brush stroke is not a text selection: a selection would print into the paper as a wash.
       e.preventDefault();
       brushing = true;
@@ -605,18 +610,21 @@ export function EyeEngine({ overlay }: { overlay: ReactNode }) {
       if (caliperDrag) {
         caliperDrag = false;
         const c = eyeStore.get().caliper;
-        if (c && Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1]) * geo.eye[2] < 3)
+        if (c && Math.hypot(c.b[0] - c.a[0], c.b[1] - c.a[1]) * geo.eye[2] < 3) {
           eyeStore.set({ caliper: null });
+          // A click, not a span: the eye blinks at it.
+          if (Math.hypot(e.clientX - down[0], e.clientY - down[1]) <= 5) blinkAt(e);
+        }
         return;
       }
       if (!brushing) return;
       brushing = false;
       lastBrush = null;
-      if (!moved) {
-        const [x, y, w, h] = rectOf('.eye-box');
-        if (e.clientX > x && e.clientX < x + w && e.clientY > y && e.clientY < y + h)
-          motion?.blink();
-      }
+      if (!moved) blinkAt(e);
+    };
+    const blinkAt = (e: PointerEvent) => {
+      const [x, y, w, h] = rectOf('.eye-box');
+      if (e.clientX > x && e.clientX < x + w && e.clientY > y && e.clientY < y + h) motion?.blink();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;

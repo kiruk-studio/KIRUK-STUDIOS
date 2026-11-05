@@ -367,9 +367,11 @@ export function Instrument() {
           .
         </p>
         <p className="ins-note">
-          With the calipers out, drag between any two points; the ends snap to the corners, the
-          lids, the iris. Lengths in d and mm hold; px and the drawn scale change with the page.{' '}
-          <kbd>U</kbd> changes the unit; move the pointer and the light moves with it.
+          Drag between any two points to measure; the ends snap to the corners, the lids, the iris.
+          With the calipers out (<kbd>M</kbd>) the snap shows before you press, and a drag measures
+          over the type too. Shift-drag wets the paper. Lengths in d and mm hold; px and the drawn
+          scale change with the page. <kbd>U</kbd> changes the unit; move the pointer and the light
+          moves with it.
         </p>
       </section>
 
