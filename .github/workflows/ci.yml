@@ -1,0 +1,80 @@
+name: ci
+
+# The gates the repo's own pre-commit hooks assume but nothing enforced:
+# types, lint errors, every workspace's tests, and the studio build.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TURBO_UI: 'false'
+
+jobs:
+  check:
+    name: Types, lint, tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Typecheck (every workspace)
+        run: pnpm typecheck
+
+      - name: Lint (errors fail, warnings reported)
+        run: pnpm lint
+
+      - name: Tests (every workspace)
+        run: pnpm test
+
+  studio:
+    name: Studio build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Build apps/kiruk-studio
+        run: pnpm --filter @kiruk/studio build
+
+      - name: p5.brush stays out of the first load
+        # adopt-p5-brush-hand: the library ships only in the worker and a lazy fallback chunk.
+        run: |
+          cd apps/kiruk-studio/.next/static/chunks
+          if grep -l "EXT_color_buffer" app/**/page-*.js app/*/page-*.js 2>/dev/null; then
+            echo "p5.brush found in a page chunk" >&2
+            exit 1
+          fi

@@ -30,7 +30,7 @@ describe('kirukal component catalog', () => {
       COMPONENT_CATALOG.flatMap((entry) => entry.recipe.map((piece) => piece.markId)),
     );
     for (const markId of MARK_IDS) {
-      if (MARK_CATALOG[markId].usedBy.includes('*')) {
+      if ((MARK_CATALOG[markId].usedBy as readonly string[]).includes('*')) {
         expect(recipeMarks.has(markId)).toBe(true);
         continue;
       }
